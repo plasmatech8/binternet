@@ -23,6 +23,13 @@
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 </script>
 
+<!-- Navigation Loading Bar -->
+{#await import('@prgm/sveltekit-progress-bar') then { ProgressBar }}
+	<div class="fixed z-[1000] w-screen top-0 left-0 right-0 h-1">
+		<ProgressBar class="text-primary-500" />
+	</div>
+{/await}
+
 <!-- App Shell -->
 <AppShell>
 	<svelte:fragment slot="header">
@@ -34,7 +41,7 @@
 					<span class="text-xl uppercase !ml-0.5">internet</span>
 				</a>
 			</svelte:fragment>
-			<div>
+			<div class="z-0">
 				<a class="btn btn-sm variant-ghost-surface" href="/documentation">Documentation</a>
 				<a class="btn btn-sm variant-ghost-surface" href="/create">Create</a>
 			</div>
