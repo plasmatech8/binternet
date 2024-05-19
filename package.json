@@ -44,8 +44,10 @@
     "@fortawesome/fontawesome-free": "^6.5.2",
     "@prgm/sveltekit-progress-bar": "^2.0.0",
     "@types/lodash": "^4.17.4",
+    "axios": "^1.6.8",
     "highlight.js": "11.9.0",
     "lodash": "^4.17.21",
-    "pretty-bytes": "^6.1.1"
+    "pretty-bytes": "^6.1.1",
+    "sats-connect": "^2.3.1"
   }
 }
