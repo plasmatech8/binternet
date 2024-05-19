@@ -1,0 +1,6 @@
+binternet: v1
+routes:
+  /mainnet/rocket: '5a54139fa5bda4dd4423729e8b349d3bc63f32dd8a46ca5dacfde56ce944bf70i0'
+  /mainnet/gray: 'de7ebcf4ff383a83f3c22e6445a6688abcb9d9e0b7ecca33f79e990051c2f1cbi0'
+  /testnet/thing: '42aaf4eda422da21197f6a5e7c064d4e63a87ea5e208f13128fe565e84107c64i0'
+  /testnet/punk: 'f052bb7690961a08f8ec97ebb7f7ff827fbfccedfff197a4aa4a87c9e6f889dfi0'
