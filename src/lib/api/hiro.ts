@@ -15,14 +15,14 @@ function getClient(network: Network) {
 	});
 }
 
-export interface InscriptionsResponse {
+export interface InscriptionsDetailsResponse {
 	limit: number;
 	offset: number;
 	total: number;
-	results: Inscription[];
+	results: InscriptionDetails[];
 }
 
-export interface Inscription {
+export interface InscriptionDetails {
 	id: string;
 	number: number;
 	address: string;
@@ -55,7 +55,7 @@ export interface Inscription {
 export async function getInscriptions(
 	network: Network,
 	address: string
-): Promise<InscriptionsResponse> {
+): Promise<InscriptionsDetailsResponse> {
 	const client = getClient(network);
 	const response = await client.get(`/inscriptions`, { params: { address } });
 	return response.data;
@@ -64,8 +64,17 @@ export async function getInscriptions(
 /**
  * Get the inscription details by inscription ID or sat number.
  */
-export async function getInscription(network: Network, id: string | number): Promise<Inscription> {
+export async function getInscriptionDetails(
+	network: Network,
+	id: string | number
+): Promise<InscriptionDetails> {
 	const client = getClient(network);
 	const response = await client.get(`/inscriptions/${id}`);
+	return response.data;
+}
+
+export async function getInscriptionContent(network: Network, id: string) {
+	const client = getClient(network);
+	const response = await client.get(`/inscriptions/${id}/content`, { responseType: 'arraybuffer' });
 	return response.data;
 }
