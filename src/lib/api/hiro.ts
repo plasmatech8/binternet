@@ -73,6 +73,10 @@ export async function getInscriptionDetails(
 	return response.data;
 }
 
+/**
+ * Get inscription content data URL by its inscription ID.
+ * NOTE: Complex inscriptions will not work. Must be a simple file data inscription.
+ */
 export async function getInscriptionContent(network: Network, id: string) {
 	const client = getClient(network);
 	const response = await client.get(`/inscriptions/${id}/content`, { responseType: 'arraybuffer' });
