@@ -1,19 +1,14 @@
-import { getInscriptionContent } from '$lib/api/ordinals';
-import { error, type Handle } from '@sveltejs/kit';
-export const handle: Handle = async ({ event, resolve }) => {
-	// If in a subdomain, handle routing to an inscription or site
-	const subdomainParts = event.url.hostname.split('.').slice(0, -1);
-	if (subdomainParts.length) {
-		if (subdomainParts.length > 1) error(400, 'Invalid subdomain');
-		const subdomain = subdomainParts[0];
+import { extractNumberAndNetwork } from '$lib/utils/network';
+import { type Handle } from '@sveltejs/kit';
 
-		// !@#@$
-		// Subdomain is max length 63 characters.
-		// TODO: Must use inscription number instead of inscription genesis id
-		const content = await getInscriptionContent('mainnet', subdomain);
-		return new Response(content);
+export const handle: Handle = async ({ resolve, event }) => {
+	const { number, network, baseDomain } = extractNumberAndNetwork(event.url);
+	// If the last part of the domain is a number, send inscription contents
+	if (number) {
+		const url = `http://${baseDomain}/api/${network}/inscription/${number}`;
+		return await fetch(url);
 	}
-	// If not in a subdomain, continue to normal SvelteKit routes
+	// Otherwise, continue to normal website routes
 	const response = await resolve(event);
 	return response;
 };

@@ -14,27 +14,30 @@ export type InscriptionDetails = {
 	createdAt: Date;
 };
 
-let client: AxiosInstance | undefined;
+let currentClient: AxiosInstance | undefined;
+let currentNetwork: string | undefined;
+let currentEndpoints: string[] = [];
 
 function getClient(network: Network) {
-	if (client) return client;
-	const baseURL = endpoints[network].pop();
-	client = axios.create({ baseURL, timeout: 1000 });
-	client.interceptors.response.use(
+	if (network === currentNetwork && currentClient) return currentClient;
+	currentEndpoints = [...endpoints[network]];
+	const baseURL = currentEndpoints.pop();
+	currentClient = axios.create({ baseURL, timeout: 1000 });
+	currentClient.interceptors.response.use(
 		(res) => res,
 		(err) => {
 			if (isAxiosError(err)) {
-				const baseURL = endpoints[network].pop();
+				const baseURL = currentEndpoints.pop();
 				const { config } = err;
 				if (!baseURL || !config) return Promise.reject(err);
 				config.baseURL = baseURL;
-				client = axios.create({ baseURL, timeout: 1000 });
-				return client(config);
+				currentClient = axios.create({ baseURL, timeout: 1000 });
+				return currentClient(config);
 			}
 			return Promise.reject(err);
 		}
 	);
-	return client;
+	return currentClient;
 }
 
 /**
