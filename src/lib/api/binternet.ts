@@ -1,30 +1,46 @@
-import { getInscriptionContent } from './ordinals';
-import yaml from 'js-yaml';
 import { error } from '@sveltejs/kit';
+import { getInscriptionContent, getInscriptionDetails } from './ordinals';
+import yaml from 'js-yaml';
+import { z } from 'zod';
 
 type Network = 'mainnet' | 'testnet';
 
-function parseContent(content: ArrayBuffer) {
-	const text = new TextDecoder('utf-8').decode(content);
+const routerSchema = z.object({
+	binternet: z.enum(['v1']),
+	routes: z.record(z.string(), z.number())
+});
+
+function parseRouter(contents: ArrayBuffer) {
+	const text = new TextDecoder('utf-8').decode(contents);
 	try {
-		return yaml.load(text);
-	} catch (_) {
-		try {
-			return JSON.parse(text);
-		} catch (_) {
-			error(404, 'Invalid JSON or YAML');
-		}
+		const object = yaml.load(text);
+		return routerSchema.parse(object);
+	} catch (e) {
+		console.error(e);
+		throw Error('Failed to parse router.');
 	}
 }
 
-export async function getSiteData(network: Network, id: string, path: string) {
-	// Inscription must be a router (JSON/YAML)
+/**
+ * Fetch the page/file from a binternet site based on inscription number of the router file and
+ * the path with corresponds to a route in the router.
+ * @param network Network. Mainnet or testnet.
+ * @param number Inscription number of the router file.
+ * @param path Resource path in the URL which corresponds to a route in the router.
+ */
+export async function fetchSiteData(network: Network, number: number, path: string) {
+	// Inscription must be a router (YAML file)
+	const { id } = await getInscriptionDetails(network, number);
 	const content = await getInscriptionContent(network, id);
-	const router = parseContent(content);
+	const router = parseRouter(content);
 	console.log(router, path);
 
-	// TODO:
-	// If inscription is an Binternet index, then parse the contents and obtain the routes.
-	// Then send response with the expected inscription from the index router.
-	// If the inscription is just a normal file, return the file.
+	const routeInscriptionNumber = router.routes[path];
+	if (routeInscriptionNumber === undefined) throw error(404, 'Not Found');
+	const { id: routeInscriptionId, contentType } = await getInscriptionDetails(
+		network,
+		routeInscriptionNumber
+	);
+	const routeInscriptionContent = await getInscriptionContent(network, routeInscriptionId);
+	return { content: routeInscriptionContent, contentType };
 }
