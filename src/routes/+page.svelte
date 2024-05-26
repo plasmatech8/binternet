@@ -1,4 +1,14 @@
+<script lang="ts">
+	import BitcoinNetwork from '$lib/components/graphics/BitcoinNetwork.svelte';
+</script>
+
 <div class="container mx-auto p-1 pt-10">
-	<h1 class="h1">Bitcoin Internet</h1>
-	<h2 class="h2">Inscribe a website onto the Bitcoin blockchain</h2>
+	<div class="flex justify-center">
+		<BitcoinNetwork></BitcoinNetwork>
+	</div>
+	<div></div>
+	<h1 class="h1 text-center">
+		Welcome to the <span class="text-binternet">Bitcoin Internet</span>
+	</h1>
+	<div class="h3 text-center mt-5">Inscribe a website onto the Bitcoin blockchain</div>
 </div>
