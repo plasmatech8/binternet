@@ -1,0 +1,12 @@
+binternet: v1
+routes:
+  # HTML
+  /: 0
+  /runes: 0
+  # JS/CSS
+  /script.js: 0
+  /styles.css: 0
+  # Images
+  /runes/going_to_the_moon.gif: 0
+  /runes/laser_eyes_effect.gif: 0
+  /favicon.gif: 0
