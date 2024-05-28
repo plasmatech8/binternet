@@ -17,7 +17,7 @@
 		autoplay
 		mode="normal"
 		src="/bitcoin_network_animation.json"
-		style="max-width: 30rem"
+		style="max-width: 40rem;"
 	>
 	</lottie-player>
 </Shine>
