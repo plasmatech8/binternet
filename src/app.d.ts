@@ -7,3 +7,18 @@ declare namespace App {
 	// interface Error {}
 	// interface Platform {}
 }
+
+interface InscriptionFile {
+	id: string;
+	type: 'new' | 'existing';
+	path: string;
+	new?: {
+		name: string;
+		size: number;
+		data: ArrayBuffer;
+		number?: number;
+	};
+	existing?: {
+		number: number | undefined;
+	};
+}

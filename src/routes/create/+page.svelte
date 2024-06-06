@@ -1,115 +1,119 @@
 <script lang="ts">
-	import { ListBoxItem, ListBox, type PopupSettings, popup } from '@skeletonlabs/skeleton';
+	import { FileButton } from '@skeletonlabs/skeleton';
+	import InscriptionCard from './InscriptionCard.svelte';
+	import { slide } from 'svelte/transition';
 
-	const files = [{}];
+	let inscriptions: InscriptionFile[] = [];
 
-	interface InscriptionFile {
-		path: string;
-		contents: any;
-		intention: null | number | 'ignore' | 'new';
+	$: pendingInscriptions = inscriptions.filter((insc) => {
+		return insc.type === 'new' && !insc.new?.number;
+	});
+
+	async function onFileUpload(e: Event) {
+		const target = e.target as HTMLInputElement;
+		const fileList = target.files as FileList;
+
+		// Add inscriptions to list
+		for (const file of fileList) {
+			const newInscription: InscriptionFile = {
+				id: Math.random().toString(),
+				type: 'new',
+				path: '/' + (file.webkitRelativePath !== '' ? file.webkitRelativePath : file.name),
+				new: {
+					name: file.name,
+					size: file.size,
+					data: await file.arrayBuffer()
+					// number: 70427602
+				}
+			};
+			inscriptions = [newInscription, ...inscriptions];
+		}
 	}
 
-	const file: InscriptionFile = {
-		// File
-		path: '/folder/index.html',
-		contents: '<h1>Hello</h1>',
-		intention: null
-	};
+	function onAddExisting() {
+		// TODO: select inscription modal
 
-	const popupCombobox: PopupSettings = {
-		event: 'click',
-		target: 'popupCombobox',
-		placement: 'bottom',
-		closeQuery: '.listbox-item'
-	};
+		// Make a path name
+		const basePath = '/existing_inscription_';
+		let pathNumber = 1;
+		while (inscriptions.find((insc) => insc.path === basePath + pathNumber)) {
+			pathNumber += 1;
+		}
+		const path = basePath + pathNumber;
+
+		// Add inscription to list
+		const newInscription: InscriptionFile = {
+			id: Math.random().toString(),
+			type: 'existing',
+			path: path,
+			existing: {
+				number: 70427602
+			}
+		};
+		inscriptions = [newInscription, ...inscriptions];
+	}
+
+	function onDelete(inscription: InscriptionFile) {
+		inscriptions = inscriptions.filter((insc) => insc !== inscription);
+	}
 </script>
 
-<div class="container mx-auto">
+<div class="container mx-auto px-2">
 	<h1 class="h1 my-10">Create</h1>
 
-	<h2 class="h2 my-10">Inscribe Files</h2>
-
-	<div class="card flex gap-3 p-5 justify-between items-center">
-		<div>{file.path}</div>
-		<div class="flex gap-2">
-			<button class="btn variant-outline-primary"> Minify JS </button>
-		</div>
-
-		<!-- <div class="flex gap-2 h-16"> -->
-		<div class="btn-group variant-outline-primary h-16">
-			<button
-				class="gap-3"
-				class:!variant-filled-primary={file.intention === 'ignore'}
-				on:click={() => (file.intention = 'ignore')}
+	<div class="flex flex-col lg:flex-row justify-between items-center mb-5">
+		<h2 class="h2 my-10">
+			Inscribe Files <span class="text-2xl opacity-60">&</span> Define Routes
+		</h2>
+		<div class="flex gap-5">
+			<FileButton
+				button="btn btn-sm variant-filled"
+				name="files"
+				on:change={onFileUpload}
+				directory
+				webkitdirectory
+				mozdirectory
 			>
-				Ignore
-				<i class="fa-solid fa-ban"></i>
-			</button>
-			<button
-				use:popup={popupCombobox}
-				class="w-40 gap-3"
-				class:!variant-filled-primary={typeof file.intention === 'number'}
-			>
-				{#if typeof file.intention === 'number'}
-					<div class="min-w-0 truncate">
-						Using {file.intention}
-					</div>
-				{:else}
-					<div>
-						<div>Use Existing</div>
-						<div class="text-sm">3 found</div>
-					</div>
-				{/if}
-				<i class="fas fa-caret-down"></i>
-			</button>
-			<button
-				class="gap-3"
-				class:!variant-filled-primary={file.intention === 'new'}
-				on:click={() => (file.intention = 'new')}
-			>
-				New Inscription
-
-				<i class="fa-solid fa-plus"></i>
+				<div>Upload Folder</div>
+				<i class="fas fa-add"></i>
+			</FileButton>
+			<FileButton button="btn btn-sm variant-filled" name="files" multiple on:change={onFileUpload}>
+				<div>Upload File</div>
+				<i class="fas fa-add"></i>
+			</FileButton>
+			<button class="btn btn-sm variant-filled" on:click={onAddExisting}>
+				<div>Add Existing</div>
+				<i class="fas fa-add"></i>
 			</button>
 		</div>
+	</div>
 
-		{#if typeof file.intention === 'number'}
-			<a href="." class="btn btn-sm gap-2 variant-filled-secondary">
-				<i class="fa-solid fa-up-right-from-square"></i>
-				View Inscription
-			</a>
-		{:else if file.intention === 'new'}
-			<button class="btn btn-sm gap-2 variant-filled-secondary">Inscribe Now</button>
+	<div class="flex flex-col gap-4 min-h-52">
+		{#each inscriptions as inscription (inscription.id)}
+			<div transition:slide>
+				<InscriptionCard bind:inscription on:delete={() => onDelete(inscription)}></InscriptionCard>
+			</div>
 		{:else}
-			<div class="opacity-50">No Inscription</div>
-		{/if}
-		<div></div>
+			<div class="grid place-items-center opacity-50 w-full h-52">No Inscriptions</div>
+		{/each}
+	</div>
+
+	<div class="mt-10 flex gap-3">
+		<button class="btn variant-filled-primary" disabled={!pendingInscriptions.length}>
+			Inscribe Pending Files
+			{#if pendingInscriptions.length}
+				({pendingInscriptions.length})
+			{/if}
+		</button>
+		<button
+			class="btn variant-filled-primary"
+			disabled={!!pendingInscriptions.length || inscriptions.length == 0}
+		>
+			Generate Router
+		</button>
 	</div>
 
 	<h2 class="h2 my-10">Create Router</h2>
-</div>
 
-<!-- Select menu for inscription -->
-<div class="card shadow-xl py-2" data-popup="popupCombobox">
-	<ListBox rounded="rounded-none">
-		<ListBoxItem bind:group={file.intention} name="intention" value={12341} class="text-nowrap">
-			<svelte:fragment slot="lead"><i class="fas fa-feather-pointed"></i></svelte:fragment>
-			12341
-			<svelte:fragment slot="trail">
-				<div class="flex gap-2 items-center text-primary-500">
-					<div>in your active wallet</div>
-					<i class="fas fa-wallet"></i>
-				</div>
-			</svelte:fragment>
-		</ListBoxItem>
-		<ListBoxItem bind:group={file.intention} name="intention" value={325355}>
-			<svelte:fragment slot="lead"><i class="fa-solid fa-feather-pointed"></i></svelte:fragment>
-			325355
-		</ListBoxItem>
-		<ListBoxItem bind:group={file.intention} name="intention" value={3412323234}>
-			<svelte:fragment slot="lead"><i class="fa-solid fa-feather-pointed"></i></svelte:fragment>
-			3412323234
-		</ListBoxItem>
-	</ListBox>
-	<div class="arrow bg-surface-100-800-token" />
+	<div class="min-h-52 grid place-items-center opacity-50">No Router</div>
 </div>
