@@ -148,10 +148,11 @@
 
 	{#if router}
 		<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
-		<div class="mt-10 flex gap-3">
-			<button class="btn variant-filled-primary"> Deploy Router </button>
-		</div>
 	{:else}
 		<div class="min-h-52 grid place-items-center opacity-50">No Router</div>
 	{/if}
+
+	<div class="mt-10 flex gap-3">
+		<button class="btn variant-filled-primary" disabled={!router}> Deploy Router </button>
+	</div>
 </div>
