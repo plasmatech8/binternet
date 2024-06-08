@@ -62,7 +62,7 @@ export async function getInscriptions(
 }
 
 /**
- * Get the inscription details by inscription ID or sat number.
+ * Get the inscription details by inscription ID or sat number (NOT INSCRIPTION NUMBER).
  */
 export async function getInscriptionDetails(
 	network: Network,
