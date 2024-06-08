@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { page } from '$app/stores';
+	import WalletButton from '$lib/components/WalletButton.svelte';
 </script>
 
 <AppBar gridColumns="sm:grid-cols-[auto_1fr_auto]">
@@ -34,8 +35,6 @@
 		</a>
 	</div>
 	<svelte:fragment slot="trail">
-		<div>
-			<button class="btn variant-filled-primary">Connect Wallet</button>
-		</div>
+		<WalletButton></WalletButton>
 	</svelte:fragment>
 </AppBar>
