@@ -14,7 +14,7 @@ interface InscriptionFile {
 	path: string;
 	new?: {
 		filename: string;
-		filepath?: string;
+		filepath: string;
 		size: number;
 		data: ArrayBuffer;
 		number?: number;

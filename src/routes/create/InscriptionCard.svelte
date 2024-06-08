@@ -20,6 +20,7 @@
 			...inscription,
 			new: {
 				filename: file.name,
+				filepath: file.webkitRelativePath ?? file.name,
 				size: file.size,
 				data: await file.arrayBuffer()
 			}
@@ -80,9 +81,7 @@
 		<div class="w-36" class:line-through={isExisting} class:opacity-50={isExisting}>
 			{#if inscription.new}
 				<div
-					title="{inscription.new.filepath ?? inscription.new.filename} ({prettyBytes(
-						inscription.new.size
-					)})"
+					title="{inscription.new.filepath} ({prettyBytes(inscription.new.size)})"
 					class="hover:outline outline-1 outline-primary-500/50 cursor-pointer px-1 rounded"
 				>
 					<div class="truncate">{inscription.new.filename}</div>
