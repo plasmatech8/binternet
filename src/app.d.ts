@@ -28,3 +28,9 @@ interface Router {
 	binternet: string;
 	routes: { [path: string]: number };
 }
+
+interface Site {
+	number: number;
+	id: string;
+	router: Router;
+}
