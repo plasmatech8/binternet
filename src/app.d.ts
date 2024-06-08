@@ -13,7 +13,8 @@ interface InscriptionFile {
 	type: 'new' | 'existing';
 	path: string;
 	new?: {
-		name: string;
+		filename: string;
+		filepath?: string;
 		size: number;
 		data: ArrayBuffer;
 		number?: number;

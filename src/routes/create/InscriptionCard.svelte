@@ -19,7 +19,7 @@
 		inscription = {
 			...inscription,
 			new: {
-				name: file.name,
+				filename: file.name,
 				size: file.size,
 				data: await file.arrayBuffer()
 			}
@@ -43,38 +43,49 @@
 </script>
 
 <div class="flex gap-2 items-center">
-	<div class="card gap-3 p-3 flex flex-col lg:flex-row items-center text-sm w-full">
-		<!-- Status -->
-		<div>
-			{#if isDone}
-				<span class="badge-icon variant-filled-success">
-					<i class="fas fa-check"></i>
-				</span>
-			{:else}
-				<span class="badge-icon variant-filled-warning">
-					<i class="fa-solid fa-circle-notch animate-spin"></i>
-				</span>
+	<div class="card gap-2 p-3 flex flex-col lg:flex-row items-center text-sm w-full">
+		<!-- Status + Type + Warning-->
+		<div class="w-5 flex gap-3 flex-shrink-0 items-center">
+			<div class="text-center">
+				{#if isDone}
+					<span class="badge-icon variant-filled-success">
+						<i class="fas fa-check"></i>
+					</span>
+				{:else}
+					<span class="badge-icon variant-filled-warning">
+						<i class="fa-solid fa-circle-notch animate-spin"></i>
+					</span>
+				{/if}
+			</div>
+		</div>
+
+		<div class="w-24 flex gap-2">
+			<!-- Type -->
+			<div class="uppercase font-bold opacity-50 text-center flex-1">{inscription.type}</div>
+
+			<!-- Warning -->
+			{#if true}
+				<div class="text-end flex-1">
+					<button><i class="fas fa-warning text-warning-500 text-lg"></i></button>
+				</div>
 			{/if}
 		</div>
 
-		<!-- Type -->
-		<div class="w-16 text-center">
-			<div class="uppercase font-bold opacity-50 mr-2">{inscription.type}</div>
-		</div>
-
-		<!-- Path -->
-		<div class="flex-2 max-w-96 w-full">
+		<!-- Path Input -->
+		<div class="flex-1 w-full">
 			<input type="text" class="input" bind:value={inscription.path} />
 		</div>
 
 		<!-- File information -->
-		<div class="w-fill flex-1" class:line-through={isExisting} class:opacity-50={isExisting}>
+		<div class="w-36" class:line-through={isExisting} class:opacity-50={isExisting}>
 			{#if inscription.new}
 				<div
-					title="{inscription.new.name} ({prettyBytes(inscription.new.size)})"
+					title="{inscription.new.filepath ?? inscription.new.filename} ({prettyBytes(
+						inscription.new.size
+					)})"
 					class="hover:outline outline-1 outline-primary-500/50 cursor-pointer px-1 rounded"
 				>
-					<div class="truncate">{inscription.new.name}</div>
+					<div class="truncate">{inscription.new.filename}</div>
 					<div class="truncate">{prettyBytes(inscription.new.size)}</div>
 				</div>
 			{:else}

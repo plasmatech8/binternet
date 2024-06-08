@@ -20,7 +20,8 @@
 				type: 'new',
 				path: '/' + (file.webkitRelativePath !== '' ? file.webkitRelativePath : file.name),
 				new: {
-					name: file.name,
+					filename: file.name,
+					filepath: file.webkitRelativePath,
 					size: file.size,
 					data: await file.arrayBuffer()
 					// number: 70427602
