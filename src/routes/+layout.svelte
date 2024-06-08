@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../app.postcss';
-	import { AppShell, AppBar, initializeStores, LightSwitch } from '@skeletonlabs/skeleton';
-	import { page } from '$app/stores';
+	import { AppShell, initializeStores } from '@skeletonlabs/skeleton';
 	initializeStores();
 
 	// Highlight JS
@@ -19,6 +18,8 @@
 
 	// FontAwesome Icons
 	import '@fortawesome/fontawesome-free/js/all.min.js';
+	import Header from './Header.svelte';
+	import Footer from './Footer.svelte';
 </script>
 
 <!-- Navigation Loading Bar -->
@@ -31,43 +32,7 @@
 <!-- App Shell -->
 <AppShell>
 	<svelte:fragment slot="header">
-		<!-- App Bar -->
-		<AppBar gridColumns="sm:grid-cols-[auto_1fr_auto]">
-			<svelte:fragment slot="lead">
-				<a href="/" class="btn btn-sm hover:variant-soft-surface font-bold !gap-0 px-4">
-					<span class="text-3xl text-orange-400">₿</span>
-					<span class="text-xl uppercase !ml-0.5">internet</span>
-				</a>
-			</svelte:fragment>
-			<div class="z-0 flex gap-2 sm:justify-center">
-				<a
-					class="btn btn-sm variant-ghost-surface"
-					href="/docs"
-					class:!variant-ghost-primary={$page.url.pathname === '/docs'}
-				>
-					Docs
-				</a>
-				<a
-					class="btn btn-sm variant-ghost-surface"
-					href="/create"
-					class:!variant-ghost-primary={$page.url.pathname === '/create'}
-				>
-					Create
-				</a>
-				<a
-					class="btn btn-sm variant-ghost-surface"
-					href="/sites"
-					class:!variant-ghost-primary={$page.url.pathname === '/sites'}
-				>
-					My Sites
-				</a>
-			</div>
-			<svelte:fragment slot="trail">
-				<div>
-					<button class="btn variant-filled-primary">Connect Wallet</button>
-				</div>
-			</svelte:fragment>
-		</AppBar>
+		<Header />
 	</svelte:fragment>
 
 	<!-- Page Route Content -->
@@ -75,16 +40,6 @@
 
 	<!-- Footer -->
 	<svelte:fragment slot="pageFooter">
-		<div class="bg-surface-100-800-token p-10">
-			<div class="flex justify-between">
-				<div>
-					<div class="font-bold font-mono"><span class="text-orange-400">B</span>Internet</div>
-				</div>
-				<div></div>
-				<div>
-					<LightSwitch></LightSwitch>
-				</div>
-			</div>
-		</div>
+		<Footer />
 	</svelte:fragment>
 </AppShell>
