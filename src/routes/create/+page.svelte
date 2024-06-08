@@ -4,6 +4,7 @@
 	import { slide } from 'svelte/transition';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
+	import PageLayout from '$lib/components/PageLayout.svelte';
 
 	let inscriptions: InscriptionFile[] = [];
 	let router: Router;
@@ -88,8 +89,8 @@
 	}
 </script>
 
-<div class="container mx-auto px-2 mb-10">
-	<h1 class="h1 my-10">Create</h1>
+<PageLayout>
+	<h1 class="h1">Create</h1>
 
 	<div class="flex flex-col lg:flex-row justify-between items-center mb-5">
 		<h2 class="h2 my-10">
@@ -155,4 +156,4 @@
 	<div class="mt-10 flex gap-3">
 		<button class="btn variant-filled-primary" disabled={!router}> Deploy Router </button>
 	</div>
-</div>
+</PageLayout>
