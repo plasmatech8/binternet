@@ -39,7 +39,7 @@
 <PageLayout>
 	<h1 class="h1 mb-5">My Sites</h1>
 
-	<div class="flex gap-5">
+	<div class="flex flex-wrap gap-5">
 		{#each sites as site}
 			<SiteCard {site}></SiteCard>
 		{/each}
