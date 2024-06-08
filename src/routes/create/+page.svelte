@@ -2,8 +2,11 @@
 	import { FileButton } from '@skeletonlabs/skeleton';
 	import InscriptionCard from './InscriptionCard.svelte';
 	import { slide } from 'svelte/transition';
+	import { CodeBlock } from '@skeletonlabs/skeleton';
+	import yaml from 'js-yaml';
 
 	let inscriptions: InscriptionFile[] = [];
+	let router: Router;
 
 	$: pendingInscriptions = inscriptions.filter((insc) => {
 		return insc.type === 'new' && !insc.new?.number;
@@ -57,9 +60,35 @@
 	function onDelete(inscription: InscriptionFile) {
 		inscriptions = inscriptions.filter((insc) => insc !== inscription);
 	}
+
+	function generateRouter() {
+		const routerData: Router = {
+			binternet: 'v1',
+			routes: {}
+		};
+		inscriptions.forEach((insc, i) => {
+			// Existing
+			if (insc.type === 'existing') {
+				const inscNumber = insc.existing?.number;
+				if (!inscNumber) {
+					throw Error(
+						`Existing inscription #${i} (${insc.path}) does not have a set inscription number.`
+					);
+				}
+				routerData.routes[insc.path] = inscNumber;
+				return;
+			}
+			// New
+			const inscNumber = insc.new?.number;
+			if (!inscNumber) {
+				throw Error(`New inscription #${i} (${insc.path}) does not have a set inscription number.`);
+			}
+		});
+		router = routerData;
+	}
 </script>
 
-<div class="container mx-auto px-2">
+<div class="container mx-auto px-2 mb-10">
 	<h1 class="h1 my-10">Create</h1>
 
 	<div class="flex flex-col lg:flex-row justify-between items-center mb-5">
@@ -109,6 +138,7 @@
 		<button
 			class="btn variant-filled-primary"
 			disabled={!!pendingInscriptions.length || inscriptions.length == 0}
+			on:click={generateRouter}
 		>
 			Generate Router
 		</button>
@@ -116,5 +146,12 @@
 
 	<h2 class="h2 my-10">Create Router</h2>
 
-	<div class="min-h-52 grid place-items-center opacity-50">No Router</div>
+	{#if router}
+		<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
+		<div class="mt-10 flex gap-3">
+			<button class="btn variant-filled-primary"> Deploy Router </button>
+		</div>
+	{:else}
+		<div class="min-h-52 grid place-items-center opacity-50">No Router</div>
+	{/if}
 </div>

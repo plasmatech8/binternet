@@ -23,3 +23,8 @@ interface InscriptionFile {
 		number: number | undefined;
 	};
 }
+
+interface Router {
+	binternet: string;
+	routes: { [path: string]: number };
+}
