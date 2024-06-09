@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { LottiePlayer } from '@lottiefiles/lottie-player';
 	import { onMount } from 'svelte';
-	import { Shine, Tilt } from 'svelte-ux';
+	import { Shine } from 'svelte-ux';
 
 	onMount(() => {
 		import('@lottiefiles/lottie-player');
