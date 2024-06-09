@@ -1,12 +1,8 @@
+import { endpointsEnv } from '$lib/utils/endpoints';
 import axios, { isAxiosError, type AxiosInstance } from 'axios';
 import { JSDOM } from 'jsdom';
 
-const endpoints = {
-	mainnet: ['https://explorer.ordinalsbot.com', 'https://ordinals.com'],
-	testnet: ['https://testnet-explorer.ordinalsbot.com', 'https://testnet.ordinals.com']
-	// 'http://192.168.1.18:9001', 'http://192.168.1.18:46283'
-};
-
+const endpoints = endpointsEnv.ordinalsEndpoints;
 type Network = keyof typeof endpoints;
 
 export type InscriptionDetails = {

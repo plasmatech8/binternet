@@ -1,8 +1,7 @@
+import { endpointsEnv } from '$lib/utils/endpoints';
 import axios from 'axios';
 
-const endpoints = {
-	mainnet: 'https://api.hiro.so/ordinals/v1'
-};
+const endpoints = endpointsEnv.hiroEndpoints;
 type Network = keyof typeof endpoints;
 
 function getClient(network: Network) {
