@@ -1,0 +1,10 @@
+{
+	"name": "The Bitcoin Internet",
+	"short_name": "BInternet",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#ffffff",
+	"theme_color": "#242c46",
+	"description": "Inscribe a website onto the Bitcoin blockchain",
+	"icons": []
+}
