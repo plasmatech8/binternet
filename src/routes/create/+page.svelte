@@ -8,6 +8,7 @@
 
 	let inscriptions: InscriptionFile[] = [];
 	let router: Router;
+	let formEl: HTMLFormElement;
 
 	$: pendingInscriptions = inscriptions.filter((insc) => {
 		return insc.type === 'new' && !insc.new?.number;
@@ -119,31 +120,36 @@
 		</div>
 	</div>
 
-	<div class="flex flex-col gap-4 min-h-52">
-		{#each inscriptions as inscription (inscription.id)}
-			<div transition:slide>
-				<InscriptionCard bind:inscription on:delete={() => onDelete(inscription)}></InscriptionCard>
-			</div>
-		{:else}
-			<div class="grid place-items-center opacity-50 w-full h-52">No Inscriptions</div>
-		{/each}
-	</div>
-
-	<div class="mt-10 flex gap-3">
-		<button class="btn variant-filled-primary" disabled={!pendingInscriptions.length}>
-			Inscribe Pending Files
-			{#if pendingInscriptions.length}
-				({pendingInscriptions.length})
-			{/if}
-		</button>
-		<button
-			class="btn variant-filled-primary"
-			disabled={!!pendingInscriptions.length || inscriptions.length == 0}
-			on:click={generateRouter}
-		>
-			Generate Router
-		</button>
-	</div>
+	<form on:submit|preventDefault={() => formEl.validate()}>
+		<div class="flex flex-col gap-4 min-h-52">
+			{#each inscriptions as inscription (inscription.id)}
+				<div transition:slide>
+					<InscriptionCard
+						bind:inscription
+						otherInscriptions={inscriptions.filter((insc) => insc.id !== inscription.id)}
+						on:delete={() => onDelete(inscription)}
+					></InscriptionCard>
+				</div>
+			{:else}
+				<div class="grid place-items-center opacity-50 w-full h-52">No Inscriptions</div>
+			{/each}
+		</div>
+		<div class="mt-10 flex gap-3">
+			<button class="btn variant-filled-primary" disabled={!pendingInscriptions.length}>
+				Inscribe Pending Files
+				{#if pendingInscriptions.length}
+					({pendingInscriptions.length})
+				{/if}
+			</button>
+			<button
+				class="btn variant-filled-primary"
+				disabled={!!pendingInscriptions.length || inscriptions.length == 0}
+				on:click={generateRouter}
+			>
+				Generate Router
+			</button>
+		</div>
+	</form>
 
 	<h2 class="h2 my-10">Create Router</h2>
 

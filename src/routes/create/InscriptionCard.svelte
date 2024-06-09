@@ -4,11 +4,21 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let inscription: InscriptionFile;
+	export let otherInscriptions: InscriptionFile[];
+
+	let valid = true;
+	let inputEl: HTMLInputElement;
+
+	const urlPathPattern = /^\/[^\s?#]*$/;
 
 	$: isNew = inscription.type === 'new';
 	$: isExisting = inscription.type === 'existing';
 	$: inscriptionNumber = isNew ? inscription.new?.number : inscription.existing?.number;
 	$: isDone = !!inscriptionNumber;
+	$: if (inputEl) {
+		inscription.path;
+		updateValidity();
+	}
 
 	const dispatch = createEventDispatcher();
 
@@ -40,6 +50,27 @@
 
 	function onDelete() {
 		dispatch('delete');
+	}
+
+	function updateValidity() {
+		// Make sure path starts with /
+		if (!inscription.path) inscription.path = '/';
+		valid = true;
+		const matchesPattern = urlPathPattern.test(inscription.path);
+		inputEl.setCustomValidity('');
+		if (!matchesPattern) {
+			inputEl.setCustomValidity(`URL path must not contain whitespace, "#" or "?"`);
+			inputEl.reportValidity();
+			valid = false;
+		}
+		const allDifferent = otherInscriptions.every((insc) => {
+			return insc.path !== inscription.path;
+		});
+		if (!allDifferent) {
+			inputEl.setCustomValidity('Duplicate URL path');
+			inputEl.reportValidity();
+			valid = false;
+		}
 	}
 </script>
 
@@ -74,7 +105,14 @@
 
 		<!-- Path Input -->
 		<div class="flex-1 w-full">
-			<input type="text" class="input" bind:value={inscription.path} />
+			<input
+				bind:this={inputEl}
+				pattern={urlPathPattern.source}
+				type="text"
+				class="input"
+				bind:value={inscription.path}
+				class:input-error={!valid}
+			/>
 		</div>
 
 		<!-- File information -->
