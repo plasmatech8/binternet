@@ -24,6 +24,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Sites - BInternet</title>
+	<meta name="description" content="The sites (routers) you have inscribed onto the blockchain." />
+</svelte:head>
+
 <PageLayout>
 	<h1 class="h1 mb-10">My Sites</h1>
 

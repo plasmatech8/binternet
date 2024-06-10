@@ -90,6 +90,14 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Create - BInternet</title>
+	<meta
+		name="description"
+		content="Create a site on the blockchain by creating file and router inscriptions."
+	/>
+</svelte:head>
+
 <PageLayout>
 	<h1 class="h1">Create</h1>
 

@@ -2,6 +2,11 @@
 	import BitcoinNetwork from '$lib/components/graphics/BitcoinNetwork.svelte';
 </script>
 
+<svelte:head>
+	<title>BInternet</title>
+	<meta name="description" content="Inscribe a website onto the Bitcoin blockchain." />
+</svelte:head>
+
 <div class="container mx-auto p-1 pt-10">
 	<div class="flex justify-center">
 		<BitcoinNetwork></BitcoinNetwork>
