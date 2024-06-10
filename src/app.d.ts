@@ -31,6 +31,7 @@ interface Router {
 
 interface Site {
 	number: number;
+	createdAt: string;
 	router: Router;
 }
 

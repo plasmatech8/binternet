@@ -35,7 +35,13 @@
 		{:then sites}
 			<div class="flex flex-wrap gap-5 mb-10">
 				{#each sites as site}
-					<SiteCard site={{ number: site.details.number, router: site.router }}></SiteCard>
+					<SiteCard
+						site={{
+							number: site.details.number,
+							router: site.router,
+							createdAt: site.details.createdAt
+						}}
+					></SiteCard>
 				{/each}
 			</div>
 

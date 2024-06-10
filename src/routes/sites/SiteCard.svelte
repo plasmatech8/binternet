@@ -18,16 +18,15 @@
 </script>
 
 <div class="text-inherit"></div>
-<div class="card card-hover p-5 flex flex-col gap-1">
+<div class="card card-hover p-5 flex flex-col gap-2">
 	<div class="flex gap-3 justify-between items-center">
 		<div class="h3">{site.number}</div>
-		<div class="opacity-50">{Object.keys(site.router.routes).length} routes</div>
+		<div class="opacity-50">{site.router.binternet}</div>
 	</div>
-	<!-- <div class="flex gap-3 justify-betwee opacity-50 items-center">
-		<div>{site.router.binternet}</div>
-		·
-
-	</div> -->
+	<div class="flex gap-3 justify-between opacity-50 items-center">
+		<div>{Object.keys(site.router.routes).length} routes</div>
+		<div>{new Date(site.createdAt).toLocaleDateString()}</div>
+	</div>
 	<div class="flex gap-2">
 		<button class="btn btn-sm variant-filled-primary gap-1" on:click={onClickViewRouter}>
 			View Router <i class="fas fa-signs-post"></i>
