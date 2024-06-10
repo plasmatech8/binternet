@@ -46,7 +46,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 					return { router, details };
 				} catch (error) {
 					console.error('Failed to get inscription:', insc.id, error);
-					return { router: { routes: {} }, details: { number: Math.random() } };
+					// return { router: { routes: {} }, details: { number: Math.random() } };
 				}
 			})
 		);

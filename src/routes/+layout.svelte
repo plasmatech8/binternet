@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../app.postcss';
-	import { AppShell, initializeStores } from '@skeletonlabs/skeleton';
-	initializeStores();
+	import { AppShell, Modal, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -20,6 +19,13 @@
 	import '@fortawesome/fontawesome-free/js/all.min.js';
 	import Header from './Header.svelte';
 	import Footer from './Footer.svelte';
+
+	// Modals
+	import SiteRouterModal from './sites/SiteRouterModal.svelte';
+	const modalRegistry: Record<string, ModalComponent> = {
+		siteRouterModal: { ref: SiteRouterModal }
+	};
+	initializeStores();
 </script>
 
 <!-- Navigation Loading Bar -->
@@ -43,3 +49,6 @@
 		<Footer />
 	</svelte:fragment>
 </AppShell>
+
+<!-- Modal -->
+<Modal components={modalRegistry} />
