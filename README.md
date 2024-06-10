@@ -1,3 +1,19 @@
+TODO:
+- Readme
+  - Update readme.
+  - Remove content below.
+- Docs
+  - Improve overview
+  - Add router specification section
+  - Add example sites section
+- Create
+  - Enable inscribing
+  - Add instructions link for URL patterns
+- Identical inscription found
+  - Add inscription endpoint (params: inscription ID)
+  - Get inscription endpoint (params: sha256 hash, response: inscription number + ID)
+- Create video tutorial
+
 # btcinternet
 
 ## SvelteKit website
@@ -31,9 +47,9 @@ Example output:
 Example index configuration:
 ```
 example_sha256_hash_d31fdc047fab76a2b7ce91352a029f27ce7f15ad401b /index.html
-example_sha256_hash_d31fdc047fab76a2b7ce91352a029f27ce7f15ad401b /index.css 
+example_sha256_hash_d31fdc047fab76a2b7ce91352a029f27ce7f15ad401b /index.css
 example_sha256_hash_d31fdc047fab76a2b7ce91352a029f27ce7f15ad401b /index.js
-``` 
+```
 
 Example output:
 ```
@@ -47,7 +63,7 @@ Example:
 ```
 example_sha256_hash_d31fdc047fab76a2b7ce91352a029f27ce7f15ad401b /same-file-for-all-routes/**/*
 example_sha256_hash_d31fdc047fab76a2b7ce91352a029f27ce7f15ad401b /another-index/%
-``` 
+```
 
 ## Example indexes
 
@@ -69,7 +85,7 @@ example_sha256_hash_d31fdc047fab76a2b7ce91352a029f27ce7f15ad401b /index.js      
 ```
 
 
-### SPA using petite-vue, navaid and simplecss 
+### SPA using petite-vue, navaid and simplecss
 ```
 # Libraries
 example_sha256_hash_d31fdc047fab76a2b7ce91352a029f27ce7f15ad401b /simple.min.css      # CSS library file
