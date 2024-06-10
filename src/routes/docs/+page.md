@@ -18,14 +18,14 @@ binternet: v1
 routes:
 
   # HTML
-  /: 100001
-  /runes: 100002
+  /: 100001        # homepage.html
+  /runes: 100002   # runes.html
 
   # JS/CSS
   /script.js: 100003
   /styles.css: 100004
 
-  # Images
+  # Image Assets
   /runes/going_to_the_moon.gif: 100005
   /runes/laser_eyes_effect.gif: 100006
   /favicon.gif: 100007
