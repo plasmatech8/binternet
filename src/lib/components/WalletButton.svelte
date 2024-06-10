@@ -2,6 +2,7 @@
 	import { wallet } from '$lib/stores/wallet';
 	import { clipboard, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import WalletAvatar from './WalletAvatar.svelte';
+	import { getAddressBalance } from '$lib/api/mempool';
 
 	const walletMenuPopupSettings: PopupSettings = {
 		event: 'click',
@@ -35,6 +36,22 @@
 	<!-- Wallet Menu Popup -->
 	<div data-popup={walletMenuPopupSettings.target} class="pr-3">
 		<div class="list-nav card shadow-xl rounded-3xl m-1">
+			<div class="p-4 pb-3 flex justify-center gap-3 items-center">
+				<div class="font-semibold opacity-60">
+					{#await getAddressBalance('mainnet', $wallet.payment)}
+						- BTC
+					{:then v}
+						{v * 10e-8} BTC
+					{:catch e}
+						{#if e?.response?.data === 'Address on invalid network'}
+							Invalid Network
+						{:else}
+							Error Reading Balance
+						{/if}
+					{/await}
+				</div>
+			</div>
+			<hr />
 			{#if addressInfoList}
 				{#each addressInfoList as info}
 					<dl class="list-dl">
