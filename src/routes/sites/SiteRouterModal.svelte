@@ -47,7 +47,13 @@
 	<div class="flex flex-col gap-10">
 		<header class="text-3xl flex justify-between items-center">
 			<div>Router Inscription</div>
-			<div class="opacity-50 text-2xl">#{site.number}</div>
+			<a
+				href={`https://ordiscan.com/inscription/${site.number}`}
+				class="hover:anchor opacity-50 text-2xl"
+				target="_blank"
+			>
+				#{site.number}
+			</a>
 		</header>
 
 		<div use:addRouterLinks>
