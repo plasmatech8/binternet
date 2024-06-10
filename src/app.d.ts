@@ -25,12 +25,21 @@ interface InscriptionFile {
 }
 
 interface Router {
-	binternet: string;
+	binternet: 'v1';
 	routes: { [path: string]: number };
 }
 
 interface Site {
 	number: number;
-	id: string;
 	router: Router;
+}
+
+interface WalletSites {
+	results: {
+		router: Router;
+		details: InscriptionDetails;
+	}[];
+	limit: number;
+	offset: number;
+	total: number;
 }

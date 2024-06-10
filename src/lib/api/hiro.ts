@@ -23,7 +23,7 @@ export interface InscriptionsDetailsResponse {
 
 export interface InscriptionDetails {
 	id: string;
-	number: number;
+	// number: number;
 	address: string;
 	genesis_address: string;
 	genesis_block_height: number;
@@ -48,8 +48,16 @@ export interface InscriptionDetails {
 	recursion_refs: null;
 }
 
+export interface InscriptionListResponse {
+	limit: number;
+	offset: number;
+	total: number;
+	results: InscriptionDetails[];
+}
+
 /**
  * Get a list of inscriptions owned by a user by their address.
+ * WARNING: ("NUMBER" IS INCORRECT)
  */
 export async function getInscriptions(
 	network: Network,
@@ -61,11 +69,12 @@ export async function getInscriptions(
 }
 
 /**
- * Get the inscription details by inscription ID or sat number (NOT INSCRIPTION NUMBER).
+ * Get the inscription details by inscription ID.
+ * WARNING: ("NUMBER" IS INCORRECT)
  */
 export async function getInscriptionDetails(
 	network: Network,
-	id: string | number
+	id: string
 ): Promise<InscriptionDetails> {
 	const client = getClient(network);
 	const response = await client.get(`/inscriptions/${id}`);
@@ -80,4 +89,29 @@ export async function getInscriptionContent(network: Network, id: string) {
 	const client = getClient(network);
 	const response = await client.get(`/inscriptions/${id}/content`, { responseType: 'arraybuffer' });
 	return response.data;
+}
+
+/**
+ * Get inscription list for an address.
+ */
+export async function getInscriptionList(
+	network: Network,
+	{
+		address,
+		limit,
+		offset,
+		mimeType
+	}: { address: string; limit?: number; offset?: number; mimeType?: string }
+) {
+	const client = getClient(network);
+	const response = await client.get(`/inscriptions?address=${address}`, {
+		responseType: 'json',
+		params: {
+			address,
+			limit,
+			offset,
+			mime_type: mimeType
+		}
+	});
+	return response.data as InscriptionListResponse;
 }

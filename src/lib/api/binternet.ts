@@ -10,7 +10,7 @@ const routerSchema = z.object({
 	routes: z.record(z.string(), z.number())
 });
 
-function parseRouter(contents: ArrayBuffer) {
+export function parseRouter(contents: ArrayBuffer) {
 	const text = new TextDecoder('utf-8').decode(contents);
 	try {
 		const object = yaml.load(text);

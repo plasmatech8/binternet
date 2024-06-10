@@ -9,6 +9,7 @@ export type InscriptionDetails = {
 	contentType: string;
 	id: string;
 	createdAt: Date;
+	number: number;
 };
 
 let currentClient: AxiosInstance | undefined;
@@ -38,15 +39,25 @@ function getClient(network: Network) {
 }
 
 /**
- * Get inscription details by its inscription number.
+ * Get inscription details by its inscription number or ID.
  */
 export async function getInscriptionDetails(
 	network: Network,
-	number: number
+	number: number | string
 ): Promise<InscriptionDetails> {
 	const client = getClient(network);
 	const response = await client.get(`/inscription/${number}`, { responseType: 'text' });
 	const doc = new JSDOM(response.data);
+	// Get inscription number if using ID
+	let inscriptionNumber: number;
+	if (typeof number === 'number') {
+		inscriptionNumber = number;
+	} else {
+		const inscriptionNumberString = doc.window.document.title.split(' ').pop();
+		if (!inscriptionNumberString) throw Error('Inscription number cannot be found');
+		inscriptionNumber = parseInt(inscriptionNumberString);
+	}
+	// Get inscription details from data list
 	const dl = doc.window.document.querySelector('dl');
 	if (!dl) throw Error('Failed to read inscription data.');
 	const dtElements = dl.querySelectorAll('dt');
@@ -68,7 +79,8 @@ export async function getInscriptionDetails(
 	if (!contentType) throw Error('Content type cannot be found.');
 	if (!id) throw Error('Inscription ID cannot be found.');
 	if (!createdAt) throw Error('Timestamp cannot be found.');
-	return { contentType, id, createdAt };
+	// Construct details object
+	return { contentType, id, createdAt, number: inscriptionNumber };
 }
 
 /**
