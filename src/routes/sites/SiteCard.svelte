@@ -17,7 +17,6 @@
 	}
 </script>
 
-<div class="text-inherit"></div>
 <div class="card card-hover p-5 flex flex-col gap-2">
 	<div class="flex gap-3 justify-between items-center">
 		<div class="h3">{site.number}</div>
