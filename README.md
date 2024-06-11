@@ -12,6 +12,9 @@ TODO:
 - Identical inscription found
   - Add inscription endpoint (params: inscription ID)
   - Get inscription endpoint (params: sha256 hash, response: inscription number + ID)
+- Routing
+  - Use glob-specificity to order routes
+  - Use minimatch to check glob patterns
 - Create video tutorial
 
 # btcinternet
