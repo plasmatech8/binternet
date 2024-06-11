@@ -4,12 +4,14 @@
 	import WalletAvatar from './WalletAvatar.svelte';
 	import { getAddressBalance } from '$lib/api/mempool';
 
+	export let morePopupOffset = false;
+
 	const walletMenuPopupSettings: PopupSettings = {
 		event: 'click',
-		target: 'walletMenuPopup',
+		target: 'walletMenuPopup' + Math.random(),
 		closeQuery: 'a[href]',
 		middleware: {
-			offset: 20
+			offset: morePopupOffset ? 70 : 20
 		}
 	};
 

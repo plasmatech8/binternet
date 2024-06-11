@@ -10,8 +10,11 @@
 			<span class="text-3xl text-orange-400">₿</span>
 			<span class="text-xl uppercase !ml-0.5">internet</span>
 		</a>
+		<div class="block sm:hidden">
+			<WalletButton morePopupOffset></WalletButton>
+		</div>
 	</svelte:fragment>
-	<div class="z-0 flex gap-2 sm:justify-center">
+	<div class="z-0 flex gap-2 justify-center">
 		<a
 			class="btn btn-sm variant-ghost-surface"
 			href="/docs"
@@ -35,6 +38,16 @@
 		</a>
 	</div>
 	<svelte:fragment slot="trail">
-		<WalletButton></WalletButton>
+		<div class="hidden sm:block">
+			<WalletButton></WalletButton>
+		</div>
 	</svelte:fragment>
 </AppBar>
+
+<style>
+	@media (max-width: 639px) {
+		:global(.app-bar-slot-trail) {
+			display: none;
+		}
+	}
+</style>
