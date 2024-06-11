@@ -9,6 +9,9 @@ TODO:
 - Create
   - Enable inscribing
   - Add instructions link for URL patterns
+  - Minify JS/CSS functions
+  - Convert /index.html and /foo.html to / and /foo
+  - Implement existing inscription picker modal
 - Identical inscription found
   - Add inscription endpoint (params: inscription ID)
   - Get inscription endpoint (params: sha256 hash, response: inscription number + ID)
