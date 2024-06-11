@@ -1,46 +1,48 @@
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
-// and what to do when importing types
-declare namespace App {
-	// interface Locals {}
-	// interface PageData {}
-	// interface Error {}
-	// interface Platform {}
-}
+import type { KVNamespace } from '@cloudflare/worker-types/experimental';
 
-interface InscriptionFile {
-	id: string;
-	type: 'new' | 'existing';
-	path: string;
-	new?: {
-		filename: string;
-		filepath: string;
-		size: number;
-		data: ArrayBuffer;
-		number?: number;
-	};
-	existing?: {
-		number: number | undefined;
-	};
-}
+declare global {
+	namespace App {
+		interface Platform {
+			env: {
+				INSCRIPTION_NUM_TO_ID: KVNamespace;
+			};
+		}
+	}
 
-interface Router {
-	binternet: 'v1';
-	routes: { [path: string]: number };
-}
+	interface InscriptionFile {
+		id: string;
+		type: 'new' | 'existing';
+		path: string;
+		new?: {
+			filename: string;
+			filepath: string;
+			size: number;
+			data: ArrayBuffer;
+			number?: number;
+		};
+		existing?: {
+			number: number | undefined;
+		};
+	}
 
-interface Site {
-	number: number;
-	createdAt: string;
-	router: Router;
-}
+	interface Router {
+		binternet: 'v1';
+		routes: { [path: string]: number };
+	}
 
-interface WalletSites {
-	results: {
+	interface Site {
+		number: number;
+		createdAt: string;
 		router: Router;
-		details: InscriptionDetails;
-	}[];
-	limit: number;
-	offset: number;
-	total: number;
+	}
+
+	interface WalletSites {
+		results: {
+			router: Router;
+			details: InscriptionDetails;
+		}[];
+		limit: number;
+		offset: number;
+		total: number;
+	}
 }

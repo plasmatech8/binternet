@@ -1,0 +1,3 @@
+kv_namespaces = [
+    { binding = "INSCRIPTION_NUM_TO_ID", id = "INSCRIPTION_NUM_TO_ID_1" },
+]
