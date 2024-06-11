@@ -20,7 +20,10 @@
 				<TableOfContents class="w-fit mx-auto" />
 			</div>
 		</div>
-		<div class="col-span-1 sm:col-span-2 md:col-span-3" use:tocCrawler={{ mode: 'generate' }}>
+		<div
+			class="col-span-1 sm:col-span-2 md:col-span-3"
+			use:tocCrawler={{ mode: 'generate', scrollTarget: '#page' }}
+		>
 			<div class="prose dark:prose-invert !max-w-none block">
 				<slot></slot>
 			</div>
