@@ -4,6 +4,7 @@
 	import { Paginator, ProgressRadial } from '@skeletonlabs/skeleton';
 	import axios from 'axios';
 	import SiteCard from './SiteCard.svelte';
+	import WalletButton from '$lib/components/WalletButton.svelte';
 
 	let offset = 0;
 	let size = 0;
@@ -65,6 +66,9 @@
 			{e.message}
 		{/await}
 	{:else}
-		Please connect wallet
+		<div class="grid place-items-center gap-10 my-40">
+			<i class="fas fa-globe text-9xl"></i>
+			<WalletButton></WalletButton>
+		</div>
 	{/if}
 </PageLayout>
