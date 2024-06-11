@@ -7,7 +7,7 @@ import axios from 'axios';
 
 type Network = 'mainnet' | 'testnet';
 
-const cacheTimeoutSeconds = 60 * 3; // cache in browser for 3 minutes
+const cacheTimeoutSeconds = 20; // cache in browser for 20 seconds
 
 /**
  * This API exists because it is currently difficult to get inscriptions for a specific address.
