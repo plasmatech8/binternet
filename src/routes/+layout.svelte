@@ -36,7 +36,7 @@
 {/await}
 
 <!-- App Shell -->
-<AppShell>
+<AppShell regionPage="scroll-smooth">
 	<svelte:fragment slot="header">
 		<Header />
 	</svelte:fragment>
