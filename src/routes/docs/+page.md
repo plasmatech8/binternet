@@ -40,3 +40,55 @@ A **router** inscription is essentially you website, and the inscription number 
 > and then create a new router which points to the new inscription numbers.
 >
 > You should try to re-use existing inscriptions as much as possible.
+
+## How to Create a Site
+
+1. Create inscriptions with data containing file data for the assets of your site (or take note of the inscription number for any existing inscriptions your site is using)
+   1. HTML, JS, CSS, images, etc...
+2. Create a router inscription which consists of a YAML file with the specified schema which maps URL paths to inscription numbers
+
+## Router Specification
+
+```yaml
+binternet: <VERSION>
+routes:
+  <URL_PATH>: <INSCRIPTION_NUMBER>
+  # ...
+```
+
+### Version
+
+`v1` is the currently the only version available.
+
+### Routes
+
+URL paths use glob syntax.
+
+- `*` matches a single file/folder
+- `**` matches zero or more folders
+
+URL paths must start with `/`.
+
+If multiple paths match for the current URL, then the path with the highest specificity will be
+used.
+
+#### Example
+
+For example, the router below defines 3 routes:
+
+```yaml
+binternet: v1
+routes:
+  /foo: 100001
+  /foo/*: 100002
+  /foo/**: 100003
+```
+
+- `/foo` will always only match the `/foo` route. This route also matches `/foo/**` but this has lower specificity.
+- `/foo/bar` matches the `/foo/*` route. This route also matches `/foo/**` but this has lower specificity.
+- `/foo/bar/baz` only matches `/foo/**`.
+
+When the user navigates to a route on your site,
+the data for the corresponding inscription will be sent to the browser.
+
+- `<route-inscription-number>.binternet.org/foo/bar` -> 100002 -> "my_image.png"
