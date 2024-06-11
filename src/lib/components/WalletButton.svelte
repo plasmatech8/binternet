@@ -7,6 +7,7 @@
 	const walletMenuPopupSettings: PopupSettings = {
 		event: 'click',
 		target: 'walletMenuPopup',
+		closeQuery: 'a[href]',
 		middleware: {
 			offset: 20
 		}
@@ -63,7 +64,7 @@
 								<dt>{info.name}:</dt>
 								<dd class="opacity-50">{truncateAddress(info.address)}</dd>
 							</span>
-							<button class="btn-icon" use:clipboard={info.address}>
+							<button class="btn-icon group" use:clipboard={info.address}>
 								<i class="far fa-clipboard group-focus:hidden"></i>
 								<i class="fas fa-check hidden group-focus:block !m-0"></i>
 							</button>
