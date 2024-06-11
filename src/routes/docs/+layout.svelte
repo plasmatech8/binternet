@@ -1,4 +1,5 @@
 <script>
+	import BitcoinNetwork from '$lib/components/graphics/BitcoinNetwork.svelte';
 	import { TableOfContents, tocCrawler } from '@skeletonlabs/skeleton';
 	import hljs from 'highlight.js';
 	import { onMount } from 'svelte';
@@ -27,6 +28,7 @@
 			<div class="prose dark:prose-invert !max-w-none block">
 				<slot></slot>
 			</div>
+			<BitcoinNetwork></BitcoinNetwork>
 		</div>
 	</div>
 </div>
