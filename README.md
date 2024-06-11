@@ -3,8 +3,6 @@ TODO:
   - Update readme.
   - Remove content below.
 - Docs
-  - Improve overview
-  - Add router specification section
   - Add example sites section
 - Create
   - Enable inscribing
