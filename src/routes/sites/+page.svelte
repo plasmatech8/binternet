@@ -66,8 +66,10 @@
 			{e.message}
 		{/await}
 	{:else}
-		<div class="grid place-items-center gap-10 my-40">
-			<i class="fas fa-globe text-9xl"></i>
+		<div class="flex flex-col justify-center items-center gap-14 h-[calc(70vh-152px)] min-h-72">
+			<div class="opacity-50">
+				<i class="fas fa-globe text-9xl"></i>
+			</div>
 			<WalletButton></WalletButton>
 		</div>
 	{/if}

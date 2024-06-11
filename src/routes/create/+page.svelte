@@ -7,9 +7,10 @@
 	import PageLayout from '$lib/components/PageLayout.svelte';
 
 	let inscriptions: InscriptionFile[] = [];
-	let router: Router;
+	let router: Router | null = null;
 	let formEl: HTMLFormElement;
 
+	// Get files that need to be inscribed
 	$: pendingInscriptions = inscriptions.filter((insc) => {
 		return insc.type === 'new' && !insc.new?.number;
 	});
@@ -129,7 +130,7 @@
 	</div>
 
 	<form on:submit|preventDefault={() => formEl.validate()}>
-		<div class="flex flex-col gap-4 min-h-52">
+		<div class="flex flex-col gap-4">
 			{#each inscriptions as inscription (inscription.id)}
 				<div transition:slide>
 					<InscriptionCard
@@ -139,7 +140,9 @@
 					></InscriptionCard>
 				</div>
 			{:else}
-				<div class="grid place-items-center opacity-50 w-full h-52">No Inscriptions</div>
+				<div class="h-40 grid place-items-center gap-3 opacity-50">
+					<i class="fas fa-feather-pointed text-7xl mb-3"></i>
+				</div>
 			{/each}
 		</div>
 		<div class="mt-10 flex gap-3">
@@ -162,9 +165,13 @@
 	<h2 class="h2 my-10">Create Router</h2>
 
 	{#if router}
-		<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
+		<div>
+			<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
+		</div>
 	{:else}
-		<div class="min-h-52 grid place-items-center opacity-50">No Router</div>
+		<div class="h-40 grid place-items-center gap-3 opacity-50">
+			<i class="fas fa-signs-post text-7xl"></i>
+		</div>
 	{/if}
 
 	<div class="mt-10 flex gap-3">
