@@ -1,3 +1,9 @@
 kv_namespaces = [
-    { binding = "INSCRIPTION_NUM_TO_ID", id = "INSCRIPTION_NUM_TO_ID_1" },
+    { binding = "KV", id = "20d35395-5eb2-4141-832f-32be35e4d116" },
 ]
+
+d1_databases = [
+    { binding = "DB", database_name = "DB", database_id = "3d1de746-6ba0-4dba-ab29-a212fc8e32a6" },
+]
+
+r2_buckets = [{ binding = "BK", bucket_name = "BK" }]

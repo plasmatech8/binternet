@@ -9,7 +9,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"reset": "rm -r .wrangler/state/v3/*/* && yes | wrangler d1 migrations apply DB --local"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20240605.0",
@@ -42,7 +43,7 @@
 		"typescript": "^5.0.0",
 		"vite": "^5.0.3",
 		"vite-plugin-tailwind-purgecss": "0.3.3",
-		"wrangler": "^3.60.1"
+		"wrangler": "^3.60.3"
 	},
 	"type": "module",
 	"dependencies": {
