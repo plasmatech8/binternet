@@ -12,21 +12,14 @@ async function testDB(platform: Readonly<App.Platform>) {
 		number: Math.floor(Math.random() * 1000),
 		id: Math.floor(Math.random() * 1000).toString(),
 		content_type: 'text/json',
-		created_at: new Date().toISOString(),
-		details_added_on: new Date().toISOString()
+		inscribed_at: new Date().toISOString()
 	};
 	const insertStatement = `
-		INSERT INTO inscriptions (number, id, content_type, created_at, details_added_on)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO inscriptions (number, id, content_type, inscribed_at)
+		VALUES (?, ?, ?, ?)
 	`;
 	await platform.env.DB.prepare(insertStatement)
-		.bind(
-			dummyData.number,
-			dummyData.id,
-			dummyData.content_type,
-			dummyData.created_at,
-			dummyData.details_added_on
-		)
+		.bind(dummyData.number, dummyData.id, dummyData.content_type, dummyData.inscribed_at)
 		.run();
 
 	const result = await platform.env.DB.prepare('SELECT * FROM inscriptions LIMIT 5').run();
