@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.postcss';
+	import '../../app.postcss';
 	import { AppShell, Modal, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
 
 	// Highlight JS

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { LightSwitch } from '@skeletonlabs/skeleton';
-	import pkg from '../../package.json?raw';
+	import pkg from '../../../package.json?raw';
 
 	const { version } = JSON.parse(pkg);
 </script>
