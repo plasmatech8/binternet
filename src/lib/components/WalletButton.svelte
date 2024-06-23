@@ -2,7 +2,6 @@
 	import { wallet } from '$lib/stores/wallet';
 	import { clipboard, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import WalletAvatar from './WalletAvatar.svelte';
-	import { getAddressBalance } from '$lib/api/mempool';
 
 	export let morePopupOffset = false;
 
@@ -23,6 +22,11 @@
 		{ name: 'Payments', address: $wallet.payment, icon: '/bitcoin_icon.webp' },
 		{ name: 'Ordinals', address: $wallet.ordinals, icon: '/ordinals_icon.png' }
 	];
+
+	function getAddressBalance(net: string, add: string) {
+		console.log(net, add);
+		return 1;
+	}
 </script>
 
 {#if $wallet}

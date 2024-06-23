@@ -7,5 +7,6 @@ create table inscriptions(
     id text not null,
     content_type text not null,
     created_at timestamptz default current_timestamp not null,
-    inscribed_at timestamptz not null
+    inscribed_at timestamptz not null,
+    inscription_hash: text
 );
