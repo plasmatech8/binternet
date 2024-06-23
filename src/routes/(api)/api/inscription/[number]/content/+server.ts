@@ -25,8 +25,8 @@ export const GET: RequestHandler = async ({ params }) => {
 		};
 		return new Response(data, { headers });
 	} catch (e) {
-		console.error('Error getting inscription content', e);
 		if (axios.isAxiosError(e) && e.response?.status === 404) error(404, 'Inscription not found');
+		console.error('Error getting inscription content', e);
 		error(500, 'Failed to get inscription content');
 	}
 };

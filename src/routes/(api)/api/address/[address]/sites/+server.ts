@@ -1,6 +1,5 @@
 import { BInternetServerClient } from '$lib/api/backend/binternet';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import axios from 'axios';
 
 const cacheTimeoutSeconds = 10; // cache in browser for 10 seconds
 
@@ -41,7 +40,6 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		});
 	} catch (e) {
 		console.error('Error getting inscription list', e);
-		if (axios.isAxiosError(e) && e.response?.status === 404) error(404, 'Inscription not found');
 		error(500, 'Failed to get inscription list');
 	}
 };

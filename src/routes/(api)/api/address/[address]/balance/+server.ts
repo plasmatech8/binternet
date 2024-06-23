@@ -18,8 +18,8 @@ export const GET: RequestHandler = async ({ params }) => {
 			headers: { 'cache-control': `max-age=${cacheTimeoutSeconds}` }
 		});
 	} catch (e) {
-		console.error('Error getting address balance', e);
-		if (axios.isAxiosError(e) && e.response?.status === 404) error(404, 'Address not found');
+		if (axios.isAxiosError(e) && e.response?.status === 400) error(400, e.response.data);
+		console.error('Failed to get address balance', e);
 		error(500, 'Failed to get address balance');
 	}
 };

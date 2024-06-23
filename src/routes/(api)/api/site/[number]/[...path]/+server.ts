@@ -20,10 +20,8 @@ export const GET: RequestHandler = async ({ params }) => {
 		};
 		return new Response(data, { headers });
 	} catch (e) {
-		console.error('Error getting inscription content', e);
-		if (e instanceof Error && e.message === 'Route not found') {
-			error(404, 'Not Found');
-		}
+		if (e instanceof Error && e.message === 'Route not found') error(404, 'Not Found');
+		console.error('Failed to get inscription content', e);
 		error(500, 'Failed to get inscription content');
 	}
 };
