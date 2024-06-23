@@ -1,10 +1,9 @@
 import { sha256 } from 'js-sha256';
 
-export interface InscriptionDetails {
+export interface CloudflareInscriptionDetails {
 	number: number;
 	id: string;
 	content_type: string;
-	created_at: string;
 	inscribed_at: string;
 	inscription_hash: string;
 	address: string;
@@ -23,7 +22,7 @@ export class Cloudflare {
 	 * Store inscription details in the database.
 	 */
 	async storeInscriptionDetails(
-		details: Omit<InscriptionDetails, 'inscription_hash'>,
+		details: Omit<CloudflareInscriptionDetails, 'inscription_hash'>,
 		content: ArrayBuffer
 	) {
 		const insertStatement = `
@@ -101,7 +100,7 @@ export class Cloudflare {
 		const res = await this.database
 			.prepare('SELECT * FROM inscriptions WHERE hash = ? LIMIT ? OFFSET ?')
 			.bind(hash, options?.limit ?? 10, options?.offset ?? 0)
-			.all<InscriptionDetails>();
+			.all<CloudflareInscriptionDetails>();
 		console.log(res);
 		return res.results;
 	}

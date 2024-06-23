@@ -1,7 +1,7 @@
 import { endpointsEnv } from '$lib/utils/apiEnv';
 import axios, { type AxiosInstance } from 'axios';
 
-export interface AddressInfo {
+export interface MempoolAddressInfo {
 	address: string;
 	chain_stats: {
 		funded_txo_count: number;
@@ -20,7 +20,7 @@ export interface AddressInfo {
 }
 
 export class Mempool {
-	static apiUrl = endpointsEnv.hiroApiUrl;
+	static apiUrl = endpointsEnv.mempoolApiUrl;
 	client: AxiosInstance;
 
 	constructor() {
@@ -35,9 +35,9 @@ export class Mempool {
 	/**
 	 * Get the balance of an address in SATs.
 	 */
-	async getAddressBalance(address: string) {
+	async fetchAddressBalance(address: string): Promise<number> {
 		const res = await this.client.get(`/address/${address}`);
-		const data = res.data as AddressInfo;
+		const data = res.data as MempoolAddressInfo;
 		const balance = data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
 		return balance;
 	}

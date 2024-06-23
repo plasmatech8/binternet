@@ -17,26 +17,9 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	try {
 		const res = await client.getInscriptionListByAddress(address, {
 			limit,
-			offset,
-			mimeType: 'application/x-yaml'
+			offset
 		});
-		const results = await Promise.all(
-			res.results.map(async ({ number }) => {
-				try {
-					const { data } = await client.getInscriptionContent(number);
-					const router = client.parseRouter(data);
-					const details = await client.getInscriptionDetails(number);
-					return { router, details };
-				} catch (error) {
-					console.error('Failed to get inscription:', number, error);
-				}
-			})
-		);
-		const output: WalletSites = {
-			...res,
-			results: results.filter((v): v is WalletSites['results'][number] => !!v)
-		};
-		return json(output, {
+		return json(res, {
 			headers: { 'cache-control': `max-age=${cacheTimeoutSeconds}` }
 		});
 	} catch (e) {
