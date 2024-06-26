@@ -1,4 +1,4 @@
-import { BInternetServerClient } from '$lib/api/backend/binternet';
+import { BInternetServerClient } from '$lib/backend-api/binternet';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 
 const cacheTimeoutSeconds = 10; // cache in browser for 10 seconds

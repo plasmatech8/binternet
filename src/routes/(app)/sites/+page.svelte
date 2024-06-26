@@ -12,8 +12,7 @@
 
 	async function fetchInscriptionList(address: string, offset: number, limit: number) {
 		const url = `/api/address/${address}/sites`;
-		const res = await axios.get(url, { params: { limit, offset } });
-		const data = res.data as WalletSites;
+		const { data } = await axios.get<WalletSites>(url, { params: { limit, offset } });
 		size = data.total;
 		return data.results;
 	}

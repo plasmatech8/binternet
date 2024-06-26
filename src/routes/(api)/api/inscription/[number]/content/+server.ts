@@ -1,4 +1,4 @@
-import { BInternetServerClient } from '$lib/api/backend/binternet';
+import { BInternetServerClient } from '$lib/backend-api/binternet';
 import { isNetwork } from '$lib/utils/validators';
 import { error, type RequestHandler } from '@sveltejs/kit';
 import axios from 'axios';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ab2str, routerInscription } from '../../../__tests__/testUtils';
+import { ab2str, routerInscription } from '../../__tests__/testUtils';
 import { Ord } from '../ord';
 
 const ord = new Ord();

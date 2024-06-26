@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { routerInscription } from '../../../__tests__/testUtils';
+import { routerInscription } from '../../__tests__/testUtils';
 import { Mempool } from '../mempool';
 
 const mempool = new Mempool();
