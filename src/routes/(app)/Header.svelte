@@ -17,13 +17,6 @@
 	<div class="z-0 flex gap-2 justify-center">
 		<a
 			class="btn btn-sm variant-ghost-surface"
-			href="/docs"
-			class:!variant-ghost-primary={$page.url.pathname === '/docs'}
-		>
-			Docs
-		</a>
-		<a
-			class="btn btn-sm variant-ghost-surface"
 			href="/create"
 			class:!variant-ghost-primary={$page.url.pathname === '/create'}
 		>
@@ -35,6 +28,13 @@
 			class:!variant-ghost-primary={$page.url.pathname === '/sites'}
 		>
 			My Sites
+		</a>
+		<a
+			class="btn btn-sm variant-ghost-surface"
+			href="/docs"
+			class:!variant-ghost-primary={$page.url.pathname === '/docs'}
+		>
+			Docs
 		</a>
 	</div>
 	<svelte:fragment slot="trail">

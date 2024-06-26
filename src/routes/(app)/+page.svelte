@@ -19,9 +19,9 @@
 	<div class="h3 text-center my-5">Inscribe a website onto the Bitcoin blockchain</div>
 
 	<div class="flex gap-3 justify-center mb-10">
-		<a href="/docs" class="btn variant-filled-primary">Docs</a>
 		<a href="/create" class="btn variant-filled-primary">Create</a>
 		<a href="/sites" class="btn variant-filled-primary">My Sites</a>
+		<a href="/docs" class="btn variant-filled-primary">Docs</a>
 	</div>
 
 	<!-- <div class="flex justify-center my-8">
