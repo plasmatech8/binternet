@@ -1,8 +1,6 @@
 import { join } from 'path';
 import type { Config } from 'tailwindcss';
-// @ts-expect-error esModuleInterop not recognized
 import forms from '@tailwindcss/forms';
-// @ts-expect-error esModuleInterop not recognized
 import typography from '@tailwindcss/typography';
 import { skeleton } from '@skeletonlabs/tw-plugin';
 import { binternet } from './src/binternet';
