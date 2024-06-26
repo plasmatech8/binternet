@@ -5,7 +5,7 @@
 
 	onMount(() => {
 		import('@lottiefiles/lottie-player');
-		setTimeout(() => player.pause(), 4000);
+		setTimeout(() => player?.pause(), 4000);
 	});
 
 	let player: LottiePlayer;
