@@ -3,7 +3,10 @@ import Wallet, {
 	AddressPurpose,
 	isProviderInstalled,
 	setDefaultProvider,
-	type GetAccountsParams
+	createInscription,
+	type GetAccountsParams,
+	type CreateInscriptionOptions,
+	BitcoinNetworkType
 } from 'sats-connect';
 
 type WalletAddresses = {
@@ -40,6 +43,24 @@ function createWalletStore() {
 				}
 				set({ ordinals: ordinals.address, payment: payments.address });
 			}
+		},
+		async inscribe(arrayBuffer: ArrayBuffer, contentType: string) {
+			const base64 = btoa(
+				new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
+			);
+			const options: CreateInscriptionOptions = {
+				payload: {
+					network: { type: BitcoinNetworkType.Mainnet },
+					content: base64,
+					contentType: contentType,
+					payloadType: 'BASE_64'
+				},
+				onFinish: (res) => {
+					console.log(res);
+				},
+				onCancel: () => {}
+			};
+			await createInscription(options);
 		},
 		async disconnect() {
 			// Disconnect and reset store data

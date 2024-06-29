@@ -5,6 +5,7 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
 	import PageLayout from '$lib/components/PageLayout.svelte';
+	import { wallet } from '$lib/stores/wallet';
 
 	const modalStore = getModalStore();
 
@@ -31,7 +32,8 @@
 					filename: file.name,
 					filepath: file.webkitRelativePath ?? file.name,
 					size: file.size,
-					data: await file.arrayBuffer()
+					data: await file.arrayBuffer(),
+					contentType: file.type
 				}
 			};
 			inscriptions = [newInscription, ...inscriptions];
@@ -95,6 +97,17 @@
 			}
 		});
 		router = routerData;
+	}
+
+	async function inscribePendingFiles() {
+		for (let i = 0; i < pendingInscriptions.length; i++) {
+			const insc = pendingInscriptions[i];
+			if (!insc.new) throw Error(`Incorrect data for inscription ${i} `);
+			const buf = insc.new?.data;
+			if (!buf) throw Error(`No data in inscription ${i}`);
+			console.log(insc);
+			await wallet.inscribe(buf, insc.new?.contentType);
+		}
 	}
 </script>
 
@@ -162,6 +175,7 @@
 				type="button"
 				class="btn variant-filled-primary"
 				disabled={!pendingInscriptions.length}
+				on:click={inscribePendingFiles}
 			>
 				Inscribe Pending Files
 				{#if pendingInscriptions.length}

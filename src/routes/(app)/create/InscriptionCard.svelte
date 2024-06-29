@@ -33,7 +33,8 @@
 				filename: file.name,
 				filepath: file.webkitRelativePath ?? file.name,
 				size: file.size,
-				data: await file.arrayBuffer()
+				data: await file.arrayBuffer(),
+				contentType: file.type || 'text/plain'
 			}
 		};
 		inscription.type = 'new';
@@ -125,14 +126,17 @@
 		</div>
 
 		<!-- File information -->
-		<div class="w-36" class:line-through={isExisting} class:opacity-50={isExisting}>
+		<div class="w-full lg:w-40" class:line-through={isExisting} class:opacity-50={isExisting}>
 			{#if inscription.new}
 				<div
-					title="{inscription.new.filepath} ({prettyBytes(inscription.new.size)})"
+					title="{inscription.new.filename} ({prettyBytes(inscription.new.size)})"
 					class="hover:outline outline-1 outline-primary-500/50 cursor-pointer px-1 rounded"
 				>
 					<div class="truncate">{inscription.new.filename}</div>
-					<div class="truncate">{prettyBytes(inscription.new.size)}</div>
+					<div class="truncate">
+						{prettyBytes(inscription.new.size)}
+						({inscription.new.contentType})
+					</div>
 				</div>
 			{:else}
 				<div class="text-center opacity-50">-</div>

@@ -18,6 +18,7 @@ interface InscriptionFile {
 		size: number;
 		data: ArrayBuffer;
 		number?: number;
+		contentType: string;
 	};
 	existing?: {
 		number: number | undefined;
