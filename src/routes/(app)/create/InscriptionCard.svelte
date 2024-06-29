@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FileButton } from '@skeletonlabs/skeleton';
+	import { FileButton, getModalStore } from '@skeletonlabs/skeleton';
 	import prettyBytes from 'pretty-bytes';
 	import { createEventDispatcher } from 'svelte';
 
@@ -21,6 +21,7 @@
 	}
 
 	const dispatch = createEventDispatcher();
+	const modalStore = getModalStore();
 
 	async function onFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
@@ -44,8 +45,16 @@
 	}
 
 	function onUseExisting() {
-		inscription.type = 'existing';
-		inscription.existing = { number: 71420222 };
+		modalStore.trigger({
+			component: 'selectInscriptionModal',
+			type: 'component',
+			response: async (r: number) => {
+				if (r) {
+					inscription.type = 'existing';
+					inscription.existing = { number: r };
+				}
+			}
+		});
 	}
 
 	function onDelete() {
@@ -98,7 +107,7 @@
 			<!-- Warning -->
 			{#if true}
 				<div class="text-end flex-1">
-					<button><i class="fas fa-warning text-warning-500 text-lg"></i></button>
+					<button type="button"><i class="fas fa-warning text-warning-500 text-lg"></i></button>
 				</div>
 			{/if}
 		</div>
@@ -137,6 +146,7 @@
 					class="gap-3 group"
 					class:!variant-filled-primary={isExisting}
 					on:click={onUseExisting}
+					type="button"
 				>
 					<span>Use Existing</span>
 					<i class="fas fa-location-crosshairs !m-0" class:group-hover:hidden={isExisting}></i>
@@ -144,7 +154,12 @@
 				</button>
 				{#if isExisting && inscription.new}
 					<!-- Switch to existing inscription -->
-					<button class="gap-3" class:!variant-filled-primary={isNew} on:click={switchToNew}>
+					<button
+						class="gap-3"
+						class:!variant-filled-primary={isNew}
+						on:click={switchToNew}
+						type="button"
+					>
 						Use New
 						<i class="fas fa-feather-pointed"></i>
 					</button>
@@ -188,7 +203,7 @@
 	</div>
 
 	<div>
-		<button class="btn-icon btn-icon-sm hover:variant-ghost" on:click={onDelete}>
+		<button class="btn-icon btn-icon-sm hover:variant-ghost" type="button" on:click={onDelete}>
 			<i class="fa-solid fa-close"></i>
 		</button>
 	</div>

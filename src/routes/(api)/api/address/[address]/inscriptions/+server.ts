@@ -8,6 +8,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const address = params.address as string;
 	const limit = parseInt(url.searchParams.get('limit') ?? '20');
 	const offset = parseInt(url.searchParams.get('offset') ?? '0');
+	const contentType = url.searchParams.get('contenttype') || undefined;
 	if (!address) error(400, 'Address parameter is required');
 
 	const client = new BInternetServerClient();
@@ -16,7 +17,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	try {
 		const res = await client.getInscriptionListByAddress(address, {
 			limit,
-			offset
+			offset,
+			mimeType: contentType
 		});
 		return json(res, {
 			headers: { 'cache-control': `max-age=${cacheTimeoutSeconds}` }

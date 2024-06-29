@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { FileButton } from '@skeletonlabs/skeleton';
+	import { FileButton, getModalStore } from '@skeletonlabs/skeleton';
 	import InscriptionCard from './InscriptionCard.svelte';
 	import { slide } from 'svelte/transition';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
 	import PageLayout from '$lib/components/PageLayout.svelte';
+
+	const modalStore = getModalStore();
 
 	let inscriptions: InscriptionFile[] = [];
 	let router: Router | null = null;
@@ -30,7 +32,6 @@
 					filepath: file.webkitRelativePath ?? file.name,
 					size: file.size,
 					data: await file.arrayBuffer()
-					// number: 70427602
 				}
 			};
 			inscriptions = [newInscription, ...inscriptions];
@@ -38,26 +39,32 @@
 	}
 
 	function onAddExisting() {
-		// TODO: select inscription modal
+		modalStore.trigger({
+			component: 'selectInscriptionModal',
+			type: 'component',
+			response: async (r: number) => {
+				if (r) {
+					// Make a path name
+					const basePath = '/existing_inscription_';
+					let pathNumber = 1;
+					while (inscriptions.find((insc) => insc.path === basePath + pathNumber)) {
+						pathNumber += 1;
+					}
+					const path = basePath + pathNumber;
 
-		// Make a path name
-		const basePath = '/existing_inscription_';
-		let pathNumber = 1;
-		while (inscriptions.find((insc) => insc.path === basePath + pathNumber)) {
-			pathNumber += 1;
-		}
-		const path = basePath + pathNumber;
-
-		// Add inscription to list
-		const newInscription: InscriptionFile = {
-			id: Math.random().toString(),
-			type: 'existing',
-			path: path,
-			existing: {
-				number: 70427602
+					// Add inscription to list
+					const newInscription: InscriptionFile = {
+						id: Math.random().toString(),
+						type: 'existing',
+						path: path,
+						existing: {
+							number: r
+						}
+					};
+					inscriptions = [newInscription, ...inscriptions];
+				}
 			}
-		};
-		inscriptions = [newInscription, ...inscriptions];
+		});
 	}
 
 	function onDelete(inscription: InscriptionFile) {
@@ -122,14 +129,19 @@
 				<div>Upload File</div>
 				<i class="fas fa-add"></i>
 			</FileButton>
-			<button class="btn btn-sm variant-filled" on:click={onAddExisting}>
+			<button class="btn btn-sm variant-filled" type="button" on:click={onAddExisting}>
 				<div>Add Existing</div>
 				<i class="fas fa-add"></i>
 			</button>
 		</div>
 	</div>
 
-	<form on:submit|preventDefault={() => formEl.validate()}>
+	<form
+		on:submit|preventDefault={() => {
+			if (formEl.checkValidity()) generateRouter();
+		}}
+		bind:this={formEl}
+	>
 		<div class="flex flex-col gap-4">
 			{#each inscriptions as inscription (inscription.id)}
 				<div transition:slide>
@@ -146,7 +158,11 @@
 			{/each}
 		</div>
 		<div class="mt-10 flex gap-3">
-			<button class="btn variant-filled-primary" disabled={!pendingInscriptions.length}>
+			<button
+				type="button"
+				class="btn variant-filled-primary"
+				disabled={!pendingInscriptions.length}
+			>
 				Inscribe Pending Files
 				{#if pendingInscriptions.length}
 					({pendingInscriptions.length})
@@ -155,7 +171,6 @@
 			<button
 				class="btn variant-filled-primary"
 				disabled={!!pendingInscriptions.length || inscriptions.length == 0}
-				on:click={generateRouter}
 			>
 				Generate Router
 			</button>
@@ -175,6 +190,6 @@
 	{/if}
 
 	<div class="mt-10 flex gap-3">
-		<button class="btn variant-filled-primary" disabled={!router}> Deploy Router </button>
+		<button class="btn variant-filled-primary" disabled={!router}> Inscribe Router </button>
 	</div>
 </PageLayout>
