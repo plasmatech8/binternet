@@ -2,17 +2,16 @@
 	import PageLayout from '$lib/components/PageLayout.svelte';
 	import { wallet } from '$lib/stores/wallet';
 	import { Paginator, ProgressRadial } from '@skeletonlabs/skeleton';
-	import axios from 'axios';
 	import SiteCard from './SiteCard.svelte';
 	import WalletButton from '$lib/components/WalletButton.svelte';
+	import { fetchSiteList } from '$lib/api';
 
 	let offset = 0;
 	let size = 0;
 	let limit = 10;
 
 	async function fetchInscriptionList(address: string, offset: number, limit: number) {
-		const url = `/api/address/${address}/sites`;
-		const { data } = await axios.get<WalletSites>(url, { params: { limit, offset } });
+		const data = await fetchSiteList(address, { offset, limit });
 		size = data.total;
 		return data.results;
 	}

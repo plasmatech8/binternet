@@ -10,3 +10,17 @@ export async function fetchInscriptionList(
 	});
 	return x.data;
 }
+
+export async function getAddressBalance(address: string) {
+	const res = await axios.get<number>(`/api/address/${address}/balance`);
+	return res.data;
+}
+
+export async function fetchSiteList(
+	address: string,
+	{ offset, limit }: { offset: number; limit: number }
+) {
+	const url = `/api/address/${address}/sites`;
+	const { data } = await axios.get<WalletSites>(url, { params: { limit, offset } });
+	return data;
+}
