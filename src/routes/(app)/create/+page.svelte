@@ -99,14 +99,16 @@
 		router = routerData;
 	}
 
+	// let waitingForInscriptions = []
+
 	async function inscribePendingFiles() {
 		for (let i = 0; i < pendingInscriptions.length; i++) {
 			const insc = pendingInscriptions[i];
+			console.log(`Inscribing pending inscription #${i}`, insc);
 			if (!insc.new) throw Error(`Incorrect data for inscription ${i} `);
 			const buf = insc.new?.data;
 			if (!buf) throw Error(`No data in inscription ${i}`);
-			console.log(insc);
-			await wallet.inscribe(buf, insc.new?.contentType);
+			wallet.inscribe(buf, insc.new?.contentType, (txId) => console.log(txId));
 		}
 	}
 </script>

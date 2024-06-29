@@ -44,7 +44,11 @@ function createWalletStore() {
 				set({ ordinals: ordinals.address, payment: payments.address });
 			}
 		},
-		async inscribe(arrayBuffer: ArrayBuffer, contentType: string) {
+		async inscribe(
+			arrayBuffer: ArrayBuffer,
+			contentType: string,
+			onFinish: (txId: string) => void
+		) {
 			const base64 = btoa(
 				new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
 			);
@@ -55,9 +59,7 @@ function createWalletStore() {
 					contentType: contentType,
 					payloadType: 'BASE_64'
 				},
-				onFinish: (res) => {
-					console.log(res);
-				},
+				onFinish: (res) => onFinish(res.txId),
 				onCancel: () => {}
 			};
 			await createInscription(options);
