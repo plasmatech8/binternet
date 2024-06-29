@@ -20,10 +20,10 @@ export default {
 	async fetch(request: Request) {
 		// Extract the URL information
 		const url = new URL(request.url);
-		const { number, network } = extractNumberAndNetwork(url);
+		const { number } = extractNumberAndNetwork(url)!;
 
 		// Rewrite the URL to point to inscription contents
-		const targetUrl = `https://binternet.org/api/${network}/inscription/${number}`;
+		const targetUrl = `https://binternet.org/api/inscription/${number}`;
 
 		// Fetch the response from the target URL
 		const response = await fetch(targetUrl, {
