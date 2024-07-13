@@ -13,6 +13,9 @@
 	let router: Router | null = null;
 	let formEl: HTMLFormElement;
 
+	// Reset generated router when routes/inscriptions list changes
+	$: if (inscriptions) router = null;
+
 	// Get files that need to be inscribed
 	$: pendingInscriptions = inscriptions.filter((insc) => {
 		return insc.type === 'new' && !insc.new?.number;
