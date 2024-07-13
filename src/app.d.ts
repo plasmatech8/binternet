@@ -22,6 +22,8 @@ interface InscriptionFile {
 	};
 	existing?: {
 		number: number | undefined;
+		contentType: string;
+		contentSize: number;
 	};
 }
 

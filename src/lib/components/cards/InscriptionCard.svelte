@@ -1,13 +1,18 @@
 <script lang="ts">
-	import { FileButton, getModalStore } from '@skeletonlabs/skeleton';
+	import { FileButton, getModalStore, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import prettyBytes from 'pretty-bytes';
 	import { createEventDispatcher } from 'svelte';
+
+	/*
+	 * Data
+	 */
 
 	export let inscription: InscriptionFile;
 	export let otherInscriptions: InscriptionFile[];
 
 	let valid = true;
 	let inputEl: HTMLInputElement;
+	let warning = false;
 
 	const urlPathPattern = /^\/[^\s?#]*$/;
 
@@ -19,6 +24,21 @@
 		inscription.path;
 		updateValidity();
 	}
+	$: contentType = isNew ? inscription.new?.contentType : inscription.existing?.contentType;
+
+	/*
+	 * File information popup
+	 */
+
+	const fileInfoPopup: PopupSettings = {
+		event: 'click',
+		target: `fileInfoPopup-${Math.random()}`,
+		placement: 'bottom'
+	};
+
+	/*
+	 * Functions
+	 */
 
 	const dispatch = createEventDispatcher();
 	const modalStore = getModalStore();
@@ -49,10 +69,10 @@
 		modalStore.trigger({
 			component: 'selectInscriptionModal',
 			type: 'component',
-			response: async (r: number) => {
+			response: async (r: { number: number; contentType: string; contentSize: number }) => {
 				if (r) {
 					inscription.type = 'existing';
-					inscription.existing = { number: r };
+					inscription.existing = r;
 				}
 			}
 		});
@@ -106,7 +126,7 @@
 			<div class="uppercase font-bold opacity-50 text-center flex-1">{inscription.type}</div>
 
 			<!-- Warning -->
-			{#if true}
+			{#if warning}
 				<div class="text-end flex-1">
 					<button type="button"><i class="fas fa-warning text-warning-500 text-lg"></i></button>
 				</div>
@@ -114,7 +134,7 @@
 		</div>
 
 		<!-- Path Input -->
-		<div class="flex-1 w-full">
+		<div class="flex-1 w-full flex gap-2">
 			<input
 				bind:this={inputEl}
 				pattern={urlPathPattern.source}
@@ -123,24 +143,19 @@
 				bind:value={inscription.path}
 				class:input-error={!valid}
 			/>
-		</div>
 
-		<!-- File information -->
-		<div class="w-full lg:w-40" class:line-through={isExisting} class:opacity-50={isExisting}>
-			{#if inscription.new}
-				<div
-					title="{inscription.new.filename} ({prettyBytes(inscription.new.size)})"
-					class="hover:outline outline-1 outline-primary-500/50 cursor-pointer px-1 rounded"
-				>
-					<div class="truncate">{inscription.new.filename}</div>
-					<div class="truncate">
-						{prettyBytes(inscription.new.size)}
-						({inscription.new.contentType})
+			<!-- File information button -->
+			<button type="button" class="btn-icon variant-outline-primary" use:popup={fileInfoPopup}>
+				{#key contentType}
+					<div>
+						{#if contentType?.startsWith('image')}
+							<i class="far fa-file-image text-xl"></i>
+						{:else}
+							<i class="far fa-file-lines text-xl"></i>
+						{/if}
 					</div>
-				</div>
-			{:else}
-				<div class="text-center opacity-50">-</div>
-			{/if}
+				{/key}
+			</button>
 		</div>
 
 		<!-- Type Toggle -->
@@ -206,9 +221,44 @@
 		</div>
 	</div>
 
+	<!-- Delete button -->
 	<div>
 		<button class="btn-icon btn-icon-sm hover:variant-ghost" type="button" on:click={onDelete}>
 			<i class="fa-solid fa-close"></i>
 		</button>
 	</div>
+</div>
+
+<!-- File information popup -->
+<div
+	class="card outline outline-1 outline-primary-500/50 p-4 w-72 shadow-xl z-30"
+	data-popup={fileInfoPopup.target}
+>
+	<div class="flex flex-col gap-3">
+		<!-- New inscription file information -->
+		{#if inscription.new}
+			<div
+				title="{inscription.new.filename} ({prettyBytes(inscription.new.size)})"
+				class:line-through={isExisting}
+				class:opacity-50={isExisting}
+			>
+				<div class="truncate">{inscription.new.filename}</div>
+				<div class="truncate">
+					{prettyBytes(inscription.new.size)}
+					({inscription.new.contentType})
+				</div>
+			</div>
+		{/if}
+		<!-- Existing inscription file information -->
+		{#if inscription.existing}
+			<div title="#{inscription.existing.number} ({prettyBytes(inscription.existing.contentSize)})">
+				<div class="truncate">Inscription #{inscription.existing.number?.toString() ?? ''}</div>
+				<div class="truncate">
+					{prettyBytes(inscription.existing.contentSize)}
+					({inscription.existing.contentType})
+				</div>
+			</div>
+		{/if}
+	</div>
+	<div class="arrow bg-surface-100-800-token border-t-[1px] border-l-[1px] border-primary-500/50" />
 </div>

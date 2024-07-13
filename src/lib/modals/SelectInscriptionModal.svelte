@@ -8,10 +8,15 @@
 
 	const modalStore = getModalStore();
 
+	/*
+	 * Data
+	 */
+
 	export let numberInput: string = $modalStore[0].meta?.number?.toString() ?? '';
 	$: number = parseInt(numberInput);
 	let inscriptionContentUrl: string | undefined;
 	let inscriptionContentType: string | undefined;
+	let inscriptionContentSize: number | undefined;
 	let error = '';
 	let loading = false;
 
@@ -30,6 +35,10 @@
 		{ name: 'WEBP', value: 'image/webp' }
 	] as const;
 	let mimeType: (typeof mimeTypeOptions)[number]['value'] = undefined;
+
+	/*
+	 * Functions
+	 */
 
 	async function loadInscription() {
 		const currentNumber = number;
@@ -56,6 +65,7 @@
 				const inscriptionBlob = await res.blob();
 				inscriptionContentType = res.headers.get('content-type') ?? undefined;
 				inscriptionContentUrl = URL.createObjectURL(inscriptionBlob);
+				inscriptionContentSize = inscriptionBlob.size;
 			}
 		} catch (e: any) {}
 		// Stop the loading spinner if number is still the same
@@ -76,7 +86,11 @@
 
 	function onSelect() {
 		if (!number) return;
-		$modalStore[0].response?.(number);
+		$modalStore[0].response?.({
+			number,
+			contentType: inscriptionContentType,
+			contentSize: inscriptionContentSize
+		});
 		modalStore.close();
 	}
 
@@ -92,117 +106,132 @@
 
 	async function fetchWalletInscriptions() {
 		inscriptionListResult = null;
-		const list = await fetchInscriptionList($wallet?.ordinals ?? '', {
-			offset,
-			limit,
-			contentType: mimeType
-		});
-		size = list.total;
-		offset = list.offset;
-		inscriptionListResult = list;
+		try {
+			const list = await fetchInscriptionList($wallet?.ordinals ?? '', {
+				offset,
+				limit,
+				contentType: mimeType
+			});
+			size = list.total;
+			offset = list.offset;
+			inscriptionListResult = list;
+		} catch (err) {
+			console.error(err);
+			error = 'Failed to fetch inscriptions';
+		}
 	}
 
 	onMount(loadInscription);
 </script>
 
-<div class="card px-10 py-6 w-modal-wide">
+<div class="card px-10 py-6 w-modal-wide max-h-[90vh] overflow-y-auto">
 	<div class="flex flex-col gap-10">
 		<header class="text-3xl">Select Inscription</header>
 
-		<div class="min-h-32 flex flex-col justify-end">
-			{#if error}
-				<!-- error -->
-				<div class="alert variant-filled-warning">
-					<i class="fas fa-exclamation-circle mr-2"></i>
-					{error}
-				</div>
-			{:else if loading}
-				<!-- loading -->
-				<div class="w-24 h-24 mx-auto placeholder grid place-items-center">
-					<ProgressRadial stroke={150} class="!w-10 !h-10 opacity-50" />
-				</div>
-			{:else if numberInput}
-				<!-- preview -->
-				{#if inscriptionContentType?.startsWith('image')}
-					<img
-						src={inscriptionContentUrl}
-						alt="Inscription Preview"
-						style="image-rendering: pixelated;"
-						class="w-24 h-24 mx-auto"
-					/>
-				{/if}
-				<div class="flex gap-3 justify-between">
-					<div>{inscriptionContentType}</div>
-					<div class="flex gap-3">
-						<a href="https://ordiscan.com/inscription/{number}" class="anchor" target="_blank">
-							Details
-						</a>
-						<a href="/api/inscription/{number}/content" class="anchor" target="_blank"> Preview </a>
+		<div class="flex flex-col gap-2">
+			<div class="flex flex-col min-h-80">
+				{#if error}
+					<!-- error -->
+					<div class="alert variant-filled-warning">
+						<i class="fas fa-exclamation-circle mr-2"></i>
+						{error}
 					</div>
-				</div>
-			{:else}
-				<!-- empty (show user inscription list) -->
-				{#if $wallet}
-					<div class="h4 mb-4">Your Inscriptions:</div>
-					<div class="flex gap-3 mb-4">
-						{#each mimeTypeOptions as option}
-							<button
-								class="chip {mimeType === option.value ? 'variant-filled' : 'variant-soft'}"
-								on:click={() => {
-									mimeType = option.value;
-									fetchWalletInscriptions();
-								}}
-								on:keypress
-							>
-								{option.name}
-							</button>
-						{/each}
+				{:else if loading}
+					<!-- Preview loading -->
+					<div class="flex-1"></div>
+					<div class="w-24 h-24 mx-auto placeholder grid place-items-center">
+						<ProgressRadial stroke={150} class="!w-10 !h-10 opacity-50" />
 					</div>
-					{#if inscriptionListResult}
-						<!-- List of owned inscriptions -->
-						<div class="flex gap-2 flex-wrap mb-8">
-							{#each inscriptionListResult.results as insc}
+				{:else if numberInput}
+					<!-- Preview -->
+					<div class="flex-1"></div>
+					{#if inscriptionContentType?.startsWith('image')}
+						<img
+							src={inscriptionContentUrl}
+							alt="Inscription Preview"
+							style="image-rendering: pixelated;"
+							class="w-24 h-24 mx-auto"
+						/>
+					{/if}
+					<div class="flex gap-3 justify-between">
+						<div>{inscriptionContentType}</div>
+						<div class="flex gap-3">
+							<a href="https://ordiscan.com/inscription/{number}" class="anchor" target="_blank">
+								Details
+							</a>
+							<a href="/api/inscription/{number}/content" class="anchor" target="_blank">
+								Preview
+							</a>
+						</div>
+					</div>
+				{:else}
+					<!-- empty (show user inscription list) -->
+					{#if $wallet}
+						<div class="h4 mb-4">Your Inscriptions:</div>
+						<div class="flex gap-3 mb-4 flex-wrap">
+							{#each mimeTypeOptions as option}
 								<button
-									class="card card-hover p-2 flex flex-col gap-1"
+									class="chip {mimeType === option.value ? 'variant-filled' : 'variant-soft'}"
 									on:click={() => {
-										numberInput = insc.number.toString();
-										onInput();
+										mimeType = option.value;
+										fetchWalletInscriptions();
 									}}
+									on:keypress
 								>
-									<div class="flex justify-between gap-3">
-										<div class="font-semibold">
-											{insc.number}
-										</div>
-										<div class="opacity-50">
-											{new Date(insc.createdAt).toLocaleDateString()}
-										</div>
-									</div>
-									<div class="opacity-50">{insc.contentType}</div>
+									{option.name}
 								</button>
-							{:else}
-								<div class="h-30 p-5 w-full opacity-50">No inscriptions</div>
 							{/each}
 						</div>
-						<!-- Pagination -->
-						<div class="flex justify-center">
-							<Paginator
-								settings={{
-									page: offset / limit,
-									limit,
-									size,
-									amounts: []
-								}}
-								on:page={onPageChange}
-							></Paginator>
-						</div>
+						{#if inscriptionListResult}
+							<!-- List of owned inscriptions -->
+							<div class="flex gap-2 flex-wrap mb-8 overflow-y-auto">
+								{#each inscriptionListResult.results as insc}
+									<button
+										class="card card-hover p-2 flex flex-col gap-1"
+										on:click={() => {
+											numberInput = insc.number.toString();
+											onInput();
+										}}
+									>
+										<div class="flex justify-between gap-3">
+											<div class="font-semibold">
+												{insc.number}
+											</div>
+											<div class="opacity-50">
+												{new Date(insc.createdAt).toLocaleDateString()}
+											</div>
+										</div>
+										<div class="opacity-50">{insc.contentType}</div>
+									</button>
+								{:else}
+									<div class="h-30 p-5 w-full opacity-50">No inscriptions</div>
+								{/each}
+							</div>
+						{:else}
+							<div class="grid place-items-center h-64">
+								<ProgressRadial width="w-32" stroke={70} class="p-4"></ProgressRadial>
+							</div>
+						{/if}
 					{:else}
-						<div class="grid place-items-center">
-							<ProgressRadial width="w-32" stroke={70} class="p-4"></ProgressRadial>
-						</div>
+						<div class="h-30 p-5 w-full opacity-50">Wallet Not Connected</div>
 					{/if}
-				{:else}
-					<div class="h-30 p-5 w-full opacity-50">Wallet Not Connected</div>
 				{/if}
+			</div>
+
+			<!-- Pagination -->
+			{#if inscriptionListResult && !number}
+				<div class="flex justify-center">
+					<Paginator
+						settings={{
+							page: offset / limit,
+							limit,
+							size,
+							amounts: []
+						}}
+						on:page={onPageChange}
+						disabled={inscriptionListResult.results.length === 0}
+					></Paginator>
+				</div>
 			{/if}
 		</div>
 

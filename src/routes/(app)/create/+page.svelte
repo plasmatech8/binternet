@@ -44,7 +44,7 @@
 		modalStore.trigger({
 			component: 'selectInscriptionModal',
 			type: 'component',
-			response: async (r: number) => {
+			response: async (r: { number: number; contentType: string; contentSize: number }) => {
 				if (r) {
 					// Make a path name
 					const basePath = '/existing_inscription_';
@@ -59,9 +59,7 @@
 						id: Math.random().toString(),
 						type: 'existing',
 						path: path,
-						existing: {
-							number: r
-						}
+						existing: r
 					};
 					inscriptions = [newInscription, ...inscriptions];
 				}
