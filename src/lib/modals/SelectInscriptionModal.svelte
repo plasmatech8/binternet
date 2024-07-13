@@ -19,6 +19,17 @@
 	let offset = 0;
 	let limit = 10;
 	let size = 0;
+	const mimeTypeOptions = [
+		{ name: 'All', value: undefined },
+		{ name: 'HTML', value: 'text/html' },
+		{ name: 'CSS', value: 'text/css' },
+		{ name: 'JS', value: 'text/javascript' },
+		{ name: 'PNG', value: 'image/png' },
+		{ name: 'JPEG', value: 'image/jpeg' },
+		{ name: 'GIF', value: 'image/gif' },
+		{ name: 'WEBP', value: 'image/webp' }
+	] as const;
+	let mimeType: (typeof mimeTypeOptions)[number]['value'] = undefined;
 
 	async function loadInscription() {
 		const currentNumber = number;
@@ -84,7 +95,7 @@
 		const list = await fetchInscriptionList($wallet?.ordinals ?? '', {
 			offset,
 			limit,
-			contentType: inscriptionContentType
+			contentType: mimeType
 		});
 		size = list.total;
 		offset = list.offset;
@@ -133,6 +144,20 @@
 				<!-- empty (show user inscription list) -->
 				{#if $wallet}
 					<div class="h4 mb-4">Your Inscriptions:</div>
+					<div class="flex gap-3 mb-4">
+						{#each mimeTypeOptions as option}
+							<button
+								class="chip {mimeType === option.value ? 'variant-filled' : 'variant-soft'}"
+								on:click={() => {
+									mimeType = option.value;
+									fetchWalletInscriptions();
+								}}
+								on:keypress
+							>
+								{option.name}
+							</button>
+						{/each}
+					</div>
 					{#if inscriptionListResult}
 						<!-- List of owned inscriptions -->
 						<div class="flex gap-2 flex-wrap mb-8">
@@ -154,6 +179,8 @@
 									</div>
 									<div class="opacity-50">{insc.contentType}</div>
 								</button>
+							{:else}
+								<div class="h-30 p-5 w-full opacity-50">No inscriptions</div>
 							{/each}
 						</div>
 						<!-- Pagination -->
@@ -169,10 +196,12 @@
 							></Paginator>
 						</div>
 					{:else}
-						Loading...
+						<div class="grid place-items-center">
+							<ProgressRadial width="w-32" stroke={70} class="p-4"></ProgressRadial>
+						</div>
 					{/if}
 				{:else}
-					No inscriptions
+					<div class="h-30 p-5 w-full opacity-50">Wallet Not Connected</div>
 				{/if}
 			{/if}
 		</div>
