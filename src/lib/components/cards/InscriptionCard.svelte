@@ -86,13 +86,30 @@
 		// Make sure path starts with /
 		if (!inscription.path) inscription.path = '/';
 		valid = true;
-		const matchesPattern = urlPathPattern.test(inscription.path);
 		inputEl.setCustomValidity('');
-		if (!matchesPattern) {
-			inputEl.setCustomValidity(`URL path must not contain whitespace, "#" or "?"`);
+		// Check for leading /
+		if (!inscription.path.startsWith('/')) {
+			inputEl.setCustomValidity(`URL path must start with forward slash /`);
 			inputEl.reportValidity();
 			valid = false;
+			return;
 		}
+		// Check for whitespace or special characters
+		const specialCharactersPattern = /[\s?#]/;
+		if (specialCharactersPattern.test(inscription.path)) {
+			inputEl.setCustomValidity(`URL path must not contain whitespace or special characters`);
+			inputEl.reportValidity();
+			valid = false;
+			return;
+		}
+		// Check pattern
+		if (!urlPathPattern.test(inscription.path)) {
+			inputEl.setCustomValidity(`URL path does not match expected format`);
+			inputEl.reportValidity();
+			valid = false;
+			return;
+		}
+		// Check other inscriptions
 		const allDifferent = otherInscriptions.every((insc) => {
 			return insc.path !== inscription.path;
 		});
