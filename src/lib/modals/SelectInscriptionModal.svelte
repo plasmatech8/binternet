@@ -35,6 +35,7 @@
 		{ name: 'WEBP', value: 'image/webp' }
 	] as const;
 	let mimeType: (typeof mimeTypeOptions)[number]['value'] = undefined;
+	let searchAddress = $wallet?.ordinals ?? '';
 
 	/*
 	 * Functions
@@ -72,14 +73,13 @@
 		if (currentNumber === number) loading = false;
 	}
 
-	const loadFaceDebounced = debounce(loadInscription, 700);
+	const loadInscriptionDebounced = debounce(loadInscription, 700);
 
 	function onInput() {
 		loading = true;
 		inscriptionContentUrl = undefined;
-		if (numberInput) {
-			loadFaceDebounced();
-		} else {
+		loadInscriptionDebounced();
+		if (!numberInput) {
 			loading = false;
 		}
 	}
@@ -107,7 +107,7 @@
 	async function fetchWalletInscriptions() {
 		inscriptionListResult = null;
 		try {
-			const list = await fetchInscriptionList($wallet?.ordinals ?? '', {
+			const list = await fetchInscriptionList(searchAddress ?? '', {
 				offset,
 				limit,
 				contentType: mimeType
@@ -169,7 +169,27 @@
 				{:else}
 					<!-- empty (show user inscription list) -->
 					{#if $wallet}
-						<div class="h4 mb-4">Your Inscriptions:</div>
+						<div class="h4 mb-4 flex flex-wrap justify-between md:gap-3">
+							<div>Your Inscriptions:</div>
+							<div class="flex">
+								<input
+									type="text"
+									class="input md:w-96 h-8 opacity-50 focus:opacity-100"
+									bind:value={searchAddress}
+									on:input={fetchWalletInscriptions}
+								/>
+								<button
+									class="btn-icon btn-icon-sm"
+									on:click={() => {
+										searchAddress = $wallet.ordinals;
+										fetchWalletInscriptions();
+									}}
+									disabled={$wallet.ordinals === searchAddress}
+								>
+									<i class="fas fa-arrow-rotate-left"></i>
+								</button>
+							</div>
+						</div>
 						<div class="flex gap-3 mb-4 flex-wrap">
 							{#each mimeTypeOptions as option}
 								<button
