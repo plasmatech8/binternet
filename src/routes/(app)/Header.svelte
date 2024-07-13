@@ -17,6 +17,13 @@
 	<div class="z-0 flex gap-2 justify-center">
 		<a
 			class="btn btn-sm variant-ghost-surface"
+			href="/"
+			class:!variant-ghost-primary={$page.url.pathname === '/'}
+		>
+			Home
+		</a>
+		<a
+			class="btn btn-sm variant-ghost-surface"
 			href="/create"
 			class:!variant-ghost-primary={$page.url.pathname === '/create'}
 		>
