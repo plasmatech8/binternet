@@ -122,8 +122,8 @@
 <PageLayout>
 	<h1 class="h1">Create</h1>
 
-	<div class="flex flex-col lg:flex-row justify-between items-center mb-5">
-		<h2 class="h2 my-10">
+	<div class="flex flex-col lg:flex-row justify-between items-center my-10">
+		<h2 class="h2 mb-5 lg:mb-0">
 			Inscribe Files <span class="text-2xl opacity-60">&</span> Define Routes
 		</h2>
 		<div class="flex gap-5">
@@ -147,6 +147,17 @@
 				<i class="fas fa-add"></i>
 			</button>
 		</div>
+	</div>
+
+	<div class="prose max-w-none prose-invert mb-10">
+		<p>
+			Add inscriptions to attach to URL paths of your site. Either create new inscriptions, or add
+			the inscription number for an existing one.
+		</p>
+		<p>
+			The URL path can include wildcards (<code>*</code>, <code>**</code>) to match multiple routes
+			on your site. See the <a href="/docs#routes" target="_blank">documentation</a> for more details.
+		</p>
 	</div>
 
 	<form

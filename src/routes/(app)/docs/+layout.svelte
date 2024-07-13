@@ -1,11 +1,16 @@
 <script>
+	import { page } from '$app/stores';
 	import BitcoinNetwork from '$lib/components/graphics/BitcoinNetwork.svelte';
 	import { TableOfContents, tocCrawler } from '@skeletonlabs/skeleton';
 	import hljs from 'highlight.js';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
+		// Code highlighting
 		hljs.highlightAll();
+		// Make sure the heading is scrolled to
+		const hash = $page.url.hash;
+		if (hash) document.querySelector(hash)?.scrollIntoView();
 	});
 </script>
 
