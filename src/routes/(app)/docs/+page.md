@@ -43,8 +43,10 @@ routes:
 
 ## Router Specification
 
-A **router** inscription is your website. The inscription number can be thought as similar to a
-(permanent) static IP address pointing to your site.
+A **router** inscription is the configuration which defines the routes for your website.
+
+The inscription number for the router can be thought as similar to a (permanent) static IP address
+and can be used as the entry point for your site.
 
 ### YAML Schema
 ```yaml

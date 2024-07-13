@@ -122,7 +122,7 @@
 <PageLayout>
 	<h1 class="h1">Create</h1>
 
-	<div class="flex flex-col lg:flex-row justify-between items-center my-10">
+	<div class="flex flex-col lg:flex-row md:justify-between items-center my-10">
 		<h2 class="h2 mb-5 lg:mb-0">
 			Define Routes <span class="text-2xl opacity-60">and Inscribe Files</span>
 		</h2>
@@ -162,7 +162,7 @@
 
 	<form
 		on:submit|preventDefault={() => {
-			if (formEl.checkValidity()) generateRouter();
+			formEl.checkValidity();
 		}}
 		bind:this={formEl}
 	>
@@ -181,7 +181,7 @@
 				</div>
 			{/each}
 		</div>
-		<div class="mt-10 flex gap-3">
+		<div class="mt-10 flex gap-3 items-center">
 			<button
 				type="button"
 				class="btn variant-filled-primary"
@@ -189,20 +189,44 @@
 				on:click={inscribePendingFiles}
 			>
 				Inscribe Pending Files
-				{#if pendingInscriptions.length}
-					({pendingInscriptions.length})
+			</button>
+			<div class="opacity-50 italic">
+				{#if pendingInscriptions.length > 0}
+					Need to inscribe {pendingInscriptions.length} file{pendingInscriptions.length !== 1
+						? 's'
+						: ''}
 				{/if}
-			</button>
-			<button
-				class="btn variant-filled-primary"
-				disabled={!!pendingInscriptions.length || inscriptions.length == 0}
-			>
-				Generate Router
-			</button>
+			</div>
 		</div>
 	</form>
 
-	<h2 class="h2 my-10">Create Router</h2>
+	<div class="flex justify-center lg:justify-start">
+		<h2 class="h2 my-10">Create Router</h2>
+	</div>
+
+	<div class="prose max-w-none prose-invert mb-10">
+		<p>
+			Create a <a href="/docs#router-specification" target="_blank">router inscription</a> which configures
+			URL paths for your site. The inscription number for the router is the entry point for your site.
+		</p>
+	</div>
+
+	<div class="flex gap-3 items-center mb-10">
+		<button
+			class="btn variant-filled-primary"
+			disabled={!!pendingInscriptions.length || inscriptions.length == 0}
+			on:click={generateRouter}
+		>
+			Generate Router
+		</button>
+		<div class="opacity-50 italic">
+			{#if inscriptions.length == 0}
+				Must define at least one route
+			{:else if pendingInscriptions.length > 0}
+				Files still need to be inscribed
+			{/if}
+		</div>
+	</div>
 
 	{#if router}
 		<div>
