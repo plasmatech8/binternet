@@ -124,7 +124,7 @@
 
 	<div class="flex flex-col lg:flex-row justify-between items-center my-10">
 		<h2 class="h2 mb-5 lg:mb-0">
-			Inscribe Files <span class="text-2xl opacity-60">&</span> Define Routes
+			Define Routes <span class="text-2xl opacity-60">and Inscribe Files</span>
 		</h2>
 		<div class="flex gap-5">
 			<FileButton
