@@ -142,6 +142,7 @@
 					<div class="w-24 h-24 mx-auto placeholder grid place-items-center">
 						<ProgressRadial stroke={150} class="!w-10 !h-10 opacity-50" />
 					</div>
+					<div class="flex-1"></div>
 				{:else if numberInput}
 					<!-- Preview -->
 					<div class="flex-1"></div>
@@ -153,6 +154,7 @@
 							class="w-24 h-24 mx-auto"
 						/>
 					{/if}
+					<div class="flex-1"></div>
 					<div class="flex gap-3 justify-between">
 						<div>{inscriptionContentType}</div>
 						<div class="flex gap-3">
