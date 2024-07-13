@@ -2,7 +2,7 @@
 	import PageLayout from '$lib/components/PageLayout.svelte';
 	import { wallet } from '$lib/stores/wallet';
 	import { Paginator, ProgressRadial } from '@skeletonlabs/skeleton';
-	import SiteCard from './SiteCard.svelte';
+	import SiteCard from '../../../lib/components/cards/SiteCard.svelte';
 	import WalletButton from '$lib/components/WalletButton.svelte';
 	import { fetchSiteList } from '$lib/api';
 

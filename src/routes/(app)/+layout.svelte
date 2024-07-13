@@ -21,7 +21,7 @@
 	import Footer from './Footer.svelte';
 
 	// Modals
-	import SiteRouterModal from './sites/SiteRouterModal.svelte';
+	import SiteRouterModal from '../../lib/components/modals/SiteRouterModal.svelte';
 	import SelectInscriptionModal from '$lib/modals/SelectInscriptionModal.svelte';
 	const modalRegistry: Record<string, ModalComponent> = {
 		siteRouterModal: { ref: SiteRouterModal },

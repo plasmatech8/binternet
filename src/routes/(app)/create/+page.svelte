@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { FileButton, getModalStore } from '@skeletonlabs/skeleton';
-	import InscriptionCard from './InscriptionCard.svelte';
+	import InscriptionCard from '../../../lib/components/cards/InscriptionCard.svelte';
 	import { slide } from 'svelte/transition';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
