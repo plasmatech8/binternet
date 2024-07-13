@@ -75,6 +75,9 @@
 	}
 
 	function generateRouter() {
+		// Check form validity first
+		if (!formEl.reportValidity()) return;
+		// Inscribe file
 		const routerData: Router = {
 			binternet: 'v1',
 			routes: {}
