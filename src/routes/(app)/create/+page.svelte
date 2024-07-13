@@ -155,7 +155,7 @@
 		</div>
 	</div>
 
-	<div class="prose max-w-none prose-invert mb-10">
+	<div class="prose max-w-none dark:prose-invert mb-10">
 		<p>
 			Add inscriptions to attach to URL paths of your site. Either create new inscriptions, or add
 			the inscription number for an existing one.
@@ -210,7 +210,7 @@
 		<h2 class="h2 my-10">Create Router</h2>
 	</div>
 
-	<div class="prose max-w-none prose-invert mb-10">
+	<div class="prose max-w-none dark:prose-invert mb-10">
 		<p>
 			Create a <a href="/docs#router-specification" target="_blank">router inscription</a> which configures
 			URL paths for your site. The inscription number for the router is the entry point for your site.
