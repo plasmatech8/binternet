@@ -122,121 +122,126 @@
 </script>
 
 <div class="flex gap-2 items-center">
-	<!-- Status + Type + Warning-->
-	<div class="w-5 flex gap-3 flex-shrink-0 items-center mr-1">
-		<div class="text-center">
-			{#if isDone}
-				<span class="badge-icon variant-filled-success">
-					<i class="fas fa-check"></i>
-				</span>
-			{:else}
-				<span class="badge-icon variant-filled-warning">
-					<i class="fa-solid fa-circle-notch animate-spin"></i>
-				</span>
-			{/if}
-		</div>
-	</div>
-	<div class="card gap-2 p-3 flex flex-col lg:flex-row items-center text-sm w-full">
-		<div class="w-20 flex gap-2">
-			<!-- Type -->
-			<div class="uppercase font-bold opacity-50 text-center flex-1">{inscription.type}</div>
-
-			<!-- Warning -->
-			{#if warning}
-				<div class="text-end flex-1">
-					<button type="button"><i class="fas fa-warning text-warning-500 text-lg"></i></button>
-				</div>
-			{/if}
-		</div>
-
+	<!-- Content -->
+	<div class="w-full flex flex-col lg:flex-row gap-2 items-center">
 		<!-- Path Input -->
-		<div class="flex-1 w-full flex gap-2">
-			<div class="input-group input-group-divider grid-cols-[auto_auto_1fr]">
-				<div class="input-group-shim">Path</div>
-				<input
-					bind:this={inputEl}
-					pattern={urlPathPattern.source}
-					type="text"
-					class="input rounded-l-none"
-					bind:value={inscription.path}
-					class:input-error={!valid}
-				/>
+		<div class="input-group input-group-divider grid-cols-[auto_auto_1fr] h-fit">
+			<div class="input-group-shim">Path</div>
+			<input
+				bind:this={inputEl}
+				pattern={urlPathPattern.source}
+				type="text"
+				class="input rounded-l-none"
+				bind:value={inscription.path}
+				class:input-error={!valid}
+			/>
+		</div>
+
+		<!-- Inscription Details Card -->
+		<div class="card gap-2 p-3 flex flex-col sm:flex-row items-center text-sm w-full rounded-xl">
+			<div class="flex gap-2 items-center">
+				<!-- Status icon-->
+				<div class="text-center">
+					{#if isDone}
+						<span class="badge-icon variant-filled-success">
+							<i class="fas fa-check"></i>
+						</span>
+					{:else}
+						<span class="badge-icon variant-filled-warning">
+							<i class="fa-solid fa-circle-notch animate-spin"></i>
+						</span>
+					{/if}
+				</div>
+
+				<!-- Warning -->
+				{#if warning}
+					<button type="button"><i class="fas fa-warning text-warning-500 text-lg"></i></button>
+				{/if}
+
+				<!-- Type -->
+				<div class="uppercase font-bold opacity-50 text-center flex-1 w-20 ml-1">
+					{inscription.type}
+				</div>
+
+				<!-- File information button -->
+				<button
+					type="button"
+					class="btn-icon btn-icon-sm focus:variant-outline-primary hover:variant-outline-primary"
+					use:popup={fileInfoPopup}
+				>
+					{#key contentType}
+						<div>
+							{#if contentType?.startsWith('image')}
+								<i class="far fa-file-image text-xl"></i>
+							{:else}
+								<i class="far fa-file-lines text-xl"></i>
+							{/if}
+						</div>
+					{/key}
+				</button>
 			</div>
 
-			<!-- File information button -->
-			<button type="button" class="btn-icon variant-outline-primary" use:popup={fileInfoPopup}>
-				{#key contentType}
-					<div>
-						{#if contentType?.startsWith('image')}
-							<i class="far fa-file-image text-xl"></i>
-						{:else}
-							<i class="far fa-file-lines text-xl"></i>
-						{/if}
-					</div>
-				{/key}
-			</button>
-		</div>
-
-		<!-- Type Toggle -->
-		<div>
-			<div class="btn-group variant-outline-primary">
-				<button
-					class="gap-3 group"
-					class:!variant-filled-primary={isExisting}
-					on:click={onUseExisting}
-					type="button"
-				>
-					<span>Use Existing</span>
-					<i class="fas fa-location-crosshairs !m-0" class:group-hover:hidden={isExisting}></i>
-					<i class="fas fa-rotate-left hidden !m-0" class:group-hover:block={isExisting}></i>
-				</button>
-				{#if isExisting && inscription.new}
-					<!-- Switch to existing inscription -->
+			<!-- Type Toggle -->
+			<div>
+				<div class="btn-group variant-outline-primary">
 					<button
-						class="gap-3"
-						class:!variant-filled-primary={isNew}
-						on:click={switchToNew}
+						class="gap-3 group"
+						class:!variant-filled-primary={isExisting}
+						on:click={onUseExisting}
 						type="button"
 					>
-						Use New
-						<i class="fas fa-feather-pointed"></i>
+						<span>Use Existing</span>
+						<i class="fas fa-location-crosshairs !m-0" class:group-hover:hidden={isExisting}></i>
+						<i class="fas fa-rotate-left hidden !m-0" class:group-hover:block={isExisting}></i>
 					</button>
-				{:else if inscription.new}
-					<!-- Re-upload inscription -->
-					<FileButton
-						button="gap-3 !variant-filled-primary group"
-						name="re-upload"
-						on:change={onFileUpload}
+					{#if isExisting && inscription.new}
+						<!-- Switch to existing inscription -->
+						<button
+							class="gap-3"
+							class:!variant-filled-primary={isNew}
+							on:click={switchToNew}
+							type="button"
+						>
+							Use New
+							<i class="fas fa-feather-pointed"></i>
+						</button>
+					{:else if inscription.new}
+						<!-- Re-upload inscription -->
+						<FileButton
+							button="gap-3 !variant-filled-primary group"
+							name="re-upload"
+							on:change={onFileUpload}
+						>
+							Use New
+							<i class="fas fa-feather-pointed group-hover:hidden !m-0"></i>
+							<i class="fas fa-rotate-left hidden group-hover:block !m-0"></i>
+						</FileButton>
+					{:else}
+						<!-- Upload new inscription when no data present -->
+						<FileButton button="gap-3 group" name="re-upload" on:change={onFileUpload}>
+							Use New
+							<i class="fas fa-feather-pointed group-hover:hidden !m-0"></i>
+							<i class="fas fa-upload hidden group-hover:block !m-0"></i>
+						</FileButton>
+					{/if}
+				</div>
+			</div>
+
+			<!-- Inscription Number -->
+			<div class="text-center w-36">
+				{#if isDone}
+					<a
+						class="btn btn-sm variant-glass-primary gap-2"
+						target="_blank"
+						href="https://ordiscan.com/inscription/{inscriptionNumber}"
 					>
-						Use New
-						<i class="fas fa-feather-pointed group-hover:hidden !m-0"></i>
-						<i class="fas fa-rotate-left hidden group-hover:block !m-0"></i>
-					</FileButton>
+						#{inscriptionNumber}
+						<i class="fas fa-up-right-from-square"></i>
+					</a>
 				{:else}
-					<!-- Upload new inscription when no data present -->
-					<FileButton button="gap-3 group" name="re-upload" on:change={onFileUpload}>
-						Use New
-						<i class="fas fa-feather-pointed group-hover:hidden !m-0"></i>
-						<i class="fas fa-upload hidden group-hover:block !m-0"></i>
-					</FileButton>
+					<div class="opacity-50">-</div>
 				{/if}
 			</div>
-		</div>
-
-		<!-- Inscription Number -->
-		<div class="text-center w-36">
-			{#if isDone}
-				<a
-					class="btn btn-sm variant-glass-primary gap-2"
-					target="_blank"
-					href="https://ordiscan.com/inscription/{inscriptionNumber}"
-				>
-					#{inscriptionNumber}
-					<i class="fas fa-up-right-from-square"></i>
-				</a>
-			{:else}
-				<div class="opacity-50">-</div>
-			{/if}
 		</div>
 	</div>
 
