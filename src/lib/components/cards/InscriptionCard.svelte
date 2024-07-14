@@ -18,6 +18,7 @@
 
 	$: isNew = inscription.type === 'new';
 	$: isExisting = inscription.type === 'existing';
+	$: isInscribing = isNew && !inscription.new?.number && inscription.inscribing;
 	$: inscriptionNumber = isNew ? inscription.new?.number : inscription.existing?.number;
 	$: isDone = !!inscriptionNumber;
 	$: if (inputEl) {
@@ -146,6 +147,10 @@
 						<span class="badge-icon variant-filled-success">
 							<i class="fas fa-check"></i>
 						</span>
+					{:else if isInscribing}
+						<span class="badge-icon variant-filled-warning">
+							<i class="fa-solid fa-hourglass-half animate-bounce mt-0.5"></i>
+						</span>
 					{:else}
 						<span class="badge-icon variant-filled-warning">
 							<i class="fa-solid fa-circle-notch animate-spin"></i>
@@ -159,8 +164,20 @@
 				{/if}
 
 				<!-- Type -->
-				<div class="uppercase font-bold opacity-50 text-center flex-1 w-20 ml-1">
-					{inscription.type}
+				<div class="uppercase font-bold text-center flex-1 w-20 ml-1">
+					{#if isInscribing}
+						<a
+							href={`https://mempool.space/tx/${inscription.inscribing?.txnId}`}
+							class="underline opacity-80 hover:opacity-100"
+							target="_blank"
+						>
+							INSCRIBING
+						</a>
+					{:else}
+						<span class="opacity-50">
+							{inscription.type}
+						</span>
+					{/if}
 				</div>
 
 				<!-- File information button -->

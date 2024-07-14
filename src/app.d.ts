@@ -25,6 +25,9 @@ interface InscriptionFile {
 		contentType: string;
 		contentSize: number;
 	};
+	inscribing?: {
+		txnId: string;
+	};
 }
 
 interface Router {

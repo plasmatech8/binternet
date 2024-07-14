@@ -18,7 +18,7 @@
 
 	// Get files that need to be inscribed
 	$: pendingInscriptions = inscriptions.filter((insc) => {
-		return insc.type === 'new' && !insc.new?.number;
+		return insc.type === 'new' && !insc.new?.number && !insc.inscribing;
 	});
 
 	async function onFileUpload(e: Event) {
@@ -103,8 +103,6 @@
 		router = routerData;
 	}
 
-	// let waitingForInscriptions = []
-
 	async function inscribePendingFiles() {
 		for (let i = 0; i < pendingInscriptions.length; i++) {
 			const insc = pendingInscriptions[i];
@@ -112,7 +110,10 @@
 			if (!insc.new) throw Error(`Incorrect data for inscription ${i} `);
 			const buf = insc.new?.data;
 			if (!buf) throw Error(`No data in inscription ${i}`);
-			wallet.inscribe(buf, insc.new?.contentType, (txId) => console.log(txId));
+			wallet.inscribe(buf, insc.new?.contentType, (txnId) => {
+				const inscIndex = inscriptions.indexOf(insc);
+				inscriptions[inscIndex].inscribing = { txnId };
+			});
 		}
 	}
 </script>
