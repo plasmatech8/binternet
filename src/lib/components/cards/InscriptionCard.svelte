@@ -122,23 +122,22 @@
 </script>
 
 <div class="flex gap-2 items-center">
-	<div class="card gap-2 p-3 flex flex-col lg:flex-row items-center text-sm w-full">
-		<!-- Status + Type + Warning-->
-		<div class="w-5 flex gap-3 flex-shrink-0 items-center">
-			<div class="text-center">
-				{#if isDone}
-					<span class="badge-icon variant-filled-success">
-						<i class="fas fa-check"></i>
-					</span>
-				{:else}
-					<span class="badge-icon variant-filled-warning">
-						<i class="fa-solid fa-circle-notch animate-spin"></i>
-					</span>
-				{/if}
-			</div>
+	<!-- Status + Type + Warning-->
+	<div class="w-5 flex gap-3 flex-shrink-0 items-center mr-1">
+		<div class="text-center">
+			{#if isDone}
+				<span class="badge-icon variant-filled-success">
+					<i class="fas fa-check"></i>
+				</span>
+			{:else}
+				<span class="badge-icon variant-filled-warning">
+					<i class="fa-solid fa-circle-notch animate-spin"></i>
+				</span>
+			{/if}
 		</div>
-
-		<div class="w-24 flex gap-2">
+	</div>
+	<div class="card gap-2 p-3 flex flex-col lg:flex-row items-center text-sm w-full">
+		<div class="w-20 flex gap-2">
 			<!-- Type -->
 			<div class="uppercase font-bold opacity-50 text-center flex-1">{inscription.type}</div>
 
