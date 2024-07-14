@@ -1,9 +1,9 @@
 <script lang="ts">
-	import PageLayout from '$lib/components/PageLayout.svelte';
+	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
 	import { wallet } from '$lib/stores/wallet';
 	import { Paginator, ProgressRadial } from '@skeletonlabs/skeleton';
 	import SiteCard from '../../../lib/components/cards/SiteCard.svelte';
-	import WalletButton from '$lib/components/WalletButton.svelte';
+	import WalletButton from '$lib/components/wallet/WalletButton.svelte';
 	import { fetchSiteList } from '$lib/api';
 
 	let offset = 0;

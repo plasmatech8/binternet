@@ -4,7 +4,7 @@
 	import { slide } from 'svelte/transition';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
-	import PageLayout from '$lib/components/PageLayout.svelte';
+	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
 	import { wallet } from '$lib/stores/wallet';
 
 	const modalStore = getModalStore();

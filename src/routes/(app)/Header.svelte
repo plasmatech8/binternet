@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { page } from '$app/stores';
-	import WalletButton from '$lib/components/WalletButton.svelte';
+	import WalletButton from '$lib/components/wallet/WalletButton.svelte';
 </script>
 
 <AppBar gridColumns="sm:grid-cols-[auto_1fr_auto]">
