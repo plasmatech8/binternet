@@ -152,14 +152,17 @@
 
 		<!-- Path Input -->
 		<div class="flex-1 w-full flex gap-2">
-			<input
-				bind:this={inputEl}
-				pattern={urlPathPattern.source}
-				type="text"
-				class="input"
-				bind:value={inscription.path}
-				class:input-error={!valid}
-			/>
+			<div class="input-group input-group-divider grid-cols-[auto_auto_1fr]">
+				<div class="input-group-shim">Path</div>
+				<input
+					bind:this={inputEl}
+					pattern={urlPathPattern.source}
+					type="text"
+					class="input rounded-l-none"
+					bind:value={inscription.path}
+					class:input-error={!valid}
+				/>
+			</div>
 
 			<!-- File information button -->
 			<button type="button" class="btn-icon variant-outline-primary" use:popup={fileInfoPopup}>
