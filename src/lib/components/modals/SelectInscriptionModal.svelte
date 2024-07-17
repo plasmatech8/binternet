@@ -86,6 +86,7 @@
 
 	function onSelect() {
 		if (!number) return;
+		if (loading) return;
 		$modalStore[0].response?.({
 			number,
 			contentType: inscriptionContentType,
@@ -286,7 +287,7 @@
 				class="btn variant-filled-primary"
 				on:click={onSelect}
 				type="button"
-				disabled={!number || !!error}
+				disabled={!number || !!error || loading}
 			>
 				Select this Inscription
 			</button>
