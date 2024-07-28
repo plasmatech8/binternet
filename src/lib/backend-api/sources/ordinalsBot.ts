@@ -1,17 +1,24 @@
 import { endpointsEnv } from '$lib/utils/apiEnv';
 import axios, { type AxiosInstance } from 'axios';
+import { z } from 'zod';
 
-export interface OrdinalsBotInscriptionOrderRequest {
-	receiveAddress: string;
-	files: {
-		size: number;
-		type: string;
-		name: string;
-		dataURL: string;
-	}[];
-	lowPostage: boolean;
-	fee: number;
-}
+export const ordinalsBotInscriptionOrderRequestSchema = z.object({
+	receiveAddress: z.string(),
+	files: z.array(
+		z.object({
+			size: z.number(),
+			type: z.string(),
+			name: z.string(),
+			dataURL: z.string()
+		})
+	),
+	lowPostage: z.boolean(),
+	fee: z.number()
+});
+
+export type OrdinalsBotInscriptionOrderRequest = z.infer<
+	typeof ordinalsBotInscriptionOrderRequestSchema
+>;
 
 export interface OrdinalsBotInscriptionOrderResponse {
 	id: string;
@@ -51,6 +58,7 @@ export interface OrdinalsBotInscriptionOrderResponse {
 }
 
 export interface OrdinalsBotOrderStatusResponse {
+	error?: string;
 	additionalFeeCharged: number;
 	baseFee: number;
 	chainFee: number;
@@ -63,22 +71,22 @@ export interface OrdinalsBotOrderStatusResponse {
 	createdAt: number;
 	fee: number;
 	files: {
-		completed: boolean;
-		inscriptionId: string;
 		name: string;
-		processing: boolean;
 		s3Key: string;
-		sent: string;
 		size: number;
-		status: string;
-		tx: {
+		type: string;
+		url: string;
+		completed?: boolean;
+		inscriptionId?: string;
+		processing?: boolean;
+		sent?: string;
+		status?: string;
+		tx?: {
 			inscription: string;
 			reveal: string;
 			totalFees: number;
 			updatedAt: number;
 		};
-		type: string;
-		url: string;
 	}[];
 	id: string;
 	inscribedCount: number;
