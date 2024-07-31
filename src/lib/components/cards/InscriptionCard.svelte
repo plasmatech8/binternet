@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { FileButton, getModalStore, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import prettyBytes from 'pretty-bytes';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 
 	/*
 	 * Data
@@ -26,6 +26,27 @@
 		updateValidity();
 	}
 	$: contentType = isNew ? inscription.new?.contentType : inscription.existing?.contentType;
+
+	/*
+	 * Check inscribed status
+	 */
+
+	onMount(() => {
+		const interval = setInterval(() => {
+			if (isInscribing) {
+				// TODO: check if txn is complete
+				console.log(inscription.inscribing?.txnId);
+				// Call txn endpoint to check if transaction is confirmed
+				const isConfirmed = false;
+				if (inscription.new && isConfirmed) {
+					// Call inscription endpoint to find the inscription number
+					const inscriptionNumber = 5;
+					inscription.new.number = inscriptionNumber;
+				}
+			}
+		}, 30000);
+		return () => clearInterval(interval);
+	});
 
 	/*
 	 * File information popup
