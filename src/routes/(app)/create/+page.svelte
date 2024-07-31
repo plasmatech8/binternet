@@ -9,7 +9,57 @@
 
 	const modalStore = getModalStore();
 
-	let inscriptions: InscriptionFile[] = [];
+	let inscriptions: InscriptionFile[] = [
+		// {
+		// 	id: '1',
+		// 	path: '/thing/1',
+		// 	type: 'new',
+		// 	new: {
+		// 		contentType: 'image/png',
+		// 		data: new ArrayBuffer(5),
+		// 		filepath: 'filename.png',
+		// 		filename: 'filename.png',
+		// 		size: 10
+		// 	}
+		// },
+		// {
+		// 	id: '2',
+		// 	path: '/thing/2',
+		// 	type: 'existing',
+		// 	existing: {
+		// 		contentType: 'image/png',
+		// 		contentSize: 10,
+		// 		number: 10
+		// 	}
+		// },
+		// {
+		// 	id: '3',
+		// 	path: '/thing/3',
+		// 	type: 'new',
+		// 	new: {
+		// 		contentType: 'image/png',
+		// 		data: new ArrayBuffer(5),
+		// 		filepath: 'filename.png',
+		// 		filename: 'filename.png',
+		// 		size: 10
+		// 	},
+		// 	inscribing: { txnId: 'asdasd' }
+		// },
+		// {
+		// 	id: '4',
+		// 	path: '/thing/4',
+		// 	type: 'new',
+		// 	new: {
+		// 		contentType: 'image/png',
+		// 		data: new ArrayBuffer(5),
+		// 		filepath: 'filename.png',
+		// 		filename: 'filename.png',
+		// 		size: 10,
+		// 		number: 10
+		// 	},
+		// 	inscribing: { txnId: 'asdasd' }
+		// }
+	];
 	let router: Router | null = null;
 	let formEl: HTMLFormElement;
 
