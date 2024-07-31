@@ -23,9 +23,11 @@
 	// Modals
 	import SiteRouterModal from '../../lib/components/modals/SiteRouterModal.svelte';
 	import SelectInscriptionModal from '$lib/components/modals/SelectInscriptionModal.svelte';
+	import InscribeFilesModal from '$lib/components/modals/InscribeFilesModal.svelte';
 	const modalRegistry: Record<string, ModalComponent> = {
 		siteRouterModal: { ref: SiteRouterModal },
-		selectInscriptionModal: { ref: SelectInscriptionModal }
+		selectInscriptionModal: { ref: SelectInscriptionModal },
+		inscribeFilesModal: { ref: InscribeFilesModal }
 	};
 	initializeStores();
 </script>
