@@ -18,6 +18,13 @@ export interface MempoolAddressInfo {
 		tx_count: number;
 	};
 }
+export interface MempoolRecommendedFees {
+	fastestFee: number;
+	halfHourFee: number;
+	hourFee: number;
+	economyFee: number;
+	minimumFee: number;
+}
 
 export class Mempool {
 	static apiUrl = endpointsEnv.mempoolApiUrl;
@@ -40,5 +47,13 @@ export class Mempool {
 		const data = res.data as MempoolAddressInfo;
 		const balance = data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
 		return balance;
+	}
+
+	/**
+	 * Get the recommended fees.
+	 */
+	async fetchRecommendedFees(): Promise<MempoolRecommendedFees> {
+		const res = await this.client.get(`/v1/fees/recommended`);
+		return res.data as MempoolRecommendedFees;
 	}
 }
