@@ -143,7 +143,11 @@
 	}
 </script>
 
-<div class="flex gap-2 items-center">
+<div class="flex gap-2 items-center group/card">
+	<!-- ID number -->
+	<div class="opacity-60 group-hover/card:opacity-100 w-5">
+		{inscription.id}
+	</div>
 	<!-- Content -->
 	<div class="w-full flex flex-col lg:flex-row gap-2 items-center">
 		<!-- Path Input -->
@@ -285,7 +289,11 @@
 
 	<!-- Delete button -->
 	<div>
-		<button class="btn-icon btn-icon-sm hover:variant-ghost" type="button" on:click={onDelete}>
+		<button
+			class="btn-icon btn-icon-sm hover:variant-ghost opacity-60 group-hover/card:opacity-100"
+			type="button"
+			on:click={onDelete}
+		>
 			<i class="fa-solid fa-close"></i>
 		</button>
 	</div>

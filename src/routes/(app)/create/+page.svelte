@@ -9,9 +9,10 @@
 
 	const modalStore = getModalStore();
 
+	let lastId = 5;
 	let inscriptions: InscriptionFile[] = [
 		// {
-		// 	id: '1',
+		// 	id: 1,
 		// 	path: '/thing/1',
 		// 	type: 'new',
 		// 	new: {
@@ -23,7 +24,7 @@
 		// 	}
 		// },
 		// {
-		// 	id: '2',
+		// 	id: 2,
 		// 	path: '/thing/2',
 		// 	type: 'existing',
 		// 	existing: {
@@ -33,7 +34,7 @@
 		// 	}
 		// },
 		// {
-		// 	id: '3',
+		// 	id: 3,
 		// 	path: '/thing/3',
 		// 	type: 'new',
 		// 	new: {
@@ -46,7 +47,7 @@
 		// 	inscribing: { txnId: 'asdasd' }
 		// },
 		// {
-		// 	id: '4',
+		// 	id: 4,
 		// 	path: '/thing/4',
 		// 	type: 'new',
 		// 	new: {
@@ -78,7 +79,7 @@
 		// Add inscriptions to list
 		for (const file of fileList) {
 			const newInscription: InscriptionFile = {
-				id: Math.random().toString(),
+				id: ++lastId,
 				type: 'new',
 				path: '/' + (file.webkitRelativePath !== '' ? file.webkitRelativePath : file.name),
 				new: {
@@ -109,7 +110,7 @@
 
 					// Add inscription to list
 					const newInscription: InscriptionFile = {
-						id: Math.random().toString(),
+						id: ++lastId,
 						type: 'existing',
 						path: path,
 						existing: r

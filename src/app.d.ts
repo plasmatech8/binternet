@@ -9,7 +9,7 @@ declare namespace App {
 }
 
 interface InscriptionFile {
-	id: string;
+	id: number;
 	type: 'new' | 'existing';
 	path: string;
 	new?: {
