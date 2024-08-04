@@ -3,6 +3,7 @@
 	import { clipboard, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import WalletAvatar from './WalletAvatar.svelte';
 	import { getAddressBalance } from '$lib/api';
+	import { bitcoinPriceStore } from '$lib/stores/bitcoin';
 
 	export let morePopupOffset = false;
 
@@ -38,21 +39,28 @@
 
 	<!-- Wallet Menu Popup -->
 	<div data-popup={walletMenuPopupSettings.target} class="pr-3">
-		<div class="list-nav card shadow-xl rounded-3xl m-1">
-			<div class="p-4 pb-3 flex justify-center gap-3 items-center">
-				<div class="font-semibold opacity-60">
-					{#await getAddressBalance($wallet.payment)}
-						- BTC
-					{:then v}
-						{v * 10e-8} BTC
-					{:catch e}
-						{#if e?.response?.data === 'Address on invalid network'}
-							Invalid Network
+		<div class="list-nav card shadow-xl rounded-3xl m-1 w-60">
+			<div class="p-4 pb-3 text-center">
+				{#await getAddressBalance($wallet.payment)}
+					- BTC
+				{:then v}
+					<div>
+						{v * 10e-9} BTC
+					</div>
+					<div class="text-sm opacity-50">
+						{#if $bitcoinPriceStore}
+							${($bitcoinPriceStore.USD * v * 10e-9).toFixed(2)} USD
 						{:else}
-							Error Reading Balance
+							-
 						{/if}
-					{/await}
-				</div>
+					</div>
+				{:catch e}
+					{#if e?.response?.data === 'Address on invalid network'}
+						Invalid Network
+					{:else}
+						Error Reading Balance
+					{/if}
+				{/await}
 			</div>
 			<hr />
 			{#if addressInfoList}

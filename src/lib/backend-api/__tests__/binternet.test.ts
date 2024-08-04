@@ -39,4 +39,21 @@ describe('BInternet Server Client', () => {
 		});
 		expect(res.results).toContainEqual(routerInscription.details);
 	});
+
+	it('getRecommendedFees()', async () => {
+		const details = await client.getRecommendedFees();
+		expect(details.minimumFee).toBeGreaterThan(0);
+		expect(details.economyFee).toBeGreaterThan(0);
+		expect(details.fastestFee).toBeGreaterThan(0);
+		expect(details.hourFee).toBeGreaterThan(0);
+		expect(details.halfHourFee).toBeGreaterThan(0);
+	});
+
+	it('getBitcoinPrice()', async () => {
+		const details = await client.getBitcoinPrice();
+		expect(details.time).toBeGreaterThan(0);
+		expect(details.USD).toBeGreaterThan(0);
+		expect(details.AUD).toBeGreaterThan(0);
+		expect(details.CAD).toBeGreaterThan(0);
+	});
 });

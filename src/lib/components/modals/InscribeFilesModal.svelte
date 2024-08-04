@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { getModalStore, popup, RangeSlider, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { bitcoinPriceStore, recommendedFeeStore } from '$lib/stores/bitcoin';
+	import {
+		getModalStore,
+		popup,
+		ProgressRadial,
+		RadioGroup,
+		RadioItem,
+		RangeSlider,
+		type PopupSettings
+	} from '@skeletonlabs/skeleton';
 	import { uniq } from 'lodash-es';
 	import prettyBytes from 'pretty-bytes';
 	import { onMount } from 'svelte';
@@ -14,6 +23,18 @@
 	$: totalSize = inscriptions.reduce((agg, next) => agg + (next.new?.size ?? 0), 0);
 
 	let feeRate = 10;
+
+	$: feeRateOptions = $recommendedFeeStore
+		? [
+				{ name: 'Economy', feeRate: $recommendedFeeStore.economyFee },
+				{ name: 'Normal', feeRate: $recommendedFeeStore.halfHourFee },
+				{ name: 'Fast', feeRate: $recommendedFeeStore.fastestFee }
+			]
+		: null;
+
+	onMount(() => {
+		if ($recommendedFeeStore) feeRate = $recommendedFeeStore.fastestFee;
+	});
 
 	/*
 	 * Content type validation (for OrdinalsBot API)
@@ -42,7 +63,7 @@
 		'yml',
 		'asc',
 		'json',
-		'js',
+		'javascript',
 		'css',
 		'gz'
 	];
@@ -75,16 +96,15 @@
 	 * Fee Calculations
 	 */
 
-	$: inscriptionFees = totalSize * feeRate;
+	$: feeInfoItems = [
+		{ name: 'Inscribing Fee', amount: totalSize * feeRate },
+		{ name: 'Total Fee', amount: NaN }
+	];
 
 	/*
 	 * ...
+	 * TODO: debounced get inscription order (from ordinals bot)
 	 */
-
-	onMount(() => {
-		// TODO: fetch
-		console.log(inscriptions);
-	});
 </script>
 
 <div class="card px-10 py-6 w-modal">
@@ -173,20 +193,52 @@
 		{/if}
 
 		<!-- Fee input -->
-		<RangeSlider name="range-slider" bind:value={feeRate} max={20} min={5} ticked>
-			<div class="flex justify-between items-center">
-				<div class="font-bold">Network Fee</div>
-				<div class="text-xs">{feeRate} sats/vB</div>
-			</div>
-		</RangeSlider>
+		{#if feeRateOptions && $recommendedFeeStore}
+			<RangeSlider
+				name="range-slider"
+				bind:value={feeRate}
+				max={Math.max($recommendedFeeStore.halfHourFee * 2 - 1, $recommendedFeeStore.hourFee)}
+				min={1}
+				ticked
+			>
+				<div class="flex justify-between items-center">
+					<div class="font-bold">Network Fee</div>
+					<div class="text-xs">{feeRate} sats/vB</div>
+				</div>
+			</RangeSlider>
 
+			<div class="flex gap-2 justify-center">
+				{#each feeRateOptions as option}
+					<button
+						class="btn btn-sm variant-soft"
+						class:!text-primary-500={option.feeRate === feeRate}
+						on:click={() => (feeRate = option.feeRate)}
+					>
+						{option.name}
+						{option.feeRate} sats/vB
+					</button>
+				{/each}
+			</div>
+		{:else}
+			<div class="flex justify-center">
+				<ProgressRadial width="w-20"></ProgressRadial>
+			</div>
+		{/if}
+
+		<!-- Fee info details -->
 		<div class="flex flex-col gap-2">
-			{#each [{ name: 'Inscribing Fee', amount: inscriptionFees }, { name: 'Total Fee', amount: 100 }] as item}
+			{#each feeInfoItems as item}
 				<div class="flex justify-between gap-3">
 					<div class="opacity-70">{item.name}:</div>
 					<div class="flex gap-3">
 						<div>{item.amount} sats</div>
-						<div class="opacity-50 min-w-16">~${item.amount}</div>
+						{#if $bitcoinPriceStore}
+							<div class="opacity-50 min-w-16">
+								~${(item.amount * 10 ** -9 * $bitcoinPriceStore.USD).toFixed(2)}
+							</div>
+						{:else}
+							<ProgressRadial width="w-4"></ProgressRadial>
+						{/if}
 					</div>
 				</div>
 			{/each}

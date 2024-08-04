@@ -26,6 +26,17 @@ export interface MempoolRecommendedFees {
 	minimumFee: number;
 }
 
+export interface MempoolBitcoinPrice {
+	time: number;
+	USD: number;
+	EUR: number;
+	GBP: number;
+	CAD: number;
+	CHF: number;
+	AUD: number;
+	JPY: number;
+}
+
 export class Mempool {
 	static apiUrl = endpointsEnv.mempoolApiUrl;
 	client: AxiosInstance;
@@ -55,5 +66,13 @@ export class Mempool {
 	async fetchRecommendedFees(): Promise<MempoolRecommendedFees> {
 		const res = await this.client.get(`/v1/fees/recommended`);
 		return res.data as MempoolRecommendedFees;
+	}
+
+	/**
+	 * Get the BTC price.
+	 */
+	async fetchBitcoinPrice(): Promise<MempoolBitcoinPrice> {
+		const res = await this.client.get(`/v1/prices`);
+		return res.data as MempoolBitcoinPrice;
 	}
 }

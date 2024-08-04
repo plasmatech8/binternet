@@ -94,4 +94,20 @@ export class BInternetServerClient {
 		const hiro = new Hiro();
 		return await hiro.fetchInscriptionList(address, options);
 	}
+
+	/**
+	 * Get recommended transaction fees.
+	 */
+	async getRecommendedFees() {
+		const mempool = new Mempool();
+		return await mempool.fetchRecommendedFees();
+	}
+
+	/**
+	 * Get the BTC price.
+	 */
+	async getBitcoinPrice() {
+		const mempool = new Mempool();
+		return await mempool.fetchBitcoinPrice();
+	}
 }

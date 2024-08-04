@@ -12,10 +12,18 @@ describe('Mempool API', () => {
 
 	it('fetchRecommendedFees()', async () => {
 		const details = await mempool.fetchRecommendedFees();
-		expect(details.minimumFee).toBeGreaterThanOrEqual(0);
-		expect(details.economyFee).toBeGreaterThanOrEqual(0);
-		expect(details.fastestFee).toBeGreaterThanOrEqual(0);
-		expect(details.hourFee).toBeGreaterThanOrEqual(0);
-		expect(details.halfHourFee).toBeGreaterThanOrEqual(0);
+		expect(details.minimumFee).toBeGreaterThan(0);
+		expect(details.economyFee).toBeGreaterThan(0);
+		expect(details.fastestFee).toBeGreaterThan(0);
+		expect(details.hourFee).toBeGreaterThan(0);
+		expect(details.halfHourFee).toBeGreaterThan(0);
+	});
+
+	it('fetchRecommendedFees()', async () => {
+		const details = await mempool.fetchBitcoinPrice();
+		expect(details.time).toBeGreaterThan(0);
+		expect(details.USD).toBeGreaterThan(0);
+		expect(details.AUD).toBeGreaterThan(0);
+		expect(details.CAD).toBeGreaterThan(0);
 	});
 });
