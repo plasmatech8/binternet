@@ -22,7 +22,7 @@
 	export let inscriptions: InscriptionFile[] = $modalStore[0].meta?.inscriptions ?? [];
 	$: totalSize = inscriptions.reduce((agg, next) => agg + (next.new?.size ?? 0), 0);
 
-	let feeRate = 10;
+	let feeRate = 0;
 
 	$: feeRateOptions = $recommendedFeeStore
 		? [
@@ -32,9 +32,9 @@
 			]
 		: null;
 
-	onMount(() => {
-		if ($recommendedFeeStore) feeRate = $recommendedFeeStore.fastestFee;
-	});
+	$: if (!feeRate && $recommendedFeeStore) {
+		feeRate = $recommendedFeeStore.fastestFee;
+	}
 
 	/*
 	 * Content type validation (for OrdinalsBot API)
