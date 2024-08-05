@@ -93,8 +93,8 @@
 		return null;
 	}
 
-	$: validationErrors = inscriptions.map(validateFile);
-	$: hasErrors = validationErrors.some((e) => e);
+	$: fileValidationErrors = inscriptions.map(validateFile);
+	$: hasFileValidationErrors = fileValidationErrors.some((e) => e);
 
 	const errorPopupSettings: PopupSettings = {
 		event: 'click',
@@ -115,6 +115,8 @@
 	let order: OrdinalsBotInscriptionOrderResponse | null = null;
 
 	const createOrderDebounced = debounce(createOrder, 800);
+
+	let orderErrors: string | null = null;
 
 	async function createOrder() {
 		const orderDetails: OrdinalsBotInscriptionOrderRequest = {
@@ -139,13 +141,19 @@
 			const res = await axios.post<OrdinalsBotInscriptionOrderResponse>('/api/order', orderDetails);
 			order = res.data;
 		} catch (error) {
-			alert(error);
+			console.error('Failed to get order quote:', error);
+			if (axios.isAxiosError(error) && error.response?.status === 400) {
+				orderErrors = error.response.data.errors;
+				return;
+			}
+			orderErrors = 'Error getting order';
 		}
 	}
 
 	$: if (feeRate && inscriptions) {
 		order = null;
-		createOrderDebounced();
+		orderErrors = null;
+		if (receiveAddress) createOrderDebounced();
 	}
 </script>
 
@@ -167,7 +175,7 @@
 							<th>Content Type</th>
 							<th>Filename</th>
 							<th>Size</th>
-							{#if hasErrors}
+							{#if hasFileValidationErrors}
 								<th></th>
 							{/if}
 						</tr>
@@ -189,9 +197,9 @@
 								<td>
 									{insc.new?.size ? prettyBytes(insc.new.size) : '?'}
 								</td>
-								{#if hasErrors}
+								{#if hasFileValidationErrors}
 									<td>
-										{#if validationErrors[i]}
+										{#if fileValidationErrors[i]}
 											{@const popupSettings = {
 												...errorPopupSettings,
 												target: Math.random().toString()
@@ -209,7 +217,7 @@
 												<div class="arrow variant-filled-error" />
 												<div class="flex items-center gap-3">
 													<i class="fas fa-triangle-exclamation"></i>
-													<div>{validationErrors[i]}</div>
+													<div>{fileValidationErrors[i]}</div>
 												</div>
 											</div>
 										{/if}
@@ -222,12 +230,12 @@
 			</div>
 		</div>
 
-		<!-- Error Alert -->
-		{#if hasErrors}
+		<!-- File Validation Error Alert -->
+		{#if hasFileValidationErrors}
 			<div class="alert variant-ghost-error flex">
 				<div><i class="fas fa-triangle-exclamation"></i></div>
 				<ul class="list-disc pl-4">
-					{#each uniq(validationErrors).filter((x) => x) as errMsg}
+					{#each uniq(fileValidationErrors).filter((x) => x) as errMsg}
 						<li>{errMsg}</li>
 					{/each}
 				</ul>
@@ -245,8 +253,8 @@
 			<RangeSlider
 				name="range-slider"
 				bind:value={feeRate}
-				max={Math.max($recommendedFeeStore.halfHourFee * 2 - 1, $recommendedFeeStore.hourFee)}
-				min={1}
+				max={Math.round($recommendedFeeStore.fastestFee * 1.6)}
+				min={3}
 				ticked
 			>
 				<div class="flex justify-between items-center">
@@ -292,7 +300,21 @@
 			{/each}
 		</div>
 
+		<!-- Order Error Alert -->
+		{#if orderErrors}
+			<div class="alert variant-ghost-error flex">
+				<i class="fas fa-triangle-exclamation"></i>
+				<ul class="list-disc pl-4">
+					{#each orderErrors as errMsg}
+						<li>{errMsg}</li>
+					{/each}
+				</ul>
+			</div>
+		{/if}
+
 		<!-- Submit Button -->
-		<button class="btn variant-filled-primary" disabled={hasErrors || !order}>Submit & Pay</button>
+		<button class="btn variant-filled-primary" disabled={hasFileValidationErrors || !order}>
+			Submit & Pay
+		</button>
 	</div>
 </div>

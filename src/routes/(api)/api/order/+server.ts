@@ -18,14 +18,22 @@ export const POST: RequestHandler = async ({ request }) => {
 		const resData = await client.createInscriptionOrder(data);
 		return json(resData);
 	} catch (e) {
-		if ((e as { response?: { data?: { error?: string } } })?.response?.data?.error) {
-			return error(400, 'Error in order data');
+		const err = e as { response?: { data?: { error?: { msg: string }[] } } };
+		console.error(err);
+		if (err?.response?.data?.error) {
+			return json(
+				{ success: false, errors: err.response.data.error.map((de) => de.msg) },
+				{ status: 400 }
+			);
 		}
-		if (e instanceof SyntaxError) {
-			return error(400, 'Request body must not be empty');
+		if (err instanceof SyntaxError) {
+			return json({ success: false, errors: ['Request body must not be empty'] }, { status: 400 });
 		}
-		if (e instanceof z.ZodError) {
-			return json({ success: false, errors: e.errors }, { status: 400 });
+		if (err instanceof z.ZodError) {
+			return json(
+				{ success: false, errors: err.errors.map((ze) => `${ze.message} "${ze.path}"`) },
+				{ status: 400 }
+			);
 		}
 		console.error('Failed to create inscription order', e);
 		error(500, 'Failed to create inscription order');
