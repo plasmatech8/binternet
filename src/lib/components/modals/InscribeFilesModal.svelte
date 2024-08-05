@@ -1,17 +1,20 @@
 <script lang="ts">
+	import type {
+		OrdinalsBotInscriptionOrderRequest,
+		OrdinalsBotInscriptionOrderResponse
+	} from '$lib/backend-api/sources/ordinalsBot';
 	import { bitcoinPriceStore, recommendedFeeStore } from '$lib/stores/bitcoin';
+	import { wallet } from '$lib/stores/wallet';
 	import {
 		getModalStore,
 		popup,
 		ProgressRadial,
-		RadioGroup,
-		RadioItem,
 		RangeSlider,
 		type PopupSettings
 	} from '@skeletonlabs/skeleton';
-	import { uniq } from 'lodash-es';
+	import axios from 'axios';
+	import { debounce, uniq } from 'lodash-es';
 	import prettyBytes from 'pretty-bytes';
-	import { onMount } from 'svelte';
 
 	const modalStore = getModalStore();
 
@@ -35,6 +38,13 @@
 	$: if (!feeRate && $recommendedFeeStore) {
 		feeRate = $recommendedFeeStore.fastestFee;
 	}
+
+	$: atFeeRateOption = feeRateOptions?.reduce((best, next) => {
+		if (feeRate < next.feeRate) return best;
+		return next;
+	}, feeRateOptions[0]);
+
+	let receiveAddress = $wallet?.ordinals ?? '';
 
 	/*
 	 * Content type validation (for OrdinalsBot API)
@@ -96,15 +106,47 @@
 	 * Fee Calculations
 	 */
 
-	$: feeInfoItems = [
-		{ name: 'Inscribing Fee', amount: totalSize * feeRate },
-		{ name: 'Total Fee', amount: NaN }
-	];
+	$: feeInfoItems = [{ name: 'Total Fee', amount: order?.charge.amount }];
 
 	/*
-	 * ...
-	 * TODO: debounced get inscription order (from ordinals bot)
+	 * Get inscription order quote
 	 */
+
+	let order: OrdinalsBotInscriptionOrderResponse | null = null;
+
+	const createOrderDebounced = debounce(createOrder, 800);
+
+	async function createOrder() {
+		const orderDetails: OrdinalsBotInscriptionOrderRequest = {
+			fee: feeRate,
+			files: inscriptions.map((insc) => {
+				const { filename, size, contentType, data } = insc.new!;
+				const base64 = btoa(
+					new Uint8Array(data).reduce((data, byte) => data + String.fromCharCode(byte), '')
+				);
+				return {
+					name: filename,
+					size: size,
+					type: contentType,
+					dataURL: `data:${contentType};base64,${base64}`
+				};
+			}),
+			lowPostage: true,
+			receiveAddress: receiveAddress
+		};
+
+		try {
+			const res = await axios.post<OrdinalsBotInscriptionOrderResponse>('/api/order', orderDetails);
+			order = res.data;
+		} catch (error) {
+			alert(error);
+		}
+	}
+
+	$: if (feeRate && inscriptions) {
+		order = null;
+		createOrderDebounced();
+	}
 </script>
 
 <div class="card px-10 py-6 w-modal">
@@ -192,6 +234,12 @@
 			</div>
 		{/if}
 
+		<!-- Receive Address -->
+		<div class="flex flex-col gap-3">
+			<div class="font-bold">Receive Address</div>
+			<input type="text" class="input h-8" bind:value={receiveAddress} />
+		</div>
+
 		<!-- Fee input -->
 		{#if feeRateOptions && $recommendedFeeStore}
 			<RangeSlider
@@ -211,7 +259,7 @@
 				{#each feeRateOptions as option}
 					<button
 						class="btn btn-sm variant-soft"
-						class:!text-primary-500={option.feeRate === feeRate}
+						class:!text-primary-500={option.name === atFeeRateOption?.name}
 						on:click={() => (feeRate = option.feeRate)}
 					>
 						{option.name}
@@ -230,9 +278,9 @@
 			{#each feeInfoItems as item}
 				<div class="flex justify-between gap-3">
 					<div class="opacity-70">{item.name}:</div>
-					<div class="flex gap-3">
-						<div>{item.amount} sats</div>
-						{#if $bitcoinPriceStore}
+					<div class="flex gap-3 items-center">
+						{#if $bitcoinPriceStore && item.amount}
+							<div>{item.amount} sats</div>
 							<div class="opacity-50 min-w-16">
 								~${(item.amount * 10 ** -9 * $bitcoinPriceStore.USD).toFixed(2)}
 							</div>
@@ -245,6 +293,6 @@
 		</div>
 
 		<!-- Submit Button -->
-		<button class="btn variant-filled-primary" disabled={hasErrors}>Submit & Pay</button>
+		<button class="btn variant-filled-primary" disabled={hasErrors || !order}>Submit & Pay</button>
 	</div>
 </div>
