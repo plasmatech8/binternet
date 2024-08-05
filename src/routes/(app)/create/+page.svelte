@@ -5,11 +5,10 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
 	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
-	import { wallet } from '$lib/stores/wallet';
 
 	const modalStore = getModalStore();
 
-	let lastId = 5;
+	let lastId = 0;
 	let inscriptions: InscriptionFile[] = [
 		// {
 		// 	id: 1,
@@ -155,17 +154,11 @@
 	}
 
 	async function inscribePendingFiles() {
-		for (let i = 0; i < pendingInscriptions.length; i++) {
-			const insc = pendingInscriptions[i];
-			console.log(`Inscribing pending inscription #${i}`, insc);
-			if (!insc.new) throw Error(`Incorrect data for inscription ${i} `);
-			const buf = insc.new?.data;
-			if (!buf) throw Error(`No data in inscription ${i}`);
-			wallet.inscribe(buf, insc.new?.contentType, (txnId) => {
-				const inscIndex = inscriptions.indexOf(insc);
-				inscriptions[inscIndex].inscribing = { txnId };
-			});
-		}
+		modalStore.trigger({
+			component: 'inscribeFilesModal',
+			type: 'component',
+			meta: { inscriptions: pendingInscriptions }
+		});
 	}
 </script>
 
