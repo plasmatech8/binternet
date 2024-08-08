@@ -8,65 +8,14 @@
 
 	const modalStore = getModalStore();
 
+	/*
+	 * Inscribe Files & Define Routes
+	 */
+
 	let lastId = 0;
-	let inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', [
-		// {
-		// 	id: 1,
-		// 	path: '/thing/1',
-		// 	type: 'new',
-		// 	new: {
-		// 		contentType: 'image/png',
-		// 		data: new ArrayBuffer(5),
-		// 		filepath: 'filename.png',
-		// 		filename: 'filename.png',
-		// 		size: 10
-		// 	}
-		// },
-		// {
-		// 	id: 2,
-		// 	path: '/thing/2',
-		// 	type: 'existing',
-		// 	existing: {
-		// 		contentType: 'image/png',
-		// 		contentSize: 10,
-		// 		number: 10
-		// 	}
-		// },
-		// {
-		// 	id: 3,
-		// 	path: '/thing/3',
-		// 	type: 'new',
-		// 	new: {
-		// 		contentType: 'image/png',
-		// 		data: new ArrayBuffer(5),
-		// 		filepath: 'filename.png',
-		// 		filename: 'filename.png',
-		// 		size: 10
-		// 	},
-		// 	inscribing: { txnId: 'asdasd' }
-		// },
-		// {
-		// 	id: 4,
-		// 	path: '/thing/4',
-		// 	type: 'new',
-		// 	new: {
-		// 		contentType: 'image/png',
-		// 		data: new ArrayBuffer(5),
-		// 		filepath: 'filename.png',
-		// 		filename: 'filename.png',
-		// 		size: 10,
-		// 		number: 10
-		// 	},
-		// 	inscribing: { txnId: 'asdasd' }
-		// }
-	]);
-	let router: Router | null = null;
+	let inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', []);
 	let formEl: HTMLFormElement;
 
-	// Reset generated router when routes/inscriptions list changes
-	$: if (inscriptions) router = null;
-
-	// Get files that need to be inscribed
 	$: pendingInscriptions = $inscriptions.filter((insc) => {
 		return insc.type === 'new' && !insc.new?.number && !insc.inscribing;
 	});
@@ -124,15 +73,27 @@
 		$inscriptions = $inscriptions.filter((insc) => insc !== inscription);
 	}
 
-	function generateRouter() {
-		// Check form validity first
-		if (!formEl.reportValidity()) return;
-		// Inscribe file
+	async function inscribePendingFiles() {
+		modalStore.trigger({
+			component: 'inscribeFilesModal',
+			type: 'component',
+			meta: { inscriptions: pendingInscriptions }
+		});
+	}
+
+	/*
+	 * Create Router Form
+	 */
+
+	$: router = canGenerateRouter ? generateRouter($inscriptions) : null;
+	$: canGenerateRouter = !pendingInscriptions.length && $inscriptions.length > 0;
+
+	function generateRouter(inscriptions: InscriptionFile[]) {
 		const routerData: Router = {
 			binternet: 'v1',
 			routes: {}
 		};
-		$inscriptions.forEach((insc, i) => {
+		inscriptions.forEach((insc, i) => {
 			// Existing
 			if (insc.type === 'existing') {
 				const inscNumber = insc.existing?.number;
@@ -150,14 +111,25 @@
 				throw Error(`New inscription #${i} (${insc.path}) does not have a set inscription number.`);
 			}
 		});
-		router = routerData;
+		return routerData;
 	}
 
-	async function inscribePendingFiles() {
+	/*
+	 * Reset form button & dialog
+	 */
+
+	function openConfirmResetFormDialog() {
 		modalStore.trigger({
-			component: 'inscribeFilesModal',
-			type: 'component',
-			meta: { inscriptions: pendingInscriptions }
+			type: 'confirm',
+
+			title: 'Reset Form Data?',
+			body: 'Are you sure you wish to proceed?',
+			response: (r: boolean) => {
+				if (r) {
+					$inscriptions = [];
+					router = null;
+				}
+			}
 		});
 	}
 </script>
@@ -171,52 +143,78 @@
 </svelte:head>
 
 <PageLayout>
-	<h1 class="h1">Create</h1>
-
-	<div class="flex flex-col lg:flex-row md:justify-between items-center my-10">
-		<h2 class="h2 mb-5 lg:mb-0">
-			Define Routes <span class="text-2xl opacity-60">and Inscribe Files</span>
-		</h2>
-		<div class="flex gap-5">
-			<FileButton
-				button="btn btn-sm variant-filled"
-				name="files"
-				on:change={onFileUpload}
-				directory
-				webkitdirectory
-				mozdirectory
+	<!-- Main Page Title & Reset button -->
+	<div class="flex gap-2 justify-between items-center">
+		<!-- Title -->
+		<h1 class="h1">Create</h1>
+		<!-- Clear Page data button -->
+		<div class="mt-6 flex gap-3">
+			<button
+				class="btn btn-sm variant-ghost gap-2"
+				disabled={!router && !$inscriptions.length}
+				on:click={openConfirmResetFormDialog}
 			>
-				<div>Upload Folder</div>
-				<i class="fas fa-add"></i>
-			</FileButton>
-			<FileButton button="btn btn-sm variant-filled" name="files" multiple on:change={onFileUpload}>
-				<div>Upload File</div>
-				<i class="fas fa-add"></i>
-			</FileButton>
-			<button class="btn btn-sm variant-filled" type="button" on:click={onAddExisting}>
-				<div>Add Existing</div>
-				<i class="fas fa-add"></i>
+				<i class="fas fa-undo"></i>
+				Reset Form
 			</button>
 		</div>
 	</div>
 
-	<div class="prose max-w-none dark:prose-invert mb-10">
-		<p>
-			Add inscriptions to attach to URL paths of your site. Either create new inscriptions, or add
-			the inscription number for an existing one.
-		</p>
-		<p>
-			The URL path can include wildcards (<code>*</code>, <code>**</code>) to match multiple routes
-			on your site. See the <a href="/docs#routes" target="_blank">documentation</a> for more details.
-		</p>
-	</div>
-
+	<!-- Define Routes and Inscribe Files section -->
 	<form
 		on:submit|preventDefault={() => {
 			formEl.checkValidity();
 		}}
 		bind:this={formEl}
+		class="my-10"
 	>
+		<!-- Heading and Action buttons -->
+		<div class="flex flex-col lg:flex-row md:justify-between items-center mb-10">
+			<h2 class="h2 mb-5 lg:mb-0">
+				Define Routes <span class="text-2xl opacity-60">and Inscribe Files</span>
+			</h2>
+			<div class="flex gap-5">
+				<FileButton
+					button="btn btn-sm variant-filled"
+					name="files"
+					on:change={onFileUpload}
+					directory
+					webkitdirectory
+					mozdirectory
+				>
+					<div>Upload Folder</div>
+					<i class="fas fa-add"></i>
+				</FileButton>
+				<FileButton
+					button="btn btn-sm variant-filled"
+					name="files"
+					multiple
+					on:change={onFileUpload}
+				>
+					<div>Upload File</div>
+					<i class="fas fa-add"></i>
+				</FileButton>
+				<button class="btn btn-sm variant-filled" type="button" on:click={onAddExisting}>
+					<div>Add Existing</div>
+					<i class="fas fa-add"></i>
+				</button>
+			</div>
+		</div>
+
+		<!-- Text -->
+		<div class="prose max-w-none dark:prose-invert mb-10">
+			<p>
+				Add inscriptions to attach to URL paths of your site. Either create new inscriptions, or add
+				the inscription number for an existing one.
+			</p>
+			<p>
+				The URL path can include wildcards (<code>*</code>, <code>**</code>) to match multiple
+				routes on your site. See the <a href="/docs#routes" target="_blank">documentation</a> for more
+				details.
+			</p>
+		</div>
+
+		<!-- Inscription Files -->
 		<div class="flex flex-col gap-4">
 			{#each $inscriptions as inscription (inscription.id)}
 				<div transition:slide>
@@ -228,10 +226,12 @@
 				</div>
 			{:else}
 				<div class="h-40 grid place-items-center gap-3 opacity-50">
-					<i class="fas fa-feather-pointed text-7xl mb-3"></i>
+					<i class="fas fa-file-signature text-7xl"></i>
 				</div>
 			{/each}
 		</div>
+
+		<!-- Inscribe Pending Files button -->
 		<div class="mt-10 flex gap-3 items-center">
 			<button
 				type="button"
@@ -251,45 +251,50 @@
 		</div>
 	</form>
 
-	<div class="flex justify-center lg:justify-start">
-		<h2 class="h2 my-10">Create Router</h2>
-	</div>
-
-	<div class="prose max-w-none dark:prose-invert mb-10">
-		<p>
-			Create a <a href="/docs#router-specification" target="_blank">router inscription</a> which configures
-			URL paths for your site. The inscription number for the router is the entry point for your site.
-		</p>
-	</div>
-
-	<div class="flex gap-3 items-center mb-10">
-		<button
-			class="btn variant-filled-primary"
-			disabled={!!pendingInscriptions.length || $inscriptions.length == 0}
-			on:click={generateRouter}
-		>
-			Generate Router
-		</button>
-		<div class="opacity-50 italic">
-			{#if $inscriptions.length == 0}
-				Must define at least one route
-			{:else if pendingInscriptions.length > 0}
-				Files still need to be inscribed
-			{/if}
+	<!-- Create Router section -->
+	<form on:submit|preventDefault class="my-10">
+		<!-- Heading -->
+		<div class="flex flex-col lg:flex-row md:justify-between items-center mb-10">
+			<h2 class="h2 mb-5 lg:mb-0">Create Router</h2>
+			<div class="flex gap-5">
+				<div class="">
+					{#if $inscriptions.length == 0}
+						<div class="opacity-50">
+							<i class="fas fa-exclamation-triangle"></i>
+							<span> Must define at least one route </span>
+						</div>
+					{:else if pendingInscriptions.length > 0}
+						<div class="text-warning-500">
+							<i class="fas fa-exclamation-triangle"></i>
+							Files still need to be inscribed
+						</div>
+					{/if}
+				</div>
+			</div>
 		</div>
-	</div>
 
-	{#if router}
-		<div>
-			<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
+		<!-- Text -->
+		<div class="prose max-w-none dark:prose-invert mb-10">
+			<p>
+				Create a <a href="/docs#router-specification" target="_blank">router inscription</a> which configures
+				URL paths for your site. The inscription number for the router is the entry point for your site.
+			</p>
 		</div>
-	{:else}
-		<div class="h-40 grid place-items-center gap-3 opacity-50">
-			<i class="fas fa-signs-post text-7xl"></i>
-		</div>
-	{/if}
 
-	<div class="mt-10 flex gap-3">
-		<button class="btn variant-filled-primary" disabled={!router}> Inscribe Router </button>
-	</div>
+		<!-- Router File details -->
+		{#if router}
+			<div>
+				<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
+			</div>
+		{:else}
+			<div class="h-40 grid place-items-center gap-3 opacity-50">
+				<i class="fas fa-signs-post text-7xl"></i>
+			</div>
+		{/if}
+
+		<!-- Inscribe Router button -->
+		<div class="mt-10 flex gap-3">
+			<button class="btn variant-filled-primary" disabled={!router}> Inscribe Router </button>
+		</div>
+	</form>
 </PageLayout>
