@@ -2,7 +2,8 @@ import {
 	OrdinalsBot,
 	ordinalsBotInscriptionOrderRequestSchema
 } from '$lib/backend-api/sources/ordinalsBot';
-import { error, json, type RequestHandler } from '@sveltejs/kit';
+import { json, type RequestHandler } from '@sveltejs/kit';
+import axios from 'axios';
 import { z } from 'zod';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -18,7 +19,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const resData = await client.createInscriptionOrder(data);
 		return json(resData);
 	} catch (e) {
-		const err = e as { response?: { data?: { error?: { msg: string }[] } } };
+		const err = e as { response?: { status: string; data?: { error?: { msg: string }[] } } };
 		console.error(err);
 		if (err?.response?.data?.error) {
 			return json(
@@ -35,7 +36,16 @@ export const POST: RequestHandler = async ({ request }) => {
 				{ status: 400 }
 			);
 		}
+		if (axios.isAxiosError(err)) {
+			return json(
+				{ errors: `Failed to create inscription order: ${err.message}` },
+				{ status: 500 }
+			);
+		}
 		console.error('Failed to create inscription order', e);
-		error(500, 'Failed to create inscription order');
+		return json(
+			{ errors: `Failed to create inscription order: ${err?.response?.status}` },
+			{ status: 500 }
+		);
 	}
 };
