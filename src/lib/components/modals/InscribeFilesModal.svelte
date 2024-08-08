@@ -1,12 +1,14 @@
 <script lang="ts">
 	import type {
 		OrdinalsBotInscriptionOrderRequest,
-		OrdinalsBotInscriptionOrderResponse
+		OrdinalsBotInscriptionOrderResponse,
+		OrdinalsBotOrderStatusResponse
 	} from '$lib/backend-api/sources/ordinalsBot';
 	import { bitcoinPriceStore, recommendedFeeStore } from '$lib/stores/bitcoin';
 	import { wallet } from '$lib/stores/wallet';
 	import {
 		getModalStore,
+		getToastStore,
 		popup,
 		ProgressRadial,
 		RangeSlider,
@@ -17,12 +19,14 @@
 	import prettyBytes from 'pretty-bytes';
 
 	const modalStore = getModalStore();
+	const toastStore = getToastStore();
 
 	/*
 	 * Form values
 	 */
 
 	export let inscriptions: InscriptionFile[] = $modalStore[0].meta?.inscriptions ?? [];
+
 	$: totalSize = inscriptions.reduce((agg, next) => agg + (next.new?.size ?? 0), 0);
 
 	let feeRate = 0;
@@ -113,21 +117,21 @@
 	 */
 
 	let order: OrdinalsBotInscriptionOrderResponse | null = null;
+	let orderStatus: OrdinalsBotOrderStatusResponse | null = null;
+	let orderErrors: string[] | null = null;
 
 	const createOrderDebounced = debounce(createOrder, 800);
-
-	let orderErrors: string[] | null = null;
 
 	async function createOrder() {
 		const orderDetails: OrdinalsBotInscriptionOrderRequest = {
 			fee: feeRate,
 			files: inscriptions.map((insc) => {
-				const { filename, size, contentType, data } = insc.new!;
+				const { size, contentType, data } = insc.new!;
 				const base64 = btoa(
 					new Uint8Array(data).reduce((data, byte) => data + String.fromCharCode(byte), '')
 				);
 				return {
-					name: filename,
+					name: insc.path,
 					size: size,
 					type: contentType,
 					dataURL: `data:${contentType};base64,${base64}`
@@ -140,6 +144,7 @@
 		try {
 			const res = await axios.post<OrdinalsBotInscriptionOrderResponse>('/api/order', orderDetails);
 			order = res.data;
+			getOrderStatus(order.id);
 		} catch (error) {
 			console.error('Failed to get order quote:', error);
 			if (axios.isAxiosError(error) && error.response?.status === 400) {
@@ -150,10 +155,45 @@
 		}
 	}
 
+	async function getOrderStatus(orderId: string) {
+		try {
+			const res = await axios.get<OrdinalsBotOrderStatusResponse>(`/api/order/${orderId}`);
+			orderStatus = res.data;
+		} catch (error) {
+			console.error('Failed to get order status:', error);
+			if (axios.isAxiosError(error) && error.response?.status === 400) {
+				orderErrors = error.response.data.errors;
+				return;
+			}
+			orderErrors = ['Error getting order status'];
+		}
+	}
+
 	$: if (feeRate && inscriptions) {
 		order = null;
 		orderErrors = null;
+		orderStatus = null;
 		if (receiveAddress) createOrderDebounced();
+	}
+
+	/*
+	 * Pay for Order
+	 */
+
+	async function payForOrder() {
+		if (!orderStatus) {
+			toastStore.trigger({ message: 'No order data not initialised.' });
+			return;
+		}
+		await wallet.sendPaymentTxn(
+			orderStatus.charge.address,
+			orderStatus.charge.amount,
+			async (txnId) => {
+				console.log('Paying for order:', { txnId, orderStatus });
+				$modalStore[0].response?.(orderStatus);
+				modalStore.close();
+			}
+		);
 	}
 </script>
 
@@ -313,7 +353,11 @@
 		{/if}
 
 		<!-- Submit Button -->
-		<button class="btn variant-filled-primary" disabled={hasFileValidationErrors || !order}>
+		<button
+			class="btn variant-filled-primary"
+			disabled={hasFileValidationErrors || !orderStatus}
+			on:click={payForOrder}
+		>
 			Submit & Pay
 		</button>
 	</div>

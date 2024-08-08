@@ -26,7 +26,9 @@ interface InscriptionFile {
 		contentSize: number;
 	};
 	inscribing?: {
-		txnId: string;
+		orderId: string;
+		txnId?: string;
+		inscriptionId?: string;
 	};
 }
 

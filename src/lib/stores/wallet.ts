@@ -4,10 +4,13 @@ import Wallet, {
 	isProviderInstalled,
 	setDefaultProvider,
 	createInscription,
+	type SendTransferParams,
 	type GetAccountsParams,
 	type CreateInscriptionOptions,
-	BitcoinNetworkType
+	BitcoinNetworkType,
+	RpcErrorCode
 } from 'sats-connect';
+import { get } from 'svelte/store';
 
 type WalletAddresses = {
 	ordinals: string;
@@ -44,7 +47,7 @@ function createWalletStore() {
 				set({ ordinals: ordinals.address, payment: payments.address });
 			}
 		},
-		async inscribe(
+		async sendInscriptionTxn(
 			arrayBuffer: ArrayBuffer,
 			contentType: string,
 			onFinish: (txId: string) => void
@@ -54,7 +57,7 @@ function createWalletStore() {
 			);
 			const options: CreateInscriptionOptions = {
 				payload: {
-					network: { type: BitcoinNetworkType.Mainnet },
+					network: { type: BitcoinNetworkType.Signet },
 					content: base64,
 					contentType: contentType,
 					payloadType: 'BASE_64'
@@ -63,6 +66,30 @@ function createWalletStore() {
 				onCancel: () => {}
 			};
 			await createInscription(options);
+		},
+		async sendPaymentTxn(toAddress: string, amountSats: number, onFinish: (txId: string) => void) {
+			const paymentAddress = get(this)?.payment;
+			if (!paymentAddress) {
+				const msg = 'Wallet not connected, or no payment address found.';
+				console.error(msg);
+				return alert(msg);
+			}
+			const options: SendTransferParams = {
+				recipients: [{ address: toAddress, amount: amountSats }]
+			};
+			const response = await Wallet.request('sendTransfer', options);
+
+			// TODO: Convert to promise syntax and call toastStore.trigger in component code.
+
+			if (response.status === 'success') {
+				return onFinish(response.result.txid);
+			} else {
+				if (response.error.code === RpcErrorCode.USER_REJECTION) {
+					console.error('User Rejected Transaction!');
+				} else {
+					console.error('Transaction Error Occured!', response.error);
+				}
+			}
 		},
 		async disconnect() {
 			// Disconnect and reset store data

@@ -5,6 +5,12 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
 	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
+	import type {
+		OrdinalsBotInscriptionOrderResponse,
+		OrdinalsBotOrderStatusResponse
+	} from '$lib/backend-api/sources/ordinalsBot';
+	import axios from 'axios';
+	import { uniq } from 'lodash';
 
 	const modalStore = getModalStore();
 
@@ -12,9 +18,18 @@
 	 * Inscribe Files & Define Routes
 	 */
 
-	let lastId = 0;
 	let inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', []);
 	let formEl: HTMLFormElement;
+	let pendingOrderIds: string[] = [];
+
+	$: lastId = $inscriptions.reduce(
+		(highestId, insc) => (highestId < insc.id ? insc.id : highestId),
+		0
+	);
+
+	$: allPathsUnique =
+		$inscriptions.map((insc) => insc.path).length ===
+		uniq($inscriptions.map((insc) => insc.path)).length;
 
 	$: pendingInscriptions = $inscriptions.filter((insc) => {
 		return insc.type === 'new' && !insc.new?.number && !insc.inscribing;
@@ -27,7 +42,7 @@
 		// Add inscriptions to list
 		for (const file of fileList) {
 			const newInscription: InscriptionFile = {
-				id: ++lastId,
+				id: lastId + 1,
 				type: 'new',
 				path: '/' + (file.webkitRelativePath !== '' ? file.webkitRelativePath : file.name),
 				new: {
@@ -58,7 +73,7 @@
 
 					// Add inscription to list
 					const newInscription: InscriptionFile = {
-						id: ++lastId,
+						id: lastId + 1,
 						type: 'existing',
 						path: path,
 						existing: r
@@ -77,7 +92,51 @@
 		modalStore.trigger({
 			component: 'inscribeFilesModal',
 			type: 'component',
-			meta: { inscriptions: pendingInscriptions }
+			meta: { inscriptions: pendingInscriptions },
+			response: (r?: OrdinalsBotOrderStatusResponse) => {
+				console.log(r);
+				if (r) {
+					pendingOrderIds = [...pendingOrderIds, r.id];
+					let orderStatus: OrdinalsBotOrderStatusResponse = r;
+
+					// TODO: Keep track of pending orders and restart the checks while they exist
+
+					// Poll the API until status changes from "waiting-payment" to "complete"
+					setInterval(async () => {
+						if (orderStatus?.state !== 'completed') {
+							console.log('Fetching order status...');
+							try {
+								const res = await axios.get<OrdinalsBotOrderStatusResponse>(
+									`/api/order/${orderStatus.id}`
+								);
+								orderStatus = res.data;
+								console.log(orderStatus);
+								if (orderStatus.state === 'completed') {
+									console.log('Order is now completed!');
+								}
+								$inscriptions = $inscriptions.map((insc) => {
+									const matchingFile = orderStatus.files.find((file) => file.name === insc.path);
+									if (matchingFile) {
+										console.log(matchingFile);
+										const newInsc: InscriptionFile = {
+											...insc,
+											inscribing: {
+												orderId: orderStatus.id,
+												inscriptionId: matchingFile.inscriptionId,
+												txnId: matchingFile.tx?.reveal
+											}
+										};
+										return newInsc;
+									}
+									return insc;
+								});
+							} catch (error) {
+								console.error('Failed to fetch order status', error);
+							}
+						}
+					}, 2000);
+				}
+			}
 		});
 	}
 
@@ -86,7 +145,10 @@
 	 */
 
 	$: router = canGenerateRouter ? generateRouter($inscriptions) : null;
-	$: canGenerateRouter = !pendingInscriptions.length && $inscriptions.length > 0;
+	$: canGenerateRouter =
+		!pendingInscriptions.length &&
+		$inscriptions.length > 0 &&
+		$inscriptions.every((insc) => (insc.type === 'new' ? !!insc.new?.number : true));
 
 	function generateRouter(inscriptions: InscriptionFile[]) {
 		const routerData: Router = {
@@ -113,6 +175,9 @@
 		});
 		return routerData;
 	}
+
+	// $: console.log($inscriptions);
+	$: console.log(pendingOrderIds);
 
 	/*
 	 * Reset form button & dialog
@@ -236,7 +301,7 @@
 			<button
 				type="button"
 				class="btn variant-filled-primary"
-				disabled={!pendingInscriptions.length}
+				disabled={!pendingInscriptions.length || !allPathsUnique}
 				on:click={inscribePendingFiles}
 			>
 				Inscribe Pending Files

@@ -191,13 +191,17 @@
 				<!-- Type -->
 				<div class="uppercase font-bold text-center flex-1 w-20 ml-1">
 					{#if isInscribing}
-						<a
-							href={`https://mempool.space/tx/${inscription.inscribing?.txnId}`}
-							class="underline opacity-80 hover:opacity-100"
-							target="_blank"
-						>
-							INSCRIBING
-						</a>
+						{#if inscription.inscribing?.txnId}
+							<a
+								href={`https://mempool.space/tx/${inscription.inscribing?.txnId}`}
+								class="underline opacity-80 hover:opacity-100"
+								target="_blank"
+							>
+								INSCRIBING
+							</a>
+						{:else}
+							<span class="opacity-80 hover:opacity-100"> ORDERING </span>
+						{/if}
 					{:else}
 						<span class="opacity-50">
 							{inscription.type}
