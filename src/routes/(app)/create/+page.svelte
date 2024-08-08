@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FileButton, getModalStore } from '@skeletonlabs/skeleton';
+	import { FileButton, getModalStore, localStorageStore } from '@skeletonlabs/skeleton';
 	import InscriptionCard from '../../../lib/components/cards/InscriptionCard.svelte';
 	import { slide } from 'svelte/transition';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
@@ -9,7 +9,7 @@
 	const modalStore = getModalStore();
 
 	let lastId = 0;
-	let inscriptions: InscriptionFile[] = [
+	let inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', [
 		// {
 		// 	id: 1,
 		// 	path: '/thing/1',
@@ -59,7 +59,7 @@
 		// 	},
 		// 	inscribing: { txnId: 'asdasd' }
 		// }
-	];
+	]);
 	let router: Router | null = null;
 	let formEl: HTMLFormElement;
 
@@ -67,7 +67,7 @@
 	$: if (inscriptions) router = null;
 
 	// Get files that need to be inscribed
-	$: pendingInscriptions = inscriptions.filter((insc) => {
+	$: pendingInscriptions = $inscriptions.filter((insc) => {
 		return insc.type === 'new' && !insc.new?.number && !insc.inscribing;
 	});
 
@@ -89,7 +89,7 @@
 					contentType: file.type
 				}
 			};
-			inscriptions = [newInscription, ...inscriptions];
+			$inscriptions = [newInscription, ...$inscriptions];
 		}
 	}
 
@@ -102,7 +102,7 @@
 					// Make a path name
 					const basePath = '/existing_inscription_';
 					let pathNumber = 1;
-					while (inscriptions.find((insc) => insc.path === basePath + pathNumber)) {
+					while ($inscriptions.find((insc) => insc.path === basePath + pathNumber)) {
 						pathNumber += 1;
 					}
 					const path = basePath + pathNumber;
@@ -114,14 +114,14 @@
 						path: path,
 						existing: r
 					};
-					inscriptions = [newInscription, ...inscriptions];
+					$inscriptions = [newInscription, ...$inscriptions];
 				}
 			}
 		});
 	}
 
 	function onDelete(inscription: InscriptionFile) {
-		inscriptions = inscriptions.filter((insc) => insc !== inscription);
+		$inscriptions = $inscriptions.filter((insc) => insc !== inscription);
 	}
 
 	function generateRouter() {
@@ -132,7 +132,7 @@
 			binternet: 'v1',
 			routes: {}
 		};
-		inscriptions.forEach((insc, i) => {
+		$inscriptions.forEach((insc, i) => {
 			// Existing
 			if (insc.type === 'existing') {
 				const inscNumber = insc.existing?.number;
@@ -218,11 +218,11 @@
 		bind:this={formEl}
 	>
 		<div class="flex flex-col gap-4">
-			{#each inscriptions as inscription (inscription.id)}
+			{#each $inscriptions as inscription (inscription.id)}
 				<div transition:slide>
 					<InscriptionCard
 						bind:inscription
-						otherInscriptions={inscriptions.filter((insc) => insc.id !== inscription.id)}
+						otherInscriptions={$inscriptions.filter((insc) => insc.id !== inscription.id)}
 						on:delete={() => onDelete(inscription)}
 					></InscriptionCard>
 				</div>
@@ -265,13 +265,13 @@
 	<div class="flex gap-3 items-center mb-10">
 		<button
 			class="btn variant-filled-primary"
-			disabled={!!pendingInscriptions.length || inscriptions.length == 0}
+			disabled={!!pendingInscriptions.length || $inscriptions.length == 0}
 			on:click={generateRouter}
 		>
 			Generate Router
 		</button>
 		<div class="opacity-50 italic">
-			{#if inscriptions.length == 0}
+			{#if $inscriptions.length == 0}
 				Must define at least one route
 			{:else if pendingInscriptions.length > 0}
 				Files still need to be inscribed
