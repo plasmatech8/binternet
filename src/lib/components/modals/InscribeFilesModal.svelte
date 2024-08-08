@@ -116,7 +116,7 @@
 
 	const createOrderDebounced = debounce(createOrder, 800);
 
-	let orderErrors: string | null = null;
+	let orderErrors: string[] | null = null;
 
 	async function createOrder() {
 		const orderDetails: OrdinalsBotInscriptionOrderRequest = {
@@ -146,7 +146,7 @@
 				orderErrors = error.response.data.errors;
 				return;
 			}
-			orderErrors = 'Error getting order';
+			orderErrors = ['Error getting order'];
 		}
 	}
 
