@@ -6,14 +6,16 @@ const cacheTimeoutSeconds = 86400 * 30; // cache in browser for 30 days
 
 export const GET: RequestHandler = async ({ params }) => {
 	// Params
-	const number = parseInt(params.number ?? '');
-	if (isNaN(number)) error(400, 'Invalid inscription number');
+	const rawNumberOrId = params.numberOrId;
+	if (!rawNumberOrId) error(400, 'Invalid inscription number or ID');
+	const numberOrId = rawNumberOrId.match(/^\d+$/) ? parseInt(rawNumberOrId) : rawNumberOrId;
+	if (typeof numberOrId === 'number' && isNaN(numberOrId)) error(400, 'Invalid inscription number');
 
 	const client = new BInternetServerClient();
 
 	// Fetch and return inscription content
 	try {
-		const { data, contentType } = await client.getInscriptionContent(number);
+		const { data, contentType } = await client.getInscriptionContent(numberOrId);
 		const headers = {
 			'cache-control': `public, max-age=${cacheTimeoutSeconds}, immutable`,
 			...(contentType && { 'Content-Type': contentType })

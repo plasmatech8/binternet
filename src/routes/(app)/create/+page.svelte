@@ -5,12 +5,10 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
 	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
-	import type {
-		OrdinalsBotInscriptionOrderResponse,
-		OrdinalsBotOrderStatusResponse
-	} from '$lib/backend-api/sources/ordinalsBot';
+	import type { OrdinalsBotOrderStatusResponse } from '$lib/backend-api/sources/ordinalsBot';
 	import axios from 'axios';
 	import { uniq } from 'lodash-es';
+	import { onMount } from 'svelte';
 
 	const modalStore = getModalStore();
 
@@ -20,7 +18,6 @@
 
 	let inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', []);
 	let formEl: HTMLFormElement;
-	let pendingOrderIds: string[] = [];
 
 	$: lastId = $inscriptions.reduce(
 		(highestId, insc) => (highestId < insc.id ? insc.id : highestId),
@@ -88,53 +85,64 @@
 		$inscriptions = $inscriptions.filter((insc) => insc !== inscription);
 	}
 
+	/*
+	 * Manage Pending Orders
+	 */
+
+	let orderHistory = localStorageStore<OrdinalsBotOrderStatusResponse[]>('orderHistory', []);
+
+	onMount(() => {
+		// Every 5 seconds, check if pending order IDs have completed submission,
+		// Then add the (unconfirmed) inscription information to the list of inscriptions.
+		const interval = setInterval(async () => {
+			for (let i = 0; i < $orderHistory.length; i++) {
+				const orderStatus = $orderHistory[i];
+				// Do not check already completed orders
+				if (orderStatus.completed) return;
+				// Check order status for pending order
+				const orderId = orderStatus.id;
+				try {
+					// Query order details
+					const res = await axios.get<OrdinalsBotOrderStatusResponse>(`/api/order/${orderId}`);
+					const newOrderStatus = res.data;
+					if (!newOrderStatus.completed) {
+						return console.log(`Order ${orderId} still pending!`);
+					}
+					console.log(`Order ${orderId} has completed submission!`);
+					// Update inscriptions array with inscription information
+					$inscriptions = $inscriptions.map((insc) => {
+						const matchingFile = newOrderStatus.files.find((file) => file.name === insc.path);
+						if (matchingFile) {
+							const newInsc: InscriptionFile = {
+								...insc,
+								inscribing: {
+									orderId: newOrderStatus.id,
+									inscriptionId: matchingFile.inscriptionId,
+									txnId: matchingFile.tx?.reveal
+								}
+							};
+							return newInsc;
+						}
+						return insc;
+					});
+					// Update the order status
+					$orderHistory[i] = newOrderStatus;
+				} catch (error) {
+					console.error('Failed to fetch order status', error);
+				}
+			}
+		}, 5000);
+		return () => clearInterval(interval);
+	});
+
 	async function inscribePendingFiles() {
 		modalStore.trigger({
 			component: 'inscribeFilesModal',
 			type: 'component',
 			meta: { inscriptions: pendingInscriptions },
 			response: (r?: OrdinalsBotOrderStatusResponse) => {
-				console.log(r);
 				if (r) {
-					pendingOrderIds = [...pendingOrderIds, r.id];
-					let orderStatus: OrdinalsBotOrderStatusResponse = r;
-
-					// TODO: Keep track of pending orders and restart the checks while they exist
-
-					// Poll the API until status changes from "waiting-payment" to "complete"
-					setInterval(async () => {
-						if (orderStatus?.state !== 'completed') {
-							console.log('Fetching order status...');
-							try {
-								const res = await axios.get<OrdinalsBotOrderStatusResponse>(
-									`/api/order/${orderStatus.id}`
-								);
-								orderStatus = res.data;
-								console.log(orderStatus);
-								if (orderStatus.state === 'completed') {
-									console.log('Order is now completed!');
-								}
-								$inscriptions = $inscriptions.map((insc) => {
-									const matchingFile = orderStatus.files.find((file) => file.name === insc.path);
-									if (matchingFile) {
-										console.log(matchingFile);
-										const newInsc: InscriptionFile = {
-											...insc,
-											inscribing: {
-												orderId: orderStatus.id,
-												inscriptionId: matchingFile.inscriptionId,
-												txnId: matchingFile.tx?.reveal
-											}
-										};
-										return newInsc;
-									}
-									return insc;
-								});
-							} catch (error) {
-								console.error('Failed to fetch order status', error);
-							}
-						}
-					}, 2000);
+					$orderHistory = [...$orderHistory, r];
 				}
 			}
 		});
@@ -175,9 +183,6 @@
 		});
 		return routerData;
 	}
-
-	// $: console.log($inscriptions);
-	$: console.log(pendingOrderIds);
 
 	/*
 	 * Reset form button & dialog

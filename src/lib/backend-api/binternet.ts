@@ -54,29 +54,33 @@ export class BInternetServerClient {
 	/**
 	 * Fetch inscription contents by inscription number.
 	 */
-	async getInscriptionContent(number: number) {
+	async getInscriptionContent(numberOrId: number | string) {
 		try {
 			const hiro = new Hiro();
-			return await hiro.fetchInscriptionContent(number);
+			return await hiro.fetchInscriptionContent(numberOrId);
 		} catch (error) {
 			console.warn('Failed to fetch inscription content via Hiro. Trying Ord.', error);
 			const ord = new Ord();
-			const details = await this.getInscriptionDetails(number);
-			return await ord.fetchInscriptionContent(details.id);
+			if (typeof numberOrId === 'number') {
+				const details = await this.getInscriptionDetails(numberOrId);
+				return await ord.fetchInscriptionContent(details.id);
+			} else {
+				return await ord.fetchInscriptionContent(numberOrId);
+			}
 		}
 	}
 
 	/**
 	 * Fetch inscription details by inscription number.
 	 */
-	async getInscriptionDetails(number: number) {
+	async getInscriptionDetails(numberOrId: number | string) {
 		try {
 			const hiro = new Hiro();
-			return await hiro.fetchInscriptionDetails(number);
+			return await hiro.fetchInscriptionDetails(numberOrId);
 		} catch (error) {
 			console.warn('Failed to fetch inscription details via Hiro. Trying Ord.', error);
 			const ord = new Ord();
-			return await ord.fetchInscriptionDetails(number);
+			return await ord.fetchInscriptionDetails(numberOrId);
 		}
 	}
 

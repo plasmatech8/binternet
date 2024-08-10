@@ -79,7 +79,8 @@
 		'json',
 		'javascript',
 		'css',
-		'gz'
+		'gz',
+		'plain'
 	];
 
 	function validateFile(insc: InscriptionFile) {

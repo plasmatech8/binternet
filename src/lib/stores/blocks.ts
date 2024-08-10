@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
+import { PUBLIC_MEMPOOL_WS_URL } from '$env/static/public';
 
 function createBlockStore() {
 	// Init store
@@ -7,15 +8,14 @@ function createBlockStore() {
 	if (!browser) return store;
 
 	// Create websocket
-	const socket = new WebSocket('wss://mempool.space/api/v1/ws');
+	const socket = new WebSocket(PUBLIC_MEMPOOL_WS_URL);
 
 	// Send data request
-	socket.onopen = (event: Event) => {
-		console.log(event);
+	socket.onopen = () => {
 		socket.send(
 			JSON.stringify({
 				action: 'want',
-				data: ['block'] // 'prices' (conversions), 'fees' (fees), 'blocks' (blocks)
+				data: ['blocks'] // 'prices' (conversions), 'fees' (fees), 'blocks' (blocks)
 			})
 		);
 	};
@@ -23,7 +23,10 @@ function createBlockStore() {
 	// Listen for events and update the store
 	socket.onmessage = (event: MessageEvent) => {
 		const res = JSON.parse(event.data);
-		if (res.block) store.set(res.block);
+		if (res.block) {
+			console.log('New Bitcoin block mined!');
+			store.set(res.block);
+		}
 	};
 
 	return store;

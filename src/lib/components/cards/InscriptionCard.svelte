@@ -1,5 +1,8 @@
 <script lang="ts">
+	import type { InscriptionDetails } from '$lib/backend-api/types';
+	import { blockStore } from '$lib/stores/blocks';
 	import { FileButton, getModalStore, popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import axios from 'axios';
 	import prettyBytes from 'pretty-bytes';
 	import { createEventDispatcher, onMount } from 'svelte';
 
@@ -32,20 +35,26 @@
 	 */
 
 	onMount(() => {
-		const interval = setInterval(() => {
-			if (isInscribing) {
-				// TODO: check if txn is complete
-				console.log(inscription.inscribing?.txnId);
-				// Call txn endpoint to check if transaction is confirmed
-				const isConfirmed = false;
-				if (inscription.new && isConfirmed) {
-					// Call inscription endpoint to find the inscription number
-					const inscriptionNumber = 5;
-					inscription.new.number = inscriptionNumber;
+		blockStore.subscribe(() => {
+			setTimeout(async () => {
+				const inscriptionId = inscription.inscribing?.inscriptionId;
+				if (isInscribing && inscriptionId) {
+					try {
+						const res = await axios.get<InscriptionDetails>(
+							`/api/inscription/${inscriptionId}/details`
+						);
+						if (res.status === 200) {
+							// Call txn endpoint to check if transaction is confirmed
+							if (inscription.new) {
+								// Call inscription endpoint to find the inscription number
+								inscription.new.number = res.data.number;
+								console.log(`Inscription ${inscription.new.number} is now confirmed!`);
+							}
+						}
+					} catch (_) {}
 				}
-			}
-		}, 30000);
-		return () => clearInterval(interval);
+			}, 1000);
+		});
 	});
 
 	/*
@@ -173,12 +182,18 @@
 							<i class="fas fa-check"></i>
 						</span>
 					{:else if isInscribing}
-						<span class="badge-icon variant-filled-warning">
-							<i class="fa-solid fa-hourglass-half animate-bounce mt-0.5"></i>
-						</span>
+						{#if inscription.inscribing?.txnId}
+							<span class="badge-icon variant-filled-warning">
+								<i class="fa-solid fa-hourglass-half animate-bounce mt-0.5"></i>
+							</span>
+						{:else}
+							<span class="badge-icon variant-filled-warning">
+								<i class="fa-solid fa-circle-notch animate-spin"></i>
+							</span>
+						{/if}
 					{:else}
 						<span class="badge-icon variant-filled-warning">
-							<i class="fa-solid fa-circle-notch animate-spin"></i>
+							<i class="fa-solid fa-plus"></i>
 						</span>
 					{/if}
 				</div>
