@@ -22,6 +22,7 @@ function useAPIPollingStore<T>(url: string) {
 function createBitcoinPriceStore() {
 	return useAPIPollingStore<MempoolBitcoinPrice>('/api/price');
 }
+
 function createRecommendedFeeStore() {
 	return useAPIPollingStore<MempoolRecommendedFees>('/api/fees');
 }
