@@ -10,7 +10,7 @@
 		OrdinalsBotOrderStatusResponse
 	} from '$lib/backend-api/sources/ordinalsBot';
 	import axios from 'axios';
-	import { uniq } from 'lodash';
+	import { uniq } from 'lodash-es';
 
 	const modalStore = getModalStore();
 

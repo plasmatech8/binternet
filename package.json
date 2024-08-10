@@ -60,7 +60,6 @@
 		"highlight.js": "11.9.0",
 		"js-sha256": "^0.11.0",
 		"js-yaml": "^4.1.0",
-		"lodash": "^4.17.21",
 		"lodash-es": "^4.17.21",
 		"pretty-bytes": "^6.1.1",
 		"sats-connect": "^2.5.0",
