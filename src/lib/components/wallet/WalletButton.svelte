@@ -45,7 +45,7 @@
 					- BTC
 				{:then v}
 					<div>
-						{v * 10e-9} BTC
+						{(v * 10e-9).toFixed(8)} BTC
 					</div>
 					<div class="text-sm opacity-50">
 						{#if $bitcoinPriceStore}
