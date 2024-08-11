@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { PUBLIC_MEMPOOL_WS_URL } from '$env/static/public';
 
 function createBlockStore() {
@@ -29,6 +29,11 @@ function createBlockStore() {
 			store.set(res.block);
 		}
 	};
+
+	setTimeout(() => {
+		console.log('Updating block store in case of fail.');
+		store.set(get(store));
+	}, 60000);
 
 	return store;
 }
