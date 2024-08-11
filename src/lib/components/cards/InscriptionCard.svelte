@@ -5,6 +5,7 @@
 	import axios from 'axios';
 	import prettyBytes from 'pretty-bytes';
 	import { createEventDispatcher, onMount } from 'svelte';
+	import { PUBLIC_INSCRIPTION_LINK_URL, PUBLIC_TRANSACTION_LINK_URL } from '$env/static/public';
 
 	/*
 	 * Data
@@ -208,7 +209,7 @@
 					{#if isInscribing}
 						{#if inscription.inscribing?.txnId}
 							<a
-								href={`https://mempool.space/tx/${inscription.inscribing?.txnId}`}
+								href={`${PUBLIC_TRANSACTION_LINK_URL}/${inscription.inscribing?.txnId}`}
 								class="underline opacity-80 hover:opacity-100"
 								target="_blank"
 							>
@@ -294,7 +295,7 @@
 					<a
 						class="btn btn-sm variant-glass-primary gap-2"
 						target="_blank"
-						href="https://ordiscan.com/inscription/{inscriptionNumber}"
+						href={`${PUBLIC_INSCRIPTION_LINK_URL}/${inscriptionNumber}`}
 					>
 						#{inscriptionNumber}
 						<i class="fas fa-up-right-from-square"></i>

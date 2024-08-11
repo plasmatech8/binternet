@@ -5,6 +5,7 @@
 	import { Paginator, ProgressRadial, getModalStore } from '@skeletonlabs/skeleton';
 	import { debounce } from 'lodash-es';
 	import { onMount } from 'svelte';
+	import { PUBLIC_INSCRIPTION_LINK_URL } from '$env/static/public';
 
 	const modalStore = getModalStore();
 
@@ -159,7 +160,7 @@
 					<div class="flex gap-3 justify-between">
 						<div>{inscriptionContentType}</div>
 						<div class="flex gap-3">
-							<a href="https://ordiscan.com/inscription/{number}" class="anchor" target="_blank">
+							<a href={`${PUBLIC_INSCRIPTION_LINK_URL}/${number}`} class="anchor" target="_blank">
 								Details
 							</a>
 							<a href="/api/inscription/{number}/content" class="anchor" target="_blank">

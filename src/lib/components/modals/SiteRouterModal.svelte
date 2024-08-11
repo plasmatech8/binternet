@@ -3,6 +3,7 @@
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
+	import { PUBLIC_INSCRIPTION_LINK_URL } from '$env/static/public';
 
 	const modalStore = getModalStore();
 
@@ -33,7 +34,7 @@
 			const match = text.match(/^\d+$/);
 			if (match) {
 				const anchor = document.createElement('a');
-				anchor.href = `https://ordiscan.com/inscription/${match[0]}`;
+				anchor.href = `${PUBLIC_INSCRIPTION_LINK_URL}/${match[0]}`;
 				anchor.target = '_blank';
 				anchor.innerHTML = el.innerHTML;
 				anchor.className = `hover:!anchor ${el.className}`;
@@ -48,7 +49,7 @@
 		<header class="text-3xl flex justify-between items-center">
 			<div>Router Inscription</div>
 			<a
-				href={`https://ordiscan.com/inscription/${site.number}`}
+				href={`${PUBLIC_INSCRIPTION_LINK_URL}/${site.number}`}
 				class="hover:anchor opacity-50 text-2xl"
 				target="_blank"
 			>
