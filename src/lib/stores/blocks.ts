@@ -12,10 +12,11 @@ function createBlockStore() {
 
 	// Send data request
 	socket.onopen = () => {
+		console.log('Initialising block store.');
 		socket.send(
 			JSON.stringify({
 				action: 'want',
-				data: ['blocks'] // 'prices' (conversions), 'fees' (fees), 'blocks' (blocks)
+				data: ['blocks']
 			})
 		);
 	};
@@ -24,7 +25,7 @@ function createBlockStore() {
 	socket.onmessage = (event: MessageEvent) => {
 		const res = JSON.parse(event.data);
 		if (res.block) {
-			console.log('New Bitcoin block mined!');
+			console.log('New Bitcoin block mined!', res.block);
 			store.set(res.block);
 		}
 	};
