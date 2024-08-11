@@ -9,6 +9,7 @@
 	import axios from 'axios';
 	import { uniq } from 'lodash-es';
 	import { onMount } from 'svelte';
+	import { orderHistoryStore } from '$lib/stores/history';
 
 	const modalStore = getModalStore();
 
@@ -16,7 +17,7 @@
 	 * Inscribe Files & Define Routes
 	 */
 
-	let inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', []);
+	const inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', []);
 	let formEl: HTMLFormElement;
 
 	$: lastId = $inscriptions.reduce(
@@ -89,14 +90,12 @@
 	 * Manage Pending Orders
 	 */
 
-	let orderHistory = localStorageStore<OrdinalsBotOrderStatusResponse[]>('orderHistory', []);
-
 	onMount(() => {
 		// Every 5 seconds, check if pending order IDs have completed submission,
 		// Then add the (unconfirmed) inscription information to the list of inscriptions.
 		const interval = setInterval(async () => {
-			for (let i = 0; i < $orderHistory.length; i++) {
-				const orderStatus = $orderHistory[i];
+			for (let i = 0; i < $orderHistoryStore.length; i++) {
+				const orderStatus = $orderHistoryStore[i];
 				// Do not check already completed orders
 				if (orderStatus.completed) return;
 				// Check order status for pending order
@@ -126,7 +125,7 @@
 						return insc;
 					});
 					// Update the order status
-					$orderHistory[i] = newOrderStatus;
+					$orderHistoryStore[i] = newOrderStatus;
 				} catch (error) {
 					console.error('Failed to fetch order status', error);
 				}
@@ -142,7 +141,7 @@
 			meta: { inscriptions: pendingInscriptions },
 			response: (r?: OrdinalsBotOrderStatusResponse) => {
 				if (r) {
-					$orderHistory = [...$orderHistory, r];
+					$orderHistoryStore = [...$orderHistoryStore, r];
 				}
 			}
 		});
@@ -185,10 +184,10 @@
 	}
 
 	/*
-	 * Reset form button & dialog
+	 * Reset form dialog
 	 */
 
-	function openConfirmResetFormDialog() {
+	function openConfirmResetDialog() {
 		modalStore.trigger({
 			type: 'confirm',
 
@@ -200,6 +199,17 @@
 					router = null;
 				}
 			}
+		});
+	}
+
+	/*
+	 * View history dialog
+	 */
+
+	function openHistoryDialog() {
+		modalStore.trigger({
+			type: 'component',
+			component: 'historyModal'
 		});
 	}
 </script>
@@ -219,10 +229,14 @@
 		<h1 class="h1">Create</h1>
 		<!-- Clear Page data button -->
 		<div class="mt-6 flex gap-3">
+			<button class="btn btn-sm variant-ghost gap-2" on:click={openHistoryDialog}>
+				<i class="fas fa-list"></i>
+				History
+			</button>
 			<button
 				class="btn btn-sm variant-ghost gap-2"
 				disabled={!router && !$inscriptions.length}
-				on:click={openConfirmResetFormDialog}
+				on:click={openConfirmResetDialog}
 			>
 				<i class="fas fa-undo"></i>
 				Reset Form
