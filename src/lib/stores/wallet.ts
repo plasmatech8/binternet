@@ -67,7 +67,12 @@ function createWalletStore() {
 			};
 			await createInscription(options);
 		},
-		async sendPaymentTxn(toAddress: string, amountSats: number, onFinish: (txId: string) => void) {
+		async sendPaymentTxn(
+			toAddress: string,
+			amountSats: number,
+			onFinish: (txId: string) => void,
+			onCancel: (reason: string) => void
+		) {
 			const paymentAddress = get(this)?.payment;
 			if (!paymentAddress) {
 				const msg = 'Wallet not connected, or no payment address found.';
@@ -86,8 +91,10 @@ function createWalletStore() {
 			} else {
 				if (response.error.code === RpcErrorCode.USER_REJECTION) {
 					console.error('User Rejected Transaction!');
+					onCancel('rejected');
 				} else {
 					console.error('Transaction Error Occured!', response.error);
+					onCancel('error');
 				}
 			}
 		},

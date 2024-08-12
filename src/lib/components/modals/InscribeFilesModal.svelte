@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_TRANSACTION_LINK_URL } from '$env/static/public';
 	import type {
 		OrdinalsBotInscriptionOrderRequest,
 		OrdinalsBotInscriptionOrderResponse,
@@ -132,7 +133,7 @@
 					new Uint8Array(data).reduce((data, byte) => data + String.fromCharCode(byte), '')
 				);
 				return {
-					name: insc.path,
+					name: insc.new!.orderFilename,
 					size: size,
 					type: contentType,
 					dataURL: `data:${contentType};base64,${base64}`
@@ -181,11 +182,14 @@
 	 * Pay for Order
 	 */
 
+	let paymentLoading = false;
+
 	async function payForOrder() {
 		if (!orderStatus) {
 			toastStore.trigger({ message: 'No order data not initialised.' });
 			return;
 		}
+		paymentLoading = true;
 		await wallet.sendPaymentTxn(
 			orderStatus.charge.address,
 			orderStatus.charge.amount,
@@ -193,6 +197,30 @@
 				console.log('Paying for order:', { txnId, orderStatus });
 				$modalStore[0].response?.(orderStatus);
 				modalStore.close();
+				paymentLoading = false;
+				toastStore.trigger({
+					message: 'Order payment sent!',
+					background: 'variant-filled-success',
+					action: {
+						label: '<i class="fas fa-up-right-from-square"></i>',
+						response: () => window.open(`${PUBLIC_TRANSACTION_LINK_URL}/${txnId}`, '_newtab')
+					}
+				});
+			},
+			(reason) => {
+				paymentLoading = false;
+				if (reason === 'rejected') {
+					toastStore.trigger({
+						message: 'Payment rejected by user.',
+						background: 'variant-filled-error'
+					});
+				}
+				if (reason === 'error') {
+					toastStore.trigger({
+						message: 'An error occured while submitting payment.',
+						background: 'variant-filled-error'
+					});
+				}
 			}
 		);
 	}
@@ -356,10 +384,14 @@
 		<!-- Submit Button -->
 		<button
 			class="btn variant-filled-primary"
-			disabled={hasFileValidationErrors || !orderStatus}
+			disabled={hasFileValidationErrors || !orderStatus || paymentLoading}
 			on:click={payForOrder}
 		>
-			Submit & Pay
+			{#if paymentLoading}
+				<ProgressRadial width="w-6" stroke={100}></ProgressRadial>
+			{:else}
+				Submit & Pay
+			{/if}
 		</button>
 	</div>
 </div>

@@ -48,7 +48,8 @@
 					filepath: file.webkitRelativePath ?? file.name,
 					size: file.size,
 					data: await file.arrayBuffer(),
-					contentType: file.type
+					contentType: file.type,
+					orderFilename: crypto.randomUUID() + `_(${lastId + 1})_${file.name}`
 				}
 			};
 			$inscriptions = [newInscription, ...$inscriptions];
@@ -97,7 +98,7 @@
 			for (let i = 0; i < $orderHistoryStore.length; i++) {
 				const orderStatus = $orderHistoryStore[i];
 				// Do not check already completed orders
-				if (orderStatus.completed) return;
+				if (orderStatus.completed) continue;
 				// Check order status for pending order
 				const orderId = orderStatus.id;
 				try {
@@ -109,21 +110,7 @@
 					}
 					console.log(`Order ${orderId} has completed submission!`);
 					// Update inscriptions array with inscription information
-					$inscriptions = $inscriptions.map((insc) => {
-						const matchingFile = newOrderStatus.files.find((file) => file.name === insc.path);
-						if (matchingFile) {
-							const newInsc: InscriptionFile = {
-								...insc,
-								inscribing: {
-									orderId: newOrderStatus.id,
-									inscriptionId: matchingFile.inscriptionId,
-									txnId: matchingFile.tx?.reveal
-								}
-							};
-							return newInsc;
-						}
-						return insc;
-					});
+					updateInscriptionFilesWithOrderStatus(newOrderStatus);
 					// Update the order status
 					$orderHistoryStore[i] = newOrderStatus;
 				} catch (error) {
@@ -134,6 +121,24 @@
 		return () => clearInterval(interval);
 	});
 
+	function updateInscriptionFilesWithOrderStatus(orderStatus: OrdinalsBotOrderStatusResponse) {
+		$inscriptions = $inscriptions.map((insc) => {
+			const matchingFile = orderStatus.files.find((file) => file.name === insc.new?.orderFilename);
+			if (matchingFile) {
+				const newInsc: InscriptionFile = {
+					...insc,
+					inscribing: {
+						orderId: orderStatus.id,
+						inscriptionId: matchingFile.inscriptionId,
+						txnId: matchingFile.tx?.reveal
+					}
+				};
+				return newInsc;
+			}
+			return insc;
+		});
+	}
+
 	async function inscribePendingFiles() {
 		modalStore.trigger({
 			component: 'inscribeFilesModal',
@@ -142,6 +147,7 @@
 			response: (r?: OrdinalsBotOrderStatusResponse) => {
 				if (r) {
 					$orderHistoryStore = [...$orderHistoryStore, r];
+					updateInscriptionFilesWithOrderStatus(r);
 				}
 			}
 		});
@@ -258,26 +264,29 @@
 				Define Routes <span class="text-2xl opacity-60">and Inscribe Files</span>
 			</h2>
 			<div class="flex gap-5">
-				<FileButton
-					button="btn btn-sm variant-filled"
-					name="files"
-					on:change={onFileUpload}
-					directory
-					webkitdirectory
-					mozdirectory
-				>
-					<div>Upload Folder</div>
-					<i class="fas fa-add"></i>
-				</FileButton>
-				<FileButton
-					button="btn btn-sm variant-filled"
-					name="files"
-					multiple
-					on:change={onFileUpload}
-				>
-					<div>Upload File</div>
-					<i class="fas fa-add"></i>
-				</FileButton>
+				{#key $inscriptions}
+					<FileButton
+						button="btn btn-sm variant-filled"
+						name="files"
+						directory
+						webkitdirectory
+						mozdirectory
+						on:change={onFileUpload}
+					>
+						<div>Upload Folder</div>
+						<i class="fas fa-add"></i>
+					</FileButton>
+					<FileButton
+						button="btn btn-sm variant-filled"
+						name="files"
+						multiple
+						on:change={onFileUpload}
+						files={undefined}
+					>
+						<div>Upload File</div>
+						<i class="fas fa-add"></i>
+					</FileButton>
+				{/key}
 				<button class="btn btn-sm variant-filled" type="button" on:click={onAddExisting}>
 					<div>Add Existing</div>
 					<i class="fas fa-add"></i>

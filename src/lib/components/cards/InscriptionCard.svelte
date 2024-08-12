@@ -86,7 +86,8 @@
 				filepath: file.webkitRelativePath ?? file.name,
 				size: file.size,
 				data: await file.arrayBuffer(),
-				contentType: file.type || 'text/plain'
+				contentType: file.type || 'text/plain',
+				orderFilename: crypto.randomUUID() + `_(${inscription.id})_${file.name}`
 			}
 		};
 		inscription.type = 'new';

@@ -1,6 +1,12 @@
 <script lang="ts">
 	import '../../app.postcss';
-	import { AppShell, Modal, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
+	import {
+		AppShell,
+		Modal,
+		Toast,
+		initializeStores,
+		type ModalComponent
+	} from '@skeletonlabs/skeleton';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -58,3 +64,6 @@
 
 <!-- Modal -->
 <Modal components={modalRegistry} />
+
+<!-- Toasts -->
+<Toast />
