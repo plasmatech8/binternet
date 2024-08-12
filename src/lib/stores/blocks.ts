@@ -30,9 +30,10 @@ function createBlockStore() {
 		}
 	};
 
-	setTimeout(() => {
-		console.log('Updating block store in case of fail.');
-		store.set(get(store));
+	// Backup with forced update every 60 seconds in case of websocket failure
+	setInterval(() => {
+		console.log('Updating block store in case of websocket failure.');
+		store.set({ ...get(store) });
 	}, 60000);
 
 	return store;
