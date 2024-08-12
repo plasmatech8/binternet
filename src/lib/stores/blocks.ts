@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { get, writable } from 'svelte/store';
-import { PUBLIC_MEMPOOL_WS_URL } from '$env/static/public';
+import { PUBLIC_BITCOIN_BLOCK_WS_URL } from '$env/static/public';
 
 function createBlockStore() {
 	// Init store
@@ -8,7 +8,7 @@ function createBlockStore() {
 	if (!browser) return store;
 
 	// Create websocket
-	const socket = new WebSocket(PUBLIC_MEMPOOL_WS_URL);
+	const socket = new WebSocket(PUBLIC_BITCOIN_BLOCK_WS_URL);
 
 	// Send data request
 	socket.onopen = () => {
