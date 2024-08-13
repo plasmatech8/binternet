@@ -161,6 +161,7 @@
 	$: router = canGenerateRouter ? generateRouter($inscriptions) : null;
 	$: canGenerateRouter =
 		!pendingInscriptions.length &&
+		allPathsUnique &&
 		$inscriptions.length > 0 &&
 		$inscriptions.every((insc) => (insc.type === 'new' ? !!insc.new?.number : true));
 
@@ -186,6 +187,7 @@
 			if (!inscNumber) {
 				throw Error(`New inscription #${i} (${insc.path}) does not have a set inscription number.`);
 			}
+			routerData.routes[insc.path] = inscNumber;
 		});
 		return routerData;
 	}
@@ -377,9 +379,11 @@
 
 		<!-- Router File details -->
 		{#if router}
-			<div use:addCodeBlockRouterLinks={{}}>
-				<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
-			</div>
+			{#key router}
+				<div use:addCodeBlockRouterLinks={{}}>
+					<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
+				</div>
+			{/key}
 		{:else}
 			<div class="h-40 grid place-items-center gap-3 opacity-50">
 				<i class="fas fa-signs-post text-7xl"></i>
