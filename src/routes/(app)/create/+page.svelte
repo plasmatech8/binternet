@@ -11,6 +11,8 @@
 	import { onMount } from 'svelte';
 	import { orderHistoryStore } from '$lib/stores/history';
 	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
+	import { wallet } from '$lib/stores/wallet';
+	import { str2ab } from '$lib/utils/conversion';
 
 	const modalStore = getModalStore();
 
@@ -190,6 +192,14 @@
 			routerData.routes[insc.path] = inscNumber;
 		});
 		return routerData;
+	}
+
+	function inscribeRouter() {
+		const routerText = yaml.dump(router);
+		const routerData = str2ab(routerText);
+		wallet.sendInscriptionTxn(routerData, 'application/x-yaml', (txnId) => {
+			alert('SENT ROUTER INSCRIPTION TXN');
+		});
 	}
 
 	/*
@@ -392,7 +402,9 @@
 
 		<!-- Inscribe Router button -->
 		<div class="mt-10 flex gap-3">
-			<button class="btn variant-filled-primary" disabled={!router}> Inscribe Router </button>
+			<button class="btn variant-filled-primary" disabled={!router} on:click={inscribeRouter}>
+				Inscribe Router
+			</button>
 		</div>
 	</form>
 </PageLayout>

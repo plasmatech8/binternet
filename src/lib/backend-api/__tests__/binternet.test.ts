@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { ab2str, routerInscription } from './testUtils';
+import { routerInscription } from './testUtils';
 import { BInternetServerClient } from '../binternet';
+import { ab2str } from '$lib/utils/conversion';
 
 const client = new BInternetServerClient();
 
