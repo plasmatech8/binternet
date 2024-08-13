@@ -2,6 +2,11 @@
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { page } from '$app/stores';
 	import WalletButton from '$lib/components/wallet/WalletButton.svelte';
+	import { PUBLIC_BITCOIN_NETWORK } from '$env/static/public';
+	import pkg from '../../../package.json?raw';
+
+	const { version } = JSON.parse(pkg);
+	const isBeta = parseInt(version.split('.')[0]) < 1;
 </script>
 
 <AppBar gridColumns="sm:grid-cols-[auto_1fr_auto]">
@@ -9,6 +14,12 @@
 		<a href="/" class="btn btn-sm hover:variant-soft-surface font-bold !gap-0 px-4">
 			<span class="text-3xl text-orange-400">₿</span>
 			<span class="text-xl uppercase !ml-0.5">internet</span>
+			{#if PUBLIC_BITCOIN_NETWORK !== 'mainnet'}
+				<span class="text-xs opacity-50">{PUBLIC_BITCOIN_NETWORK.toUpperCase()}</span>
+			{/if}
+			{#if isBeta}
+				<span class="text-xs opacity-50">BETA</span>
+			{/if}
 		</a>
 		<div class="block sm:hidden">
 			<WalletButton morePopupOffset></WalletButton>
