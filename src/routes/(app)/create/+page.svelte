@@ -10,6 +10,7 @@
 	import { uniq } from 'lodash-es';
 	import { onMount } from 'svelte';
 	import { orderHistoryStore } from '$lib/stores/history';
+	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
 
 	const modalStore = getModalStore();
 
@@ -376,7 +377,7 @@
 
 		<!-- Router File details -->
 		{#if router}
-			<div>
+			<div use:addCodeBlockRouterLinks={{}}>
 				<CodeBlock language="yaml" code={yaml.dump(router, {})}></CodeBlock>
 			</div>
 		{:else}
