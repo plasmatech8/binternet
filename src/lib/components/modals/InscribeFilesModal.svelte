@@ -6,7 +6,8 @@
 		OrdinalsBotOrderStatusResponse
 	} from '$lib/backend-api/sources/ordinalsBot';
 	import { bitcoinPriceStore, recommendedFeeStore } from '$lib/stores/bitcoin';
-	import { wallet } from '$lib/stores/wallet';
+	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
+	import { errorToast, successToast } from '$lib/toasts';
 	import {
 		getModalStore,
 		getToastStore,
@@ -190,39 +191,29 @@
 			return;
 		}
 		paymentLoading = true;
-		await wallet.sendPaymentTxn(
-			orderStatus.charge.address,
-			orderStatus.charge.amount,
-			async (txnId) => {
+		wallet
+			.sendPaymentTxn({
+				toAddress: orderStatus.charge.address,
+				amountSats: orderStatus.charge.amount
+			})
+			.then(async (txnId) => {
 				console.log('Paying for order:', { txnId, orderStatus });
 				$modalStore[0].response?.(orderStatus);
 				modalStore.close();
 				paymentLoading = false;
-				toastStore.trigger({
-					message: 'Order payment sent!',
-					background: 'variant-filled-success',
+				successToast('Order payment sent!', {
 					action: {
 						label: '<i class="fas fa-up-right-from-square"></i>',
 						response: () => window.open(`${PUBLIC_TRANSACTION_LINK_URL}/${txnId}`, '_newtab')
 					}
 				});
-			},
-			(reason) => {
+			})
+			.catch((error) => {
+				errorToast(error.message);
+			})
+			.finally(() => {
 				paymentLoading = false;
-				if (reason === 'rejected') {
-					toastStore.trigger({
-						message: 'Payment rejected by user.',
-						background: 'variant-filled-error'
-					});
-				}
-				if (reason === 'error') {
-					toastStore.trigger({
-						message: 'An error occured while submitting payment.',
-						background: 'variant-filled-error'
-					});
-				}
-			}
-		);
+			});
 	}
 </script>
 

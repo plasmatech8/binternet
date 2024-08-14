@@ -12,10 +12,32 @@ import Wallet, {
 } from 'sats-connect';
 import { get } from 'svelte/store';
 
+/*
+ * Types
+ */
+
 type WalletAddresses = {
 	ordinals: string;
 	payment: string;
 };
+
+export class UnexpectedTransactionError extends Error {
+	constructor(message: string = 'Transaction has failed due to an unexpected error.') {
+		super(message);
+		this.name = 'UnexpectedTransactionError';
+	}
+}
+
+export class RejectedTransactionError extends Error {
+	constructor(message: string = 'Transaction was rejected by user.') {
+		super(message);
+		this.name = 'RejectedTransactionError';
+	}
+}
+
+/*
+ * Wallet Store
+ */
 
 function createWalletStore() {
 	const { subscribe, set } = localStorageStore<WalletAddresses | null>('wallet', null);
@@ -47,56 +69,67 @@ function createWalletStore() {
 				set({ ordinals: ordinals.address, payment: payments.address });
 			}
 		},
-		async sendInscriptionTxn(
-			arrayBuffer: ArrayBuffer,
-			contentType: string,
-			onFinish: (txId: string) => void
-		) {
-			const base64 = btoa(
-				new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-			);
-			const options: CreateInscriptionOptions = {
-				payload: {
-					network: { type: BitcoinNetworkType.Signet },
-					content: base64,
-					contentType: contentType,
-					payloadType: 'BASE_64'
-				},
-				onFinish: (res) => onFinish(res.txId),
-				onCancel: () => {}
-			};
-			await createInscription(options);
-		},
-		async sendPaymentTxn(
-			toAddress: string,
-			amountSats: number,
-			onFinish: (txId: string) => void,
-			onCancel: (reason: string) => void
-		) {
-			const paymentAddress = get(this)?.payment;
-			if (!paymentAddress) {
-				const msg = 'Wallet not connected, or no payment address found.';
-				console.error(msg);
-				return alert(msg);
-			}
-			const options: SendTransferParams = {
-				recipients: [{ address: toAddress, amount: amountSats }]
-			};
-			const response = await Wallet.request('sendTransfer', options);
-
-			// TODO: Convert to promise syntax and call toastStore.trigger in component code.
-
-			if (response.status === 'success') {
-				return onFinish(response.result.txid);
-			} else {
-				if (response.error.code === RpcErrorCode.USER_REJECTION) {
-					console.error('User Rejected Transaction!');
-					onCancel('rejected');
-				} else {
-					console.error('Transaction Error Occured!', response.error);
-					onCancel('error');
+		sendInscribeTxn({
+			inscriptionData: arrayBuffer,
+			contentType
+		}: {
+			inscriptionData: ArrayBuffer;
+			contentType: string;
+		}): Promise<string> {
+			return new Promise((resolve, reject) => {
+				try {
+					const base64 = btoa(
+						new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
+					);
+					const options: CreateInscriptionOptions = {
+						payload: {
+							network: { type: BitcoinNetworkType.Signet },
+							content: base64,
+							contentType: contentType,
+							payloadType: 'BASE_64'
+						},
+						onFinish: (res) => {
+							resolve(res.txId);
+						},
+						onCancel: () => {
+							reject(new RejectedTransactionError());
+						}
+					};
+					createInscription(options);
+				} catch (error) {
+					console.error('Transaction has failed due to an unexpected error:', error);
+					reject(new UnexpectedTransactionError());
 				}
-			}
+			});
+		},
+		async sendPaymentTxn({ toAddress, amountSats }: { toAddress: string; amountSats: number }) {
+			return new Promise((resolve, reject) => {
+				try {
+					const paymentAddress = get(this)?.payment;
+					if (!paymentAddress) {
+						const msg = 'Wallet not connected, or no payment address found.';
+						console.error(msg);
+						return alert(msg);
+					}
+					const options: SendTransferParams = {
+						recipients: [{ address: toAddress, amount: amountSats }]
+					};
+					Wallet.request('sendTransfer', options).then((response) => {
+						if (response.status === 'success') {
+							resolve(response.result.txid);
+						} else {
+							if (response.error.code === RpcErrorCode.USER_REJECTION) {
+								reject(new UnexpectedTransactionError());
+							} else {
+								throw response.error;
+							}
+						}
+					});
+				} catch (error) {
+					console.error('Transaction has failed due to an unexpected error:', error);
+					reject(new UnexpectedTransactionError());
+				}
+			});
 		},
 		async disconnect() {
 			// Disconnect and reset store data

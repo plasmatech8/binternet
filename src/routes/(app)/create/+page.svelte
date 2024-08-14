@@ -11,8 +11,9 @@
 	import { onMount } from 'svelte';
 	import { orderHistoryStore } from '$lib/stores/history';
 	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
-	import { wallet } from '$lib/stores/wallet';
+	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
 	import { str2ab } from '$lib/utils/conversion';
+	import '$lib/toasts';
 
 	const modalStore = getModalStore();
 
@@ -197,9 +198,17 @@
 	function inscribeRouter() {
 		const routerText = yaml.dump(router);
 		const routerData = str2ab(routerText);
-		wallet.sendInscriptionTxn(routerData, 'application/x-yaml', (txnId) => {
-			alert('SENT ROUTER INSCRIPTION TXN');
-		});
+		wallet
+			.sendInscribeTxn({ inscriptionData: routerData, contentType: 'application/x-yaml' })
+			.then((txnId) => {
+				alert(`SENT ROUTER INSCRIPTION TXN: ${txnId}`);
+			})
+			.catch((error) => {
+				if (error instanceof UnexpectedTransactionError) {
+				}
+				if (error instanceof RejectedTransactionError) {
+				}
+			});
 	}
 
 	/*
