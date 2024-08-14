@@ -35,6 +35,14 @@
 		</a>
 		<a
 			class="btn btn-sm variant-ghost-surface"
+			href="/docs"
+			class:!variant-ghost-primary={$page.url.pathname === '/docs'}
+		>
+			Docs
+		</a>
+		<div class="opacity-50">·</div>
+		<a
+			class="btn btn-sm variant-ghost-surface"
 			href="/create"
 			class:!variant-ghost-primary={$page.url.pathname === '/create'}
 		>
@@ -46,13 +54,6 @@
 			class:!variant-ghost-primary={$page.url.pathname === '/sites'}
 		>
 			My Sites
-		</a>
-		<a
-			class="btn btn-sm variant-ghost-surface"
-			href="/docs"
-			class:!variant-ghost-primary={$page.url.pathname === '/docs'}
-		>
-			Docs
 		</a>
 	</div>
 	<svelte:fragment slot="trail">
