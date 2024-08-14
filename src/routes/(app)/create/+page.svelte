@@ -37,6 +37,10 @@
 		return insc.type === 'new' && !insc.new?.number && !insc.inscribing;
 	});
 
+	$: inscribingInscriptions = $inscriptions.filter((insc) => {
+		return insc.type === 'new' && !insc.new?.number && insc.inscribing;
+	});
+
 	async function onFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
 		const fileList = target.files as FileList;
@@ -382,6 +386,11 @@
 						<div class="text-warning-500">
 							<i class="fas fa-exclamation-triangle"></i>
 							Files still need to be inscribed
+						</div>
+					{:else if inscribingInscriptions.length > 0}
+						<div class="text-warning-500">
+							<i class="fas fa-exclamation-triangle"></i>
+							Inscriptions are waiting for confirmation
 						</div>
 					{/if}
 				</div>
