@@ -14,6 +14,7 @@
 	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
 	import { str2ab } from '$lib/utils/conversion';
 	import '$lib/toasts';
+	import { errorToast } from '$lib/toasts';
 
 	const modalStore = getModalStore();
 
@@ -148,6 +149,12 @@
 	}
 
 	async function inscribePendingFiles() {
+		// Check that wallet is connected
+		if (!$wallet) {
+			errorToast('Please connect you wallet first!');
+			return;
+		}
+		// Send batch inscription order transaction
 		modalStore.trigger({
 			component: 'inscribeFilesModal',
 			type: 'component',
@@ -200,6 +207,12 @@
 	}
 
 	function inscribeRouter() {
+		// Check that wallet is connected
+		if (!$wallet) {
+			errorToast('Please connect you wallet first!');
+			return;
+		}
+		// Send inscribe transaction
 		const routerText = yaml.dump(router);
 		const routerData = str2ab(routerText);
 		wallet

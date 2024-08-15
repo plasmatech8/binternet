@@ -108,6 +108,7 @@
 
 	async function fetchWalletInscriptions() {
 		inscriptionListResult = null;
+		if (!$wallet) return;
 		try {
 			const list = await fetchInscriptionList(searchAddress ?? '', {
 				offset,
