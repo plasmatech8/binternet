@@ -24,6 +24,19 @@
 		{ name: 'Payments', address: $wallet.payment, icon: '/bitcoin_icon.webp' },
 		{ name: 'Ordinals', address: $wallet.ordinals, icon: '/ordinals_icon.png' }
 	];
+
+	let wrongNetwork = false;
+
+	async function updateAddressBalanceAndNetworkInfo(paymentAddr: string) {
+		try {
+			return await getAddressBalance(paymentAddr);
+		} catch (error) {
+			if ((error as any)?.response?.data?.message === 'Address on invalid network') {
+				wrongNetwork = true;
+			}
+			throw error;
+		}
+	}
 </script>
 
 {#if $wallet}
@@ -32,7 +45,11 @@
 		class="btn variant-filled-secondary h-12 p-1 pl-4 gap-2"
 		use:popup={walletMenuPopupSettings}
 	>
-		<div>{truncateAddress($wallet.payment)}</div>
+		{#if wrongNetwork}
+			<div class="ml-1"><i class="fas fa-exclamation-triangle mr-1"></i> Wrong Network</div>
+		{:else}
+			<div>{truncateAddress($wallet.payment)}</div>
+		{/if}
 		<i class="fas fa-caret-down ml-2"></i>
 		<div class="!ml-0"><WalletAvatar address={$wallet.payment}></WalletAvatar></div>
 	</button>
@@ -41,7 +58,7 @@
 	<div data-popup={walletMenuPopupSettings.target} class="pr-3">
 		<div class="list-nav card shadow-xl rounded-3xl m-1 w-60">
 			<div class="p-4 pb-3 text-center">
-				{#await getAddressBalance($wallet.payment)}
+				{#await updateAddressBalanceAndNetworkInfo($wallet.payment)}
 					- BTC
 				{:then v}
 					<div>
@@ -55,11 +72,7 @@
 						{/if}
 					</div>
 				{:catch e}
-					{#if e?.response?.data === 'Address on invalid network'}
-						Invalid Network
-					{:else}
-						Error Reading Balance
-					{/if}
+					{e?.response?.data?.message ?? 'Error Reading Balance'}
 				{/await}
 			</div>
 			<hr />

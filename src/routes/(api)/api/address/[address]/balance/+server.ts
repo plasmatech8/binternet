@@ -18,7 +18,9 @@ export const GET: RequestHandler = async ({ params }) => {
 			headers: { 'cache-control': `max-age=${cacheTimeoutSeconds}` }
 		});
 	} catch (e) {
-		if (axios.isAxiosError(e) && e.response?.status === 400) error(400, e.response.data);
+		if (axios.isAxiosError(e) && e.response?.status === 400) {
+			error(400, 'Address on invalid network');
+		}
 		console.error('Failed to get address balance', e);
 		error(500, 'Failed to get address balance');
 	}
