@@ -4,8 +4,6 @@ import yaml from 'js-yaml';
 import { Ord } from './sources/ord';
 import { Mempool } from './sources/mempool';
 
-export interface Content {}
-
 export class BInternetServerClient {
 	/**
 	 * Parse a router inscription in form of ArrayBuffer.
@@ -55,18 +53,13 @@ export class BInternetServerClient {
 	 * Fetch inscription contents by inscription number.
 	 */
 	async getInscriptionContent(numberOrId: number | string) {
-		try {
-			const hiro = new Hiro();
-			return await hiro.fetchInscriptionContent(numberOrId);
-		} catch (error) {
-			console.warn('Failed to fetch inscription content via Hiro. Trying Ord.', error);
-			const ord = new Ord();
-			if (typeof numberOrId === 'number') {
-				const details = await this.getInscriptionDetails(numberOrId);
-				return await ord.fetchInscriptionContent(details.id);
-			} else {
-				return await ord.fetchInscriptionContent(numberOrId);
-			}
+		// TODO: storage/caching using cloudflare
+		const ord = new Ord();
+		if (typeof numberOrId === 'number') {
+			const details = await this.getInscriptionDetails(numberOrId);
+			return await ord.fetchInscriptionContent(details.id);
+		} else {
+			return await ord.fetchInscriptionContent(numberOrId);
 		}
 	}
 
@@ -74,14 +67,9 @@ export class BInternetServerClient {
 	 * Fetch inscription details by inscription number.
 	 */
 	async getInscriptionDetails(numberOrId: number | string) {
-		try {
-			const hiro = new Hiro();
-			return await hiro.fetchInscriptionDetails(numberOrId);
-		} catch (error) {
-			console.warn('Failed to fetch inscription details via Hiro. Trying Ord.', error);
-			const ord = new Ord();
-			return await ord.fetchInscriptionDetails(numberOrId);
-		}
+		// TODO: storage/caching using cloudflare
+		const ord = new Ord();
+		return await ord.fetchInscriptionDetails(numberOrId);
 	}
 
 	/**
