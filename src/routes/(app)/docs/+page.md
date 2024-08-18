@@ -68,7 +68,7 @@ URL paths use glob syntax.
 
 URL paths must start with `/`.
 
-If multiple paths match a URL, the router path with the highest specificity is used.
+If multiple router paths match a URL, the first matching path is used.
 
 #### Example
 

@@ -3,6 +3,7 @@ import { Hiro } from './sources/hiro';
 import yaml from 'js-yaml';
 import { Ord } from './sources/ord';
 import { Mempool } from './sources/mempool';
+import { minimatch } from 'minimatch';
 
 export class BInternetServerClient {
 	/**
@@ -33,9 +34,10 @@ export class BInternetServerClient {
 		const router = this.parseRouter(data);
 
 		// Get resource from route
-		const resourceInscriptionNumber = router.routes[path];
-		if (resourceInscriptionNumber === undefined) throw Error('Route not found');
-		const resourceRes = await this.getInscriptionContent(resourceInscriptionNumber);
+		const matchedRoutePath = Object.keys(router.routes).find((glob) => minimatch(path, glob));
+		if (matchedRoutePath === undefined) throw Error('Route not found');
+		const matchedRouteInscriptionNumber = router.routes[matchedRoutePath];
+		const resourceRes = await this.getInscriptionContent(matchedRouteInscriptionNumber);
 
 		// Return data
 		return resourceRes;
