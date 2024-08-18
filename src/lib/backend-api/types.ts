@@ -3,8 +3,7 @@ export interface InscriptionDetails {
 	id: string;
 	contentType: string;
 	createdAt: Date;
-	savedAt?: Date;
-	address?: string;
+	inscribedAt: Date;
 }
 
 export interface InscriptionContent {

@@ -1,4 +1,4 @@
-import type { InscriptionDetails } from '../types';
+import type { InscriptionContent, InscriptionDetails } from '../types';
 
 export interface CloudflareInscriptionDetails {
 	number: number;
@@ -20,14 +20,14 @@ export class Cloudflare {
 	/**
 	 * Store inscription details in the database.
 	 */
-	async storeInscriptionDetails(details: Omit<CloudflareInscriptionDetails, 'created_at'>) {
+	async storeInscriptionDetails(details: Omit<InscriptionDetails, 'createdAt'>): Promise<void> {
 		const insertStatement = `
 			INSERT INTO inscriptions (number, id, content_type, inscribed_at)
 			VALUES (?, ?, ?, ?)
 		`;
 		const res = await this.database
 			.prepare(insertStatement)
-			.bind(details.number, details.id, details.content_type, details.inscribed_at)
+			.bind(details.number, details.id, details.contentType, details.inscribedAt)
 			.run();
 		console.log(res);
 	}
@@ -35,7 +35,11 @@ export class Cloudflare {
 	/**
 	 * Store inscription content in storage.
 	 */
-	async storeInscriptionContent(number: number, content: ArrayBuffer, contentType: string) {
+	async storeInscriptionContent(
+		number: number,
+		content: ArrayBuffer,
+		contentType: string
+	): Promise<void> {
 		const cacheTimeoutSeconds = 86400 * 30; // cache in browser for 30 days
 		const key = number.toString();
 		const httpMetadata: R2HTTPMetadata = {
@@ -49,7 +53,7 @@ export class Cloudflare {
 	/**
 	 * Get inscription content by inscription number.
 	 */
-	async fetchInscriptionContent(number: number) {
+	async fetchInscriptionContent(number: number): Promise<InscriptionContent | null> {
 		// Fetch from R2
 		const res = await this.storage.get(number.toString());
 		if (!res) return null;
@@ -64,18 +68,28 @@ export class Cloudflare {
 		if (cacheControl) headers.set('cache-control', cacheControl);
 
 		// Return content
-		return { content: await res.arrayBuffer(), headers };
+		return { data: await res.arrayBuffer(), headers, contentType };
 	}
 
 	/**
 	 * Get inscription details by inscription number.
 	 */
-	async fetchInscriptionDetails(number: number) {
+	async fetchInscriptionDetails(numberOrId: number | string): Promise<InscriptionDetails | null> {
 		const selectStatement = `
-			SELECT * FROM inscriptions WHERE number = ?
+			SELECT * FROM inscriptions
+			WHERE ${typeof numberOrId === 'number' ? 'number' : 'id'} = ?
 		`;
-		const res = await this.database.prepare(selectStatement).bind(number).first();
-		console.log(res);
-		return res as InscriptionDetails | null;
+		const res = await this.database
+			.prepare(selectStatement)
+			.bind(numberOrId)
+			.first<CloudflareInscriptionDetails>();
+		if (!res) return null;
+		return {
+			number: res.number,
+			id: res.id,
+			contentType: res.content_type,
+			createdAt: new Date(res.created_at),
+			inscribedAt: new Date(res.inscribed_at)
+		};
 	}
 }
