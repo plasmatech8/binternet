@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { ab2str, routerInscription } from '../../__tests__/testUtils';
+import { routerInscription } from '../../__tests__/testUtils';
 import { Hiro } from '../hiro';
+import { ab2str } from '$lib/utils/conversion';
 
 const hiro = new Hiro();
 
