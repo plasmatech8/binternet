@@ -6,6 +6,6 @@ create table inscriptions(
     number integer not null primary key,
     id text not null,
     content_type text not null,
-    saved_at timestamptz default current_timestamp not null,
-    created_at timestamptz not null,
+    created_at timestamptz default current_timestamp not null,
+    inscribed_at timestamptz not null,
 );
