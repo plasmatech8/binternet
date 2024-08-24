@@ -1,11 +1,2 @@
 name = "binternet"
 pages_build_output_dir = ".svelte-kit/cloudflare"
-
-[[kv_namespaces]]
-binding = "KV"
-id = "20d35395-5eb2-4141-832f-32be35e4d116"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "INSCRIPTIONS_DB"
-database_id = "3d1de746-6ba0-4dba-ab29-a212fc8e32a6"
