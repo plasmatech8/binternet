@@ -46,8 +46,7 @@ export class Mempool {
 			baseURL: Mempool.apiUrl,
 			headers: {
 				'Content-Type': 'application/json'
-			},
-			adapter: 'fetch'
+			}
 		});
 	}
 
