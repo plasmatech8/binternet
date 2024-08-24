@@ -10,4 +10,4 @@ database_id = "674e2007-532d-4ad5-839a-a0ee1c7a794e"
 
 [[r2_buckets]]
 binding = 'BK'
-bucket_name = 'inscriptions_bk'
+bucket_name = 'inscriptions-bk'
