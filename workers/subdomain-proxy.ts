@@ -1,3 +1,9 @@
+/*
+ * Cloudflare Pages does not currently support wildcard subdomains,
+ * so a Cloudflare worker needs to be created to redirect requests from
+ * subdomains to the Pages site.
+ */
+
 /**
  * Extract inscription number (if exists) and network intended for this URL.
  */
@@ -20,10 +26,11 @@ export default {
 	async fetch(request: Request) {
 		// Extract the URL information
 		const url = new URL(request.url);
-		const { number } = extractNumberAndNetwork(url)!;
+		const { number, network } = extractNumberAndNetwork(url)!;
 
 		// Rewrite the URL to point to inscription contents
-		const targetUrl = `https://binternet.org/api/inscription/${number}`;
+		const networkSegment = network === 'mainnet' ? '' : `${network}.`;
+		const targetUrl = `https://${networkSegment}binternet.org/api/inscription/${number}`;
 
 		// Fetch the response from the target URL
 		const response = await fetch(targetUrl, {
