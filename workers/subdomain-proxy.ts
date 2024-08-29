@@ -26,6 +26,13 @@ export default {
 	async fetch(request: Request) {
 		// Extract the URL information
 		const url = new URL(request.url);
+
+		// If it is not a domain name, return placeholder content
+		if (url.host.endsWith('.workers.dev')) {
+			return new Response('Cannot access sites from worker domain');
+		}
+
+		// Extract network and inscription number (for a router) if exists
 		const { number, network } = extractNumberAndNetwork(url)!;
 
 		// Rewrite the URL to point to inscription contents
