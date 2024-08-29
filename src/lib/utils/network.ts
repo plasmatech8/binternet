@@ -7,7 +7,7 @@ export function extractNumberAndNetwork(url: URL): {
 	baseDomain: string;
 } {
 	const domain = url.host;
-	const regex = /^(\d+)?\.?(mainnet|testnet)?\.?(.+)$/;
+	const regex = /^(\d+)?\.?(mainnet|testnet|signet)?\.?(.+)$/;
 	const match = domain.match(regex);
 	if (!match) return { number: null, network: 'mainnet', baseDomain: '' };
 	const [, number, network, baseDomain] = match;
@@ -18,4 +18,4 @@ export function extractNumberAndNetwork(url: URL): {
 	};
 }
 
-type Network = 'mainnet' | 'testnet';
+type Network = 'mainnet' | 'testnet' | 'signet';

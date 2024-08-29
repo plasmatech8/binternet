@@ -3,7 +3,7 @@
  */
 function extractNumberAndNetwork(url: URL) {
 	const domain = url.host;
-	const regex = /^(\d+)?\.?(mainnet|testnet)?/;
+	const regex = /^(\d+)?\.?(mainnet|testnet|signet)?/;
 	const match = domain.match(regex);
 	if (!match) return null;
 	const [, number, network] = match;
