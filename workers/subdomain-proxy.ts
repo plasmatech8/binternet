@@ -34,10 +34,11 @@ export default {
 
 		// Extract network and inscription number (for a router) if exists
 		const { number, network } = extractNumberAndNetwork(url)!;
+		const path = url.pathname;
 
 		// Rewrite the URL to point to inscription contents
 		const networkSegment = network === 'mainnet' ? '' : `${network}.`;
-		const targetUrl = `https://${networkSegment}binternet.org/api/inscription/${number}`;
+		const targetUrl = `https://${networkSegment}binternet.org/api/site/${number}${path}`;
 
 		// Fetch the response from the target URL
 		const response = await fetch(targetUrl, {
