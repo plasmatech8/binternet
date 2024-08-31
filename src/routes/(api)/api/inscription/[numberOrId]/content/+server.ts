@@ -4,14 +4,14 @@ import axios from 'axios';
 
 const cacheTimeoutSeconds = 86400 * 30; // cache in browser for 30 days
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, platform }) => {
 	// Params
 	const rawNumberOrId = params.numberOrId;
 	if (!rawNumberOrId) error(400, 'Invalid inscription number or ID');
 	const numberOrId = rawNumberOrId.match(/^\d+$/) ? parseInt(rawNumberOrId) : rawNumberOrId;
 	if (typeof numberOrId === 'number' && isNaN(numberOrId)) error(400, 'Invalid inscription number');
 
-	const client = new BInternetServerClient();
+	const client = new BInternetServerClient(platform);
 
 	// Fetch and return inscription content
 	try {
