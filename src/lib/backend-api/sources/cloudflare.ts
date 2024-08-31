@@ -25,7 +25,7 @@ export class Cloudflare {
 
 		// Insert into D1
 		const insertStatement = `
-			INSERT INTO inscriptions_db (number, id, content_type, inscribed_at)
+			INSERT INTO inscriptions (number, id, content_type, inscribed_at)
 			VALUES (?, ?, ?, ?)
 		`;
 		const res = await this.database
@@ -85,7 +85,7 @@ export class Cloudflare {
 		console.log(`Fetching details for inscription: ${numberOrId}`);
 
 		const selectStatement = `
-			SELECT * FROM inscriptions_db
+			SELECT * FROM inscriptions
 			WHERE ${typeof numberOrId === 'number' ? 'number' : 'id'} = ?
 		`;
 		const res = await this.database
