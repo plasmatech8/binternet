@@ -4,7 +4,7 @@ import yaml from 'js-yaml';
 import { Ord } from './sources/ord';
 import { Mempool } from './sources/mempool';
 import { minimatch } from 'minimatch';
-import type { Cloudflare } from './sources/_cloudflare';
+import type { Cloudflare } from './sources/cloudflare';
 import type { InscriptionContent, InscriptionDetails } from './types';
 
 export class BInternetServerClient {
