@@ -28,11 +28,10 @@ export class Cloudflare {
 			INSERT INTO inscriptions (number, id, content_type, inscribed_at)
 			VALUES (?, ?, ?, ?)
 		`;
-		const res = await this.database
+		await this.database
 			.prepare(insertStatement)
 			.bind(details.number, details.id, details.contentType, details.inscribedAt.toISOString())
 			.run();
-		console.log(res);
 	}
 
 	/**
@@ -63,7 +62,10 @@ export class Cloudflare {
 
 		// Fetch from R2
 		const res = await this.storage.get(number.toString());
-		if (!res) return null;
+		if (!res) {
+			console.log(`Cloudflare - details does not exist for inscription: ${number}`);
+			return null;
+		}
 
 		// Set headers
 		const headers = new Headers();
@@ -93,7 +95,10 @@ export class Cloudflare {
 			.prepare(selectStatement)
 			.bind(numberOrId)
 			.first<CloudflareInscriptionDetails>();
-		if (!res) return null;
+		if (!res) {
+			console.log(`Cloudflare - content does not exist for inscription: ${numberOrId}`);
+			return null;
+		}
 		return {
 			number: res.number,
 			id: res.id,
