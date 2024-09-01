@@ -21,7 +21,7 @@ export class Cloudflare {
 	 * Store inscription details in the database.
 	 */
 	async storeInscriptionDetails(details: InscriptionDetails): Promise<void> {
-		console.log(`Storing details for inscription: ${details.number}`, details);
+		console.log(`Cloudflare - storing details for inscription: ${details.number}`, details);
 
 		// Insert into D1
 		const insertStatement = `
@@ -43,7 +43,7 @@ export class Cloudflare {
 		content: ArrayBuffer,
 		contentType: string
 	): Promise<void> {
-		console.log(`Storing content for inscription: ${number} (${contentType})`);
+		console.log(`Cloudflare - storing content for inscription: ${number} (${contentType})`);
 
 		// Upload to R2
 		const cacheTimeoutSeconds = 86400 * 30; // cache in browser for 30 days
@@ -59,7 +59,7 @@ export class Cloudflare {
 	 * Get inscription content by inscription number.
 	 */
 	async fetchInscriptionContent(number: number): Promise<InscriptionContent | null> {
-		console.log(`Fetching content for inscription: ${number}`);
+		console.log(`Cloudflare - fetching content for inscription: ${number}`);
 
 		// Fetch from R2
 		const res = await this.storage.get(number.toString());
@@ -82,8 +82,9 @@ export class Cloudflare {
 	 * Get inscription details by inscription number.
 	 */
 	async fetchInscriptionDetails(numberOrId: number | string): Promise<InscriptionDetails | null> {
-		console.log(`Fetching details for inscription: ${numberOrId}`);
+		console.log(`Cloudflare - fetching details for inscription: ${numberOrId}`);
 
+		// Fetch from D1
 		const selectStatement = `
 			SELECT * FROM inscriptions
 			WHERE ${typeof numberOrId === 'number' ? 'number' : 'id'} = ?

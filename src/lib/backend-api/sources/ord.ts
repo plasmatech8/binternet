@@ -48,6 +48,9 @@ export class Ord {
 	 * Get inscription details by its inscription number or ID.
 	 */
 	async fetchInscriptionDetails(number: number | string): Promise<InscriptionDetails> {
+		console.log(`Ord - fetching details for inscription: ${number}`);
+
+		// Fetch from Ord
 		const res = await this.client.get<OrdInscriptionDetails>(`/inscription/${number}`, {
 			headers: { Accept: 'application/json' }
 		});
@@ -59,6 +62,9 @@ export class Ord {
 	 * NOTE: Complex inscriptions will not work. Must be a simple file data inscription.
 	 */
 	async fetchInscriptionContent(id: string): Promise<InscriptionContent> {
+		console.log(`Ord - fetching content for inscription: ${id}`);
+
+		// Fetch from Ord
 		const res = await this.client.get<ArrayBuffer>(`/content/${id}`, {
 			responseType: 'arraybuffer'
 		});

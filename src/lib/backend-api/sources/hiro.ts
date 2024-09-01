@@ -71,6 +71,9 @@ export class Hiro {
 	 * Get the inscription details by inscription ID or number.
 	 */
 	async fetchInscriptionDetails(identifier: string | number): Promise<InscriptionDetails> {
+		console.log(`Hiro - fetching details for inscription: ${identifier}`);
+
+		// Fetch from Hiro
 		const res = await this.client.get<HiroInscriptionDetails>(`/inscriptions/${identifier}`);
 		return this.convertInscription(res.data);
 	}
@@ -80,6 +83,9 @@ export class Hiro {
 	 * NOTE: Complex inscriptions will not work. Must be a simple file data inscription.
 	 */
 	async fetchInscriptionContent(identifier: string | number): Promise<InscriptionContent> {
+		console.log(`Hiro - fetching content for inscription: ${identifier}`);
+
+		// Fetch from Hiro
 		const res = await this.client.get<ArrayBuffer>(`/inscriptions/${identifier}/content`, {
 			responseType: 'arraybuffer'
 		});
@@ -99,6 +105,9 @@ export class Hiro {
 			mimeType?: string;
 		}
 	): Promise<InscriptionDetailsList> {
+		console.log(`Hiro - fetching list of inscriptions by address: ${address}`);
+
+		// Fetch from Hiro
 		const res = await this.client.get<HiroInscriptionListResponse>(
 			`/inscriptions?address=${address}`,
 			{
