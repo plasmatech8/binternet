@@ -21,7 +21,7 @@ export class Cloudflare {
 	 * Store inscription details in the database.
 	 */
 	async storeInscriptionDetails(details: Omit<InscriptionDetails, 'createdAt'>): Promise<void> {
-		console.log(`Storing details for inscription: ${details.number}`);
+		console.log(`Storing details for inscription: ${details.number}`, details);
 
 		// Insert into D1
 		const insertStatement = `
