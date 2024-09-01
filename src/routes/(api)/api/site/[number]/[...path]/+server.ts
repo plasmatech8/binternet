@@ -3,13 +3,13 @@ import { error, type RequestHandler } from '@sveltejs/kit';
 
 const cacheTimeoutSeconds = 86400 * 30; // cache in browser for 30 days
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, platform }) => {
 	// Params
 	const number = parseInt(params.number ?? '');
 	const path = '/' + (params.path ?? '');
 	if (isNaN(number)) error(400, 'Invalid inscription number');
 
-	const client = new BInternetServerClient();
+	const client = new BInternetServerClient(platform);
 
 	// Fetch and return inscription content
 	try {

@@ -4,8 +4,18 @@ import yaml from 'js-yaml';
 import { Ord } from './sources/ord';
 import { Mempool } from './sources/mempool';
 import { minimatch } from 'minimatch';
+import { Cloudflare } from './sources/cloudflare';
+import type { InscriptionContent, InscriptionDetails } from './types';
 
 export class BInternetServerClient {
+	cloudflare: Cloudflare | undefined;
+	constructor(platform?: Readonly<App.Platform>) {
+		console.log(
+			`Initializing BInternetServerClient with ${platform ? '' : 'no '}Cloudflare platform.`
+		);
+		this.cloudflare = platform && new Cloudflare(platform);
+	}
+
 	/**
 	 * Parse a router inscription in form of ArrayBuffer.
 	 */
@@ -55,23 +65,50 @@ export class BInternetServerClient {
 	 * Fetch inscription contents by inscription number.
 	 */
 	async getInscriptionContent(numberOrId: number | string) {
-		// TODO: storage/caching using cloudflare
-		const ord = new Ord();
-		if (typeof numberOrId === 'number') {
-			const details = await this.getInscriptionDetails(numberOrId);
-			return await ord.fetchInscriptionContent(details.id);
-		} else {
-			return await ord.fetchInscriptionContent(numberOrId);
+		const details = await this.getInscriptionDetails(numberOrId);
+		let content: InscriptionContent | null = null;
+		// If possible, return the inscription content as found in Cloudflare
+		if (this.cloudflare) {
+			content = await this.cloudflare.fetchInscriptionContent(details.number);
 		}
+		// Fetch inscription content from Ord
+		if (!content) {
+			const ord = new Ord();
+			content = await ord.fetchInscriptionContent(details.id);
+			// Cache the inscription content in Cloudflare if possible
+			if (this.cloudflare) {
+				await this.cloudflare.storeInscriptionContent(
+					details.number,
+					content.data,
+					details.contentType
+				);
+			}
+		}
+		// Return the content data
+		return content;
 	}
 
 	/**
 	 * Fetch inscription details by inscription number.
 	 */
 	async getInscriptionDetails(numberOrId: number | string) {
-		// TODO: storage/caching using cloudflare
-		const ord = new Ord();
-		return await ord.fetchInscriptionDetails(numberOrId);
+		let details: InscriptionDetails | null = null;
+		// If possible, return the inscription details as found in Cloudflare
+		if (this.cloudflare) {
+			details = await this.cloudflare.fetchInscriptionDetails(numberOrId);
+		}
+		// Fetch inscription details from Ord
+		if (!details) {
+			const ord = new Ord();
+			details = await ord.fetchInscriptionDetails(numberOrId);
+			// Cache the inscription details in Cloudflare if possible
+			if (this.cloudflare) {
+				const { createdAt: _, ...restDetails } = details;
+				await this.cloudflare.storeInscriptionDetails(restDetails);
+			}
+		}
+		// Return the details data
+		return details;
 	}
 
 	/**
