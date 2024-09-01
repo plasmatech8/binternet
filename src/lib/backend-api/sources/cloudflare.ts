@@ -30,7 +30,7 @@ export class Cloudflare {
 		`;
 		const res = await this.database
 			.prepare(insertStatement)
-			.bind(details.number, details.id, details.contentType, details.inscribedAt)
+			.bind(details.number, details.id, details.contentType, details.inscribedAt.toISOString())
 			.run();
 		console.log(res);
 	}
