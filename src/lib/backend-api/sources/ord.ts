@@ -40,8 +40,7 @@ export class Ord {
 			id: insc.id,
 			number: insc.number,
 			contentType: insc.content_type,
-			createdAt: new Date(insc.timestamp * 1000),
-			address: insc.address
+			inscribedAt: new Date(insc.timestamp * 1000)
 		};
 	}
 

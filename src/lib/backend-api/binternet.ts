@@ -103,8 +103,7 @@ export class BInternetServerClient {
 			details = await ord.fetchInscriptionDetails(numberOrId);
 			// Cache the inscription details in Cloudflare if possible
 			if (this.cloudflare) {
-				const { createdAt: _, ...restDetails } = details;
-				await this.cloudflare.storeInscriptionDetails(restDetails);
+				await this.cloudflare.storeInscriptionDetails(details);
 			}
 		}
 		// Return the details data

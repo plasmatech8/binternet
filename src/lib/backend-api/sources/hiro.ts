@@ -63,8 +63,7 @@ export class Hiro {
 			id: insc.id,
 			number: insc.number,
 			contentType: insc.content_type,
-			createdAt: new Date(insc.timestamp),
-			address: insc.address
+			inscribedAt: new Date(insc.timestamp)
 		};
 	}
 

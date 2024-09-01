@@ -2,7 +2,6 @@ export interface InscriptionDetails {
 	number: number;
 	id: string;
 	contentType: string;
-	createdAt: Date;
 	inscribedAt: Date;
 }
 
