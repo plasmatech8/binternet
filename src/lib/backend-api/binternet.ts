@@ -6,6 +6,7 @@ import { Mempool } from './sources/mempool';
 import { minimatch } from 'minimatch';
 import { Cloudflare } from './sources/cloudflare';
 import type { InscriptionContent, InscriptionDetails } from './types';
+import { endpointsEnv } from '$lib/utils/apiEnv';
 
 export class BInternetServerClient {
 	cloudflare: Cloudflare | undefined;
@@ -68,7 +69,7 @@ export class BInternetServerClient {
 		const details = await this.getInscriptionDetails(numberOrId);
 		let content: InscriptionContent | null = null;
 		// If possible, return the inscription content as found in Cloudflare
-		if (this.cloudflare) {
+		if (this.cloudflare && endpointsEnv.cacheFetchEnabled) {
 			content = await this.cloudflare.fetchInscriptionContent(details.number);
 		}
 		// Fetch inscription content from Ord
@@ -76,7 +77,7 @@ export class BInternetServerClient {
 			const ord = new Ord();
 			content = await ord.fetchInscriptionContent(details.id);
 			// Cache the inscription content in Cloudflare if possible
-			if (this.cloudflare) {
+			if (this.cloudflare && endpointsEnv.cacheStoreEnabled) {
 				await this.cloudflare.storeInscriptionContent(
 					details.number,
 					content.data,
@@ -94,7 +95,7 @@ export class BInternetServerClient {
 	async getInscriptionDetails(numberOrId: number | string) {
 		let details: InscriptionDetails | null = null;
 		// If possible, return the inscription details as found in Cloudflare
-		if (this.cloudflare) {
+		if (this.cloudflare && endpointsEnv.cacheFetchEnabled) {
 			details = await this.cloudflare.fetchInscriptionDetails(numberOrId);
 		}
 		// Fetch inscription details from Ord
@@ -102,7 +103,7 @@ export class BInternetServerClient {
 			const ord = new Ord();
 			details = await ord.fetchInscriptionDetails(numberOrId);
 			// Cache the inscription details in Cloudflare if possible
-			if (this.cloudflare) {
+			if (this.cloudflare && endpointsEnv.cacheStoreEnabled) {
 				await this.cloudflare.storeInscriptionDetails(details);
 			}
 		}
