@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 // Validate JSON environment variables
 const urlSchema = z.string().url();
-const booleanSchema = z.boolean();
+const booleanSchema = z.coerce.boolean();
 
 // Return environment variables
 export const endpointsEnv = {
