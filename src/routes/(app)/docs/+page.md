@@ -140,7 +140,7 @@ See examples in [on GitHub](https://github.com/plasmatech8/binternet/tree/main/e
 
 3. **My inscription is not working**
     - Complex inscriptions using advanced features like relationships with other inscriptions are not currently supported as they require additional JavaScript to render. (parents inscriptions, recursion, etc)
-    - Check if an inscription works by opening the link: e.g., <a href="/api/inscription/7850607/content" target="_blank">https://binternet.org/api/inscription/7850607/content</a>
+    - Check if an inscription works by opening the link: e.g., <a href="/api/inscription/7850607/content" target="_blank">/api/inscription/7850607/content</a>
 
 ### FAQs
 
