@@ -45,11 +45,13 @@ interface Site {
 }
 
 interface WalletSites {
-	results: {
-		router: Router;
-		details: InscriptionDetails;
-	}[];
+	results: WalletSitesResult[];
 	limit: number;
 	offset: number;
 	total: number;
+}
+
+interface WalletSitesResult {
+	router: Router;
+	details: InscriptionDetails;
 }

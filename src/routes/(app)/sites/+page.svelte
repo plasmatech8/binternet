@@ -1,20 +1,31 @@
 <script lang="ts">
 	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
 	import { wallet } from '$lib/stores/wallet';
-	import { Paginator, ProgressRadial } from '@skeletonlabs/skeleton';
+	import { getToastStore, Paginator, ProgressRadial } from '@skeletonlabs/skeleton';
 	import SiteCard from '../../../lib/components/cards/SiteCard.svelte';
 	import WalletButton from '$lib/components/wallet/WalletButton.svelte';
 	import { fetchSiteList } from '$lib/api';
 	import { PUBLIC_BITCOIN_NETWORK } from '$env/static/public';
+	import { siteHistoryStore } from '$lib/stores/history';
+
+	const toastStore = getToastStore();
 
 	let offset = 0;
 	let size = 0;
 	let limit = 10;
 
 	async function fetchInscriptionList(address: string, offset: number, limit: number) {
-		const data = await fetchSiteList(address, { offset, limit });
-		size = data.total;
-		return data.results;
+		if (PUBLIC_BITCOIN_NETWORK === 'mainnet') {
+			const data = await fetchSiteList(address, { offset, limit });
+			size = data.total;
+			return data.results;
+		} else {
+			toastStore.trigger({
+				message: `<i class="fas fa-exclamation-triangle"></i> Fetching sites not currently supported for ${PUBLIC_BITCOIN_NETWORK}. Falling back to sites found in local history.`,
+				background: 'variant-filled-warning'
+			});
+			return $siteHistoryStore;
+		}
 	}
 
 	function onPageChange(e: CustomEvent) {
@@ -33,41 +44,39 @@
 	<h1 class="h1 mb-10">My Sites</h1>
 
 	{#if $wallet}
-		{#if PUBLIC_BITCOIN_NETWORK === 'mainnet'}
-			{#await fetchInscriptionList($wallet.ordinals, offset, limit)}
-				<div class="min-h-72 h-[50vh] grid place-items-center">
-					<ProgressRadial />
-				</div>
-			{:then sites}
-				<div class="flex flex-wrap gap-5 mb-10">
-					{#each sites as site}
-						<SiteCard
-							site={{
-								number: site.details.number,
-								router: site.router,
-								createdAt: site.details.createdAt
-							}}
-						></SiteCard>
-					{/each}
-				</div>
-
-				<div class="flex justify-center">
-					<Paginator
-						settings={{
-							page: offset / limit,
-							limit,
-							size,
-							amounts: []
+		{#await fetchInscriptionList($wallet.ordinals, offset, limit)}
+			<div class="min-h-72 h-[50vh] grid place-items-center">
+				<ProgressRadial />
+			</div>
+		{:then sites}
+			<div class="flex flex-wrap gap-5 mb-10">
+				{#each sites as site}
+					<SiteCard
+						site={{
+							number: site.details.number,
+							router: site.router,
+							createdAt: site.details.createdAt
 						}}
-						on:page={onPageChange}
-					></Paginator>
-				</div>
-			{:catch e}
-				{e.message}
-			{/await}
-		{:else}
-			<div>Listing sites is not currently available for {PUBLIC_BITCOIN_NETWORK}.</div>
-		{/if}
+					></SiteCard>
+				{:else}
+					<div class="grid p-5 place-items-center w-full opacity-50">No Sites</div>
+				{/each}
+			</div>
+
+			<div class="flex justify-center">
+				<Paginator
+					settings={{
+						page: offset / limit,
+						limit,
+						size,
+						amounts: []
+					}}
+					on:page={onPageChange}
+				></Paginator>
+			</div>
+		{:catch e}
+			{e.message}
+		{/await}
 	{:else}
 		<div class="flex flex-col justify-center items-center gap-14 h-[calc(70vh-152px)] min-h-72">
 			<div class="opacity-50">

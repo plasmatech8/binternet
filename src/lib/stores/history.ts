@@ -5,3 +5,5 @@ export const orderHistoryStore = localStorageStore<OrdinalsBotOrderStatusRespons
 	'orderHistory',
 	[]
 );
+
+export const siteHistoryStore = localStorageStore<WalletSitesResult[]>('siteHistory', []);

@@ -10,6 +10,7 @@
 		PUBLIC_TRANSACTION_LINK_URL
 	} from '$env/static/public';
 	import { getTitleFromHTML } from '$lib/utils/htmlUtils';
+	import { siteHistoryStore } from '$lib/stores/history';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -46,6 +47,8 @@
 						router,
 						id: res.data.id
 					};
+					// Add to history
+					$siteHistoryStore = [...$siteHistoryStore, { details: confirmedSiteDetails, router }];
 					// Send request to save site to database
 					const baseRouteInscNumber = router.routes['/'];
 					let title = `Site ${confirmedSiteDetails.number}`;
