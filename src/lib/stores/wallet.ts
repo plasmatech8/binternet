@@ -119,7 +119,7 @@ function createWalletStore() {
 							resolve(response.result.txid);
 						} else {
 							if (response.error.code === RpcErrorCode.USER_REJECTION) {
-								reject(new UnexpectedTransactionError());
+								reject(new RejectedTransactionError());
 							} else {
 								throw response.error;
 							}

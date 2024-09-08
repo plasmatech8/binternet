@@ -210,6 +210,7 @@
 				});
 			})
 			.catch((error) => {
+				console.error('Error with wallet:', error);
 				toastStore.trigger({
 					message: error.message,
 					background: 'variant-filled-error'
