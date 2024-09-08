@@ -18,7 +18,6 @@
 	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
 	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
 	import { str2ab } from '$lib/utils/conversion';
-	import '$lib/toasts';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -221,6 +220,7 @@
 				background: 'variant-filled-error'
 			});
 		}
+
 		// Send inscribe transaction
 		const routerText = yaml.dump(router);
 		const routerData = str2ab(routerText);
@@ -228,6 +228,15 @@
 			.sendInscribeTxn({ inscriptionData: routerData, contentType: 'application/x-yaml' })
 			.then((txnId) => {
 				alert(`SENT ROUTER INSCRIPTION TXN: ${txnId}`);
+				// Open waiting for router inscription modal
+				modalStore.trigger({
+					component: 'inscribeRouterModal',
+					type: 'component',
+					meta: { router, txnId }
+				});
+				// Reset form
+				$inscriptions = [];
+				router = null;
 			})
 			.catch((error) => {
 				if (error instanceof UnexpectedTransactionError) {
@@ -244,7 +253,6 @@
 	function openConfirmResetDialog() {
 		modalStore.trigger({
 			type: 'confirm',
-
 			title: 'Reset Form Data?',
 			body: 'Are you sure you wish to proceed?',
 			response: (r: boolean) => {
@@ -397,26 +405,6 @@
 		<!-- Heading -->
 		<div class="flex flex-col lg:flex-row md:justify-between items-center mb-10">
 			<h2 class="h2 mb-5 lg:mb-0">Create Router</h2>
-			<div class="flex gap-5">
-				<div class="">
-					{#if $inscriptions.length == 0}
-						<div class="opacity-50">
-							<i class="fas fa-exclamation-triangle"></i>
-							<span> Must define at least one route </span>
-						</div>
-					{:else if pendingInscriptions.length > 0}
-						<div class="text-warning-500">
-							<i class="fas fa-exclamation-triangle"></i>
-							Files still need to be inscribed
-						</div>
-					{:else if inscribingInscriptions.length > 0}
-						<div class="text-warning-500">
-							<i class="fas fa-exclamation-triangle"></i>
-							Inscriptions are waiting for confirmation
-						</div>
-					{/if}
-				</div>
-			</div>
 		</div>
 
 		<!-- Text -->
@@ -435,8 +423,29 @@
 				</div>
 			{/key}
 		{:else}
-			<div class="h-40 grid place-items-center gap-3 opacity-50">
-				<i class="fas fa-signs-post text-7xl"></i>
+			<div class="h-40 grid place-items-center gap-1">
+				<i class="fas fa-signs-post text-7xl opacity-50"></i>
+
+				<div class="flex gap-5">
+					<div class="">
+						{#if $inscriptions.length == 0}
+							<div class="opacity-60">
+								<i class="fas fa-exclamation-triangle"></i>
+								<span> Must define at least one route </span>
+							</div>
+						{:else if pendingInscriptions.length > 0}
+							<div class="text-warning-500 animate-bounce opacity-80">
+								<i class="fas fa-exclamation-triangle"></i>
+								Files still need to be inscribed
+							</div>
+						{:else if inscribingInscriptions.length > 0}
+							<div class="text-warning-500 animate-bounce opacity-80">
+								<i class="fas fa-hourglass-half"></i>
+								Inscriptions are waiting for confirmation
+							</div>
+						{/if}
+					</div>
+				</div>
 			</div>
 		{/if}
 

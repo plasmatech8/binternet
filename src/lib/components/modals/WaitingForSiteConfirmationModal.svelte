@@ -1,0 +1,119 @@
+<script lang="ts">
+	import type { InscriptionDetails } from '$lib/backend-api/types';
+	import { blockStore } from '$lib/stores/blocks';
+	import { getModalStore, getToastStore, ProgressRadial } from '@skeletonlabs/skeleton';
+	import axios from 'axios';
+	import SiteRouterCodeBlock from '../code/SiteRouterCodeBlock.svelte';
+	import {
+		PUBLIC_BITCOIN_NETWORK,
+		PUBLIC_INSCRIPTION_LINK_URL,
+		PUBLIC_TRANSACTION_LINK_URL
+	} from '$env/static/public';
+
+	const modalStore = getModalStore();
+	const toastStore = getToastStore();
+
+	export const router: Router = $modalStore[0].meta.router;
+	export const txnId: string = $modalStore[0].meta.txnId;
+
+	/*
+	 * Waiting for confirmation
+	 */
+	$: routerInscriptionId = txnId + 'i0';
+	let confirmedSiteDetails: (Site & { id: string }) | null = null;
+	$: siteLinkUrl = confirmedSiteDetails
+		? `${location.protocol}//${confirmedSiteDetails.number}.${PUBLIC_BITCOIN_NETWORK}.${location.host}`
+		: null;
+
+	blockStore.subscribe(() => {
+		setTimeout(async () => {
+			try {
+				const res = await axios.get<InscriptionDetails>(
+					`/api/inscription/${routerInscriptionId}/details`
+				);
+				if (res.status === 200 && !confirmedSiteDetails) {
+					console.log(`Router inscription ${routerInscriptionId} is now confirmed!`);
+					// Show success toast
+					toastStore.trigger({
+						message: 'Router inscription is now confirmed!',
+						background: 'variant-filled-success'
+					});
+					// Add confirmed site details
+					confirmedSiteDetails = {
+						number: res.data.number,
+						createdAt: new Date(res.data.inscribedAt).toISOString(),
+						router,
+						id: res.data.id
+					};
+				}
+			} catch (_) {}
+		}, 1000);
+	});
+
+	function truncateTxnId(txnId: string) {
+		return `${txnId.slice(0, 10)}...${txnId.slice(-10)}`;
+	}
+</script>
+
+<div class="card px-10 py-6 w-modal">
+	<div class="flex flex-col gap-6">
+		<header class="text-3xl">Site Router Inscription</header>
+		{#if confirmedSiteDetails}
+			<div>Your site is now inscribed and visible!</div>
+			<SiteRouterCodeBlock site={confirmedSiteDetails}></SiteRouterCodeBlock>
+			<table>
+				<tr>
+					<td>Transaction ID:</td>
+					<td>
+						<a
+							href={`${PUBLIC_TRANSACTION_LINK_URL}/${txnId}`}
+							class="anchor no-underline hover:underline"
+							target="_blank"
+						>
+							{truncateTxnId(txnId)}
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td>Inscription number:</td>
+					<td>
+						<a
+							href={`${PUBLIC_INSCRIPTION_LINK_URL}/${confirmedSiteDetails.number}`}
+							class="anchor no-underline hover:underline"
+							target="_blank"
+						>
+							{confirmedSiteDetails.number}
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td>Site Link URL:</td>
+					<td>
+						<a href={siteLinkUrl} class="anchor no-underline hover:underline" target="_blank">
+							{siteLinkUrl}
+						</a>
+					</td>
+				</tr>
+			</table>
+			<div class="flex justify-end">
+				<button type="button" class="btn variant-filled">Back</button>
+			</div>
+		{:else}
+			<div class="grid place-items-center gap-4 p-5">
+				<ProgressRadial />
+				<div>Waiting for router inscription confirmation...</div>
+				<div class="opacity-50 truncate max-w-64">
+					TXN:
+					<a
+						href={`${PUBLIC_TRANSACTION_LINK_URL}/${txnId}`}
+						class="hover:underline"
+						target="_blank"
+					>
+						{truncateTxnId(txnId)}
+						<i class="fas fa-arrow-up-right-from-square"></i>
+					</a>
+				</div>
+			</div>
+		{/if}
+	</div>
+</div>

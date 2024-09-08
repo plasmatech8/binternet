@@ -31,11 +31,13 @@
 	import SelectInscriptionModal from '$lib/components/modals/SelectInscriptionModal.svelte';
 	import InscribeFilesModal from '$lib/components/modals/InscribeFilesModal.svelte';
 	import HistoryModal from '$lib/components/modals/HistoryModal.svelte';
+	import WaitingForSiteConfirmationModal from '$lib/components/modals/WaitingForSiteConfirmationModal.svelte';
 	const modalRegistry: Record<string, ModalComponent> = {
 		siteRouterModal: { ref: SiteRouterModal },
 		selectInscriptionModal: { ref: SelectInscriptionModal },
 		inscribeFilesModal: { ref: InscribeFilesModal },
-		historyModal: { ref: HistoryModal }
+		historyModal: { ref: HistoryModal },
+		waitingForSiteConfirmationModal: { ref: WaitingForSiteConfirmationModal }
 	};
 	initializeStores();
 </script>
