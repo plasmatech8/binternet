@@ -221,6 +221,20 @@
 			});
 		}
 
+		// // Testing:
+		// modalStore.trigger({
+		// 	component: 'waitingForSiteConfirmationModal',
+		// 	type: 'component',
+		// 	meta: { router, txnId: '4439ef741b27c4788eed1f7bebde1d253a5f1c9bee3ef63a1ae4e94604720192' },
+		// 	response: (r) => {
+		// 		if (r) {
+		// 			$inscriptions = [];
+		// 			router = null;
+		// 		}
+		// 	}
+		// });
+		// return;
+
 		// Send inscribe transaction
 		const routerText = yaml.dump(router);
 		const routerData = str2ab(routerText);

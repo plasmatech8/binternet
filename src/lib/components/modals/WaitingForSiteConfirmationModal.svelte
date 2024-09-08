@@ -9,6 +9,7 @@
 		PUBLIC_INSCRIPTION_LINK_URL,
 		PUBLIC_TRANSACTION_LINK_URL
 	} from '$env/static/public';
+	import { getTitleFromHTML } from '$lib/utils/htmlUtils';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -45,6 +46,26 @@
 						router,
 						id: res.data.id
 					};
+					// Send request to save site to database
+					const baseRouteInscNumber = router.routes['/'];
+					let title = `Site ${confirmedSiteDetails.number}`;
+					if (baseRouteInscNumber) {
+						try {
+							const baseRouteContentRes = await axios.get(
+								`/api/inscription/${baseRouteInscNumber}/content`
+							);
+							const baseRouteContentData = baseRouteContentRes.data;
+							title = getTitleFromHTML(baseRouteContentData);
+						} catch (err) {
+							console.log('Failed to get site title:', err);
+							title = `Site ${confirmedSiteDetails.number}*`;
+						}
+					}
+					console.log('Site title is:', title);
+					axios.post(`/api/site`, {
+						number: res.data.number,
+						title: title
+					});
 				}
 			} catch (_) {}
 		}, 1000);
@@ -112,7 +133,7 @@
 			<div class="grid place-items-center gap-4 p-5">
 				<ProgressRadial />
 				<div>Waiting for router inscription confirmation...</div>
-				<div class="opacity-50 truncate max-w-64">
+				<div class="opacity-50 max-w-64 text-nowrap">
 					TXN:
 					<a
 						href={`${PUBLIC_TRANSACTION_LINK_URL}/${txnId}`}
