@@ -16,7 +16,7 @@
 		Welcome to the <span class="text-binternet">Bitcoin Internet</span>
 	</h1>
 
-	<div class="h3 text-center my-5">Inscribe a website onto the Bitcoin blockchain</div>
+	<div class="h3 text-center my-5">Inscribe a static website onto the Bitcoin blockchain</div>
 
 	<div class="flex gap-3 justify-center mb-10">
 		<a href="/create" class="btn variant-filled-primary">Create</a>
