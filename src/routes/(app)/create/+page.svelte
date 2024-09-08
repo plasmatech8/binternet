@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { FileButton, getModalStore, localStorageStore } from '@skeletonlabs/skeleton';
+	import {
+		FileButton,
+		getModalStore,
+		getToastStore,
+		localStorageStore
+	} from '@skeletonlabs/skeleton';
 	import InscriptionCard from '../../../lib/components/cards/InscriptionCard.svelte';
 	import { slide } from 'svelte/transition';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
@@ -14,9 +19,9 @@
 	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
 	import { str2ab } from '$lib/utils/conversion';
 	import '$lib/toasts';
-	import { errorToast } from '$lib/toasts';
 
 	const modalStore = getModalStore();
+	const toastStore = getToastStore();
 
 	/*
 	 * Inscribe Files & Define Routes
@@ -151,8 +156,10 @@
 	async function inscribePendingFiles() {
 		// Check that wallet is connected
 		if (!$wallet) {
-			errorToast('Please connect you wallet first!');
-			return;
+			return toastStore.trigger({
+				message: 'Please connect you wallet first!',
+				background: 'variant-filled-error'
+			});
 		}
 		// Send batch inscription order transaction
 		modalStore.trigger({
@@ -209,8 +216,10 @@
 	function inscribeRouter() {
 		// Check that wallet is connected
 		if (!$wallet) {
-			errorToast('Please connect you wallet first!');
-			return;
+			return toastStore.trigger({
+				message: 'Please connect you wallet first!',
+				background: 'variant-filled-error'
+			});
 		}
 		// Send inscribe transaction
 		const routerText = yaml.dump(router);

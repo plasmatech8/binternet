@@ -6,8 +6,7 @@
 		OrdinalsBotOrderStatusResponse
 	} from '$lib/backend-api/sources/ordinalsBot';
 	import { bitcoinPriceStore, recommendedFeeStore } from '$lib/stores/bitcoin';
-	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
-	import { errorToast, successToast } from '$lib/toasts';
+	import { wallet } from '$lib/stores/wallet';
 	import {
 		getModalStore,
 		getToastStore,
@@ -201,7 +200,9 @@
 				$modalStore[0].response?.(orderStatus);
 				modalStore.close();
 				paymentLoading = false;
-				successToast('Order payment sent!', {
+				toastStore.trigger({
+					message: 'Order payment sent!',
+					background: 'variant-filled-success',
 					action: {
 						label: '<i class="fas fa-up-right-from-square"></i>',
 						response: () => window.open(`${PUBLIC_TRANSACTION_LINK_URL}/${txnId}`, '_newtab')
@@ -209,7 +210,10 @@
 				});
 			})
 			.catch((error) => {
-				errorToast(error.message);
+				toastStore.trigger({
+					message: error.message,
+					background: 'variant-filled-error'
+				});
 			})
 			.finally(() => {
 				paymentLoading = false;
