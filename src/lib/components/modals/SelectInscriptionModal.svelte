@@ -223,7 +223,7 @@
 												{insc.number}
 											</div>
 											<div class="opacity-50">
-												{new Date(insc.createdAt).toLocaleDateString()}
+												{new Date(insc.inscribedAt).toLocaleDateString()}
 											</div>
 										</div>
 										<div class="opacity-50">{insc.contentType}</div>
