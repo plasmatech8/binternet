@@ -354,7 +354,7 @@
 						{#if $bitcoinPriceStore && item.amount}
 							<div>{item.amount} sats</div>
 							<div class="opacity-50 min-w-16">
-								~${(item.amount * 10 ** -9 * $bitcoinPriceStore.USD).toFixed(2)}
+								~${(item.amount * 10e-9 * $bitcoinPriceStore.USD).toFixed(2)}
 							</div>
 						{:else}
 							<ProgressRadial width="w-4"></ProgressRadial>
