@@ -141,4 +141,15 @@ export class BInternetServerClient {
 		const mempool = new Mempool();
 		return await mempool.fetchBitcoinPrice();
 	}
+
+	/**
+	 * Save site to database.
+	 */
+	async saveSite(number: number, title: string) {
+		if (this.cloudflare) {
+			await this.cloudflare.storeSiteDetails(number, title);
+		} else {
+			console.error('Cannot save site because Cloudflare platform not configured.');
+		}
+	}
 }

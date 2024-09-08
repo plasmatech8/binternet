@@ -55,6 +55,20 @@ export class Cloudflare {
 	}
 
 	/**
+	 * Store site details in the database.
+	 */
+	async storeSiteDetails(number: number, title: string): Promise<void> {
+		console.log(`Cloudflare - storing details for site: ${number} - ${title}`);
+
+		// Insert into D1
+		const insertStatement = `
+				INSERT INTO sites (number, title)
+				VALUES (?, ?)
+			`;
+		await this.database.prepare(insertStatement).bind(number, title).run();
+	}
+
+	/**
 	 * Get inscription content by inscription number.
 	 */
 	async fetchInscriptionContent(number: number): Promise<InscriptionContent | null> {
