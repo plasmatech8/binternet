@@ -227,16 +227,19 @@
 		wallet
 			.sendInscribeTxn({ inscriptionData: routerData, contentType: 'application/x-yaml' })
 			.then((txnId) => {
-				alert(`SENT ROUTER INSCRIPTION TXN: ${txnId}`);
+				console.log(`SENT ROUTER INSCRIPTION TXN: ${txnId}`);
 				// Open waiting for router inscription modal
 				modalStore.trigger({
-					component: 'inscribeRouterModal',
+					component: 'waitingForSiteConfirmationModal',
 					type: 'component',
-					meta: { router, txnId }
+					meta: { router, txnId },
+					response: (r) => {
+						if (r) {
+							$inscriptions = [];
+							router = null;
+						}
+					}
 				});
-				// Reset form
-				$inscriptions = [];
-				router = null;
 			})
 			.catch((error) => {
 				if (error instanceof UnexpectedTransactionError) {

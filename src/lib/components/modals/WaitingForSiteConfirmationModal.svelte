@@ -53,6 +53,11 @@
 	function truncateTxnId(txnId: string) {
 		return `${txnId.slice(0, 10)}...${txnId.slice(-10)}`;
 	}
+
+	function closeModal(resetForm: boolean) {
+		$modalStore[0].response?.(resetForm);
+		modalStore.close();
+	}
 </script>
 
 <div class="card px-10 py-6 w-modal">
@@ -95,8 +100,13 @@
 					</td>
 				</tr>
 			</table>
-			<div class="flex justify-end">
-				<button type="button" class="btn variant-filled">Back</button>
+			<div class="flex justify-end gap-3">
+				<button type="button" class="btn variant-filled" on:click={() => closeModal(true)}>
+					Back & Reset Form
+				</button>
+				<button type="button" class="btn variant-filled" on:click={() => closeModal(false)}>
+					Back
+				</button>
 			</div>
 		{:else}
 			<div class="grid place-items-center gap-4 p-5">
