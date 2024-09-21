@@ -18,6 +18,8 @@
 	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
 	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
 	import { str2ab } from '$lib/utils/conversion';
+	import clone from 'lodash-es/clone';
+	import { flip } from 'svelte/animate';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -28,11 +30,6 @@
 
 	const inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', []);
 	let formEl: HTMLFormElement;
-
-	$: lastId = $inscriptions.reduce(
-		(highestId, insc) => (highestId < insc.id ? insc.id : highestId),
-		0
-	);
 
 	$: allPathsUnique =
 		$inscriptions.map((insc) => insc.path).length ===
@@ -51,9 +48,11 @@
 		const fileList = target.files as FileList;
 
 		// Add inscriptions to list
-		for (const file of fileList) {
+		for (let i = 0; i < fileList.length; i++) {
+			const file = fileList[i];
+			const uuid = crypto.randomUUID();
 			const newInscription: InscriptionFile = {
-				id: lastId + 1,
+				id: uuid,
 				type: 'new',
 				path: '/' + (file.webkitRelativePath !== '' ? file.webkitRelativePath : file.name),
 				new: {
@@ -62,7 +61,7 @@
 					size: file.size,
 					data: await file.arrayBuffer(),
 					contentType: file.type,
-					orderFilename: crypto.randomUUID() + `_(${lastId + 1})_${file.name}`
+					orderFilename: `${uuid}_${file.name}`
 				}
 			};
 			$inscriptions = [newInscription, ...$inscriptions];
@@ -85,7 +84,7 @@
 
 					// Add inscription to list
 					const newInscription: InscriptionFile = {
-						id: lastId + 1,
+						id: crypto.randomUUID(),
 						type: 'existing',
 						path: path,
 						existing: r
@@ -94,6 +93,22 @@
 				}
 			}
 		});
+	}
+
+	function onMoveUp(index: number) {
+		const current = clone($inscriptions[index]);
+		const other = clone($inscriptions[index - 1]);
+		if (!current || !other) return;
+		$inscriptions[index] = other;
+		$inscriptions[index - 1] = current;
+	}
+
+	function onMoveDown(index: number) {
+		const current = clone($inscriptions[index]);
+		const other = clone($inscriptions[index + 1]);
+		if (!current || !other) return;
+		$inscriptions[index] = other;
+		$inscriptions[index + 1] = current;
 	}
 
 	function onDelete(inscription: InscriptionFile) {
@@ -382,13 +397,18 @@
 
 		<!-- Inscription Files -->
 		<div class="flex flex-col gap-4">
-			{#each $inscriptions as inscription (inscription.id)}
-				<div transition:slide>
-					<InscriptionCard
-						bind:inscription
-						otherInscriptions={$inscriptions.filter((insc) => insc.id !== inscription.id)}
-						on:delete={() => onDelete(inscription)}
-					></InscriptionCard>
+			{#each $inscriptions as inscription, i (inscription.id)}
+				<div transition:slide animate:flip={{ duration: 500 }}>
+					{#key i}
+						<InscriptionCard
+							index={i}
+							bind:inscription
+							otherInscriptions={$inscriptions.filter((insc) => insc.id !== inscription.id)}
+							on:delete={() => onDelete(inscription)}
+							on:moveup={() => onMoveUp(i)}
+							on:movedown={() => onMoveDown(i)}
+						></InscriptionCard>
+					{/key}
 				</div>
 			{:else}
 				<div class="h-40 grid place-items-center gap-3 opacity-50">

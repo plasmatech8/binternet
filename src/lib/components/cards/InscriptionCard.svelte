@@ -13,6 +13,7 @@
 
 	export let inscription: InscriptionFile;
 	export let otherInscriptions: InscriptionFile[];
+	export let index: number;
 
 	let valid = true;
 	let inputEl: HTMLInputElement;
@@ -111,6 +112,14 @@
 		});
 	}
 
+	function onMoveUp() {
+		dispatch('moveup');
+	}
+
+	function onMoveDown() {
+		dispatch('movedown');
+	}
+
 	function onDelete() {
 		dispatch('delete');
 	}
@@ -157,7 +166,7 @@
 <div class="flex gap-2 items-center group/card">
 	<!-- ID number -->
 	<div class="opacity-60 group-hover/card:opacity-100 w-5">
-		{inscription.id}
+		{index + 1}
 	</div>
 	<!-- Content -->
 	<div class="w-full flex flex-col lg:flex-row gap-2 items-center">
@@ -309,9 +318,13 @@
 	</div>
 
 	<!-- Delete button -->
-	<div>
+	<div class="flex gap-1 items-center">
+		<div class="btn-group-vertical hover:variant-ghost">
+			<button type="button" on:click={onMoveUp}><i class="fas fa-caret-up"></i></button>
+			<button type="button" on:click={onMoveDown}><i class="fas fa-caret-down"></i></button>
+		</div>
 		<button
-			class="btn-icon btn-icon-sm hover:variant-ghost opacity-60 group-hover/card:opacity-100"
+			class="btn-icon btn-icon-sm hover:variant-ghost opacity-60 group-hover/card:opacity-100 h-fit"
 			type="button"
 			on:click={onDelete}
 		>
@@ -329,7 +342,7 @@
 		<!-- New inscription file information -->
 		{#if inscription.new}
 			<div
-				title="{inscription.new.filename} ({prettyBytes(inscription.new.size)})"
+				title="{inscription.new.filename} ({prettyBytes(inscription.new.size ?? 0)})"
 				class:line-through={isExisting}
 				class:opacity-50={isExisting}
 			>
@@ -342,10 +355,14 @@
 		{/if}
 		<!-- Existing inscription file information -->
 		{#if inscription.existing}
-			<div title="#{inscription.existing.number} ({prettyBytes(inscription.existing.contentSize)})">
+			<div
+				title="#{inscription.existing.number} ({prettyBytes(
+					inscription.existing.contentSize ?? 0
+				)})"
+			>
 				<div class="truncate">Inscription #{inscription.existing.number?.toString() ?? ''}</div>
 				<div class="truncate">
-					{prettyBytes(inscription.existing.contentSize)}
+					{prettyBytes(inscription.existing.contentSize ?? 0)}
 					({inscription.existing.contentType})
 				</div>
 			</div>
