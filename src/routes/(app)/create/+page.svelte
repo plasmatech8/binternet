@@ -64,7 +64,7 @@
 					orderFilename: `${uuid}_${file.name}`
 				}
 			};
-			$inscriptions = [newInscription, ...$inscriptions];
+			$inscriptions = [...$inscriptions, newInscription];
 		}
 	}
 
@@ -89,7 +89,7 @@
 						path: path,
 						existing: r
 					};
-					$inscriptions = [newInscription, ...$inscriptions];
+					$inscriptions = [...$inscriptions, newInscription];
 				}
 			}
 		});
