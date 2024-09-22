@@ -1,25 +1,24 @@
 <script lang="ts">
+	import type { OrdinalsBotOrderStatusResponse } from '$lib/backend-api/sources/ordinalsBot';
+	import InscriptionCard from '$lib/components/cards/InscriptionCard.svelte';
+	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
+	import { orderHistoryStore } from '$lib/stores/history';
+	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
+	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
+	import { str2ab } from '$lib/utils/conversion';
 	import {
+		CodeBlock,
 		FileButton,
 		getModalStore,
 		getToastStore,
 		localStorageStore
 	} from '@skeletonlabs/skeleton';
-	import InscriptionCard from '../../../lib/components/cards/InscriptionCard.svelte';
-	import { slide } from 'svelte/transition';
-	import { CodeBlock } from '@skeletonlabs/skeleton';
-	import yaml from 'js-yaml';
-	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
-	import type { OrdinalsBotOrderStatusResponse } from '$lib/backend-api/sources/ordinalsBot';
 	import axios from 'axios';
-	import { uniq } from 'lodash-es';
+	import yaml from 'js-yaml';
+	import { clone, uniq, uniqBy } from 'lodash-es';
 	import { onMount } from 'svelte';
-	import { orderHistoryStore } from '$lib/stores/history';
-	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
-	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
-	import { str2ab } from '$lib/utils/conversion';
-	import clone from 'lodash-es/clone';
 	import { flip } from 'svelte/animate';
+	import { slide } from 'svelte/transition';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -30,6 +29,37 @@
 
 	const inscriptions = localStorageStore<InscriptionFile[]>('inscriptions', []);
 	let formEl: HTMLFormElement;
+
+	fixInscriptionDataProblems();
+
+	function fixInscriptionDataProblems() {
+		// 1. Filter out null or undefined inscriptions
+		const invalidIndexes = $inscriptions
+			.map((insc, index) => (insc && insc.id ? null : index))
+			.filter((index) => index !== null);
+		if (invalidIndexes.length > 0) {
+			console.error(
+				`Error in data: inscriptions at indexes ${invalidIndexes.join(', ')} are null or undefined. These inscriptions will be removed.`
+			);
+			$inscriptions = $inscriptions.filter((insc) => insc);
+		}
+		// 2. Group by 'id' to find duplicates
+		const idToIndexes = $inscriptions.reduce(
+			(acc, insc, index) => {
+				acc[insc.id] = acc[insc.id] || [];
+				acc[insc.id].push(index);
+				return acc;
+			},
+			{} as Record<string, number[]>
+		);
+		const duplicateIds = Object.keys(idToIndexes).filter((id) => idToIndexes[id].length > 1);
+		if (duplicateIds.length > 0) {
+			console.error(
+				`Error in data: Duplicate inscriptions found for IDs: ${duplicateIds.join(', ')}. The duplicates inscriptions will be removed.`
+			);
+			$inscriptions = uniqBy($inscriptions, 'id');
+		}
+	}
 
 	$: allPathsUnique =
 		$inscriptions.map((insc) => insc.path).length ===
