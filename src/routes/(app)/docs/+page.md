@@ -135,11 +135,11 @@ This process is made easier by using [binternet.org](https://binternet.org/creat
 
 1. First you can define URL paths for your website, and you either inscribe new files or link to existing inscription numbers.
 
-![create_page_define_routes](/screenshots/create_page_define_routes.png)
+![Create Page - define routes screenshot](/screenshots/create_page_define_routes.png)
 
 2. Then, you can examine your router (YAML file) and inscribe the router to deploy your static website.
 
-![create_page_create_router](/screenshots/create_page_create_router.png)
+![Create Page - create router screenshot](/screenshots/create_page_create_router.png)
 
 ## Examples
 

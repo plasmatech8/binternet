@@ -1,8 +1,9 @@
 # BInternet
 
 **BInternet** allows you to inscribe static websites onto the Bitcoin blockchain.
-By using HTML files and router inscriptions, your content is permanently stored and
-accessible via inscription numbers or IDs.
+
+By using website asset and router inscriptions, your content is permanently stored and
+accessible via inscription numbers or ID.
 
 [mainnet](binternet.org) | [signet](signet.binternet.org)
 
@@ -57,8 +58,8 @@ accessible via inscription numbers or IDs.
 For information about the BInternet specifications and step-by-step guides, please read the
 documentation page:
 
-- [Markdown file](/src/routes/(app)/docs/+page.md)
 - [Website](https://binternet.org/docs)
+- ([Markdown file](/src/routes/(app)/docs/+page.md))
 
 ## License
 
