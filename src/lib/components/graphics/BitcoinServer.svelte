@@ -15,7 +15,7 @@
 	bind:this={player}
 	autoplay
 	mode="normal"
-	src="/bitcoin_server_animation.json"
+	src="/animations/bitcoin_server_animation.json"
 	style="width: 320px"
 >
 </lottie-player>

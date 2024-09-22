@@ -21,8 +21,8 @@
 	}
 
 	$: addressInfoList = $wallet && [
-		{ name: 'Payments', address: $wallet.payment, icon: '/bitcoin_icon.webp' },
-		{ name: 'Ordinals', address: $wallet.ordinals, icon: '/ordinals_icon.png' }
+		{ name: 'Payments', address: $wallet.payment, icon: '/icons/bitcoin_icon.webp' },
+		{ name: 'Ordinals', address: $wallet.ordinals, icon: '/icons/ordinals_icon.png' }
 	];
 
 	let wrongNetwork = false;
