@@ -8,19 +8,23 @@ onto the Bitcoin blockchain using HTML files and router inscriptions.
 ## Overview
 
 You can inscribe a static website onto the Bitcoin blockchain.
-This process involves inscribing HTML files onto the chain where the content can be accessed via inscription number or ID.
-Afterwards, you can create a **router** inscription to structure your website with URL paths,
-similar to a traditional website.
 
-### Creating a Router Inscription
+This process involves inscribing HTML files and other website assets onto the chain.
 
-A router inscription allows you to create a structured website by mapping URL paths to different
-resources or files using a YAML configuration.
-Each path in under `routes` maps to an inscription number.
-The inscription data corresponding to the number will be returned when the user navigates to a URL
-which matches the path.
+Afterwards, you can create a **Router Inscription** to define the URL paths of
+your website, which reference the inscription number of your inscribed files.
 
-Example:
+### Asset Inscriptions
+
+An **Asset Inscription** is a file which is makes up part of your website.
+
+e.g., HTML, CSS, JS, images, etc.
+
+### Router Inscriptions
+
+A **Router Inscription** is a YAML file which maps URL paths to the inscriptions used as website assets.
+
+e.g.,
 ```yaml
 binternet: v1
 routes:
@@ -30,20 +34,26 @@ routes:
   /runes: 100002    # runes.html
   /about: 100003    # about.html
   /contact: 100004  # contact.html
+  /app/**: 100005   # single_page_app.html
 
   # JS/CSS
-  /script.js: 100005
-  /styles.css: 100006
+  /script.js: 100006
+  /styles.css: 100007
 
   # Image Assets
-  /runes/going_to_the_moon.gif: 100007
-  /runes/laser_eyes_effect.gif: 100008
-  /favicon.gif: 100009
+  /runes/going_to_the_moon.gif: 100008
+  /runes/laser_eyes_effect.gif: 100009
+  /favicon.gif: 100010
 ```
+
+Each path in under `routes` maps to an inscription number.
+
+The inscription data corresponding to the inscription number will be returned when the user
+navigates to the matching URL path.
 
 ## Router Specification
 
-A **router** inscription is the configuration which defines the routes for your website.
+A **Router Inscription** is the configuration which defines the routes for your website.
 
 The inscription number for the router can be thought as similar to a (permanent) static IP address
 and can be used as the entry point for your site.
@@ -70,7 +80,7 @@ URL paths must start with `/`.
 
 If multiple router paths match a URL, the first matching path is used.
 
-#### Example
+e.g.,
 
 ```yaml
 binternet: v1
@@ -86,12 +96,11 @@ routes:
 
 ## How to Create a Site
 
-### Step-by-Step Guide
+### Manual Process
 
 1. **Create Inscriptions**
-   - Inscribe data containing file data for the assets of your site (HTML, JS, CSS, images, etc.).
-   - Note the inscription number for each asset.
-   - If an inscription with identical data already exists, you can forgo creating a new inscription and note the inscription number for the existing asset.
+   - Inscribe data containing file data for the assets of your site (HTML, JS, CSS, images, etc.). Keep note of the inscription numbers for each asset.
+   - If an inscription with identical data already exists, you use the inscription number for the existing asset instead of creating a new inscription.
 
    **Example**:
    - Inscribe `index.html` (inscription number: 100001)
@@ -99,8 +108,10 @@ routes:
    - Inscribe `favicon.png` (inscription number: 100003)
    - Inscribe `frog.gif` (inscription number: 100004)
 
-2. **Create a Router Inscription**
-   - Create a YAML file following the specified schema.
+
+
+1. **Create a Router Inscription**
+   - Create a YAML file following the example schema below.
    - Map URL paths to corresponding inscription numbers.
 
     **Example**:
@@ -113,22 +124,50 @@ routes:
       /images/frog.gif: 100004
     ```
 
-3. **Deploy Your Site**
+2. **Deploy Your Site**
    - Inscribe your router YAML file onto the blockchain.
    - Use the inscription number of your router as your site's entry point.
    - Access your site under URL: `<router-inscription-number>.binternet.org`.
+
+### Using binternet.org
+
+This process is made easier by using the [binternet.org](binternet.org) website.
+
+1. First you can define URL paths for your website, and you either inscribe files or link to existing inscription numbers.
+
+![create_page_define_routes](/screenshots/create_page_define_routes.png)
+
+2. Then, you can examine your router inscriptions and inscribe the router to deploy your site.
+
+![create_page_create_router](/screenshots/create_page_create_router.png)
 
 ## Examples
 
 See examples in [on GitHub](https://github.com/plasmatech8/binternet/tree/main/examples).
 
-## Best Practices
+### 1. Basic Site
+
+A simple static site with HTML, CSS, and JavaScript.
+
+[Link](https://github.com/plasmatech8/binternet/tree/main/examples/01_basic_site)
+
+### 2. Modular Site
+
+A site with a modular architecture so that it can be updated in the future
+with the fewest number of new inscription transactions required and the lowest fees.
+
+Not yet implemented.
+
+[Link](https://github.com/plasmatech8/binternet/tree/main/examples/02_modular_site)
+
+
+## More Information
+
+### Best Practices
 
 - **Updating Your Website:** Inscribe new files and create a new router to update your website.
 - **Reusing Existing Inscriptions:** Reuse existing inscriptions as much as possible to save space and costs.
 - **Validation**: Always check your YAML configuration to ensure there are no syntax errors.
-
-## Error Handling and FAQs
 
 ### Common Errors
 
