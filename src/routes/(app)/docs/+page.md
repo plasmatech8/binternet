@@ -131,13 +131,13 @@ routes:
 
 ### Using binternet.org
 
-This process is made easier by using the [binternet.org](binternet.org) website.
+This process is made easier by using [binternet.org](https://binternet.org/create) (create page).
 
-1. First you can define URL paths for your website, and you either inscribe files or link to existing inscription numbers.
+1. First you can define URL paths for your website, and you either inscribe new files or link to existing inscription numbers.
 
 ![create_page_define_routes](/screenshots/create_page_define_routes.png)
 
-2. Then, you can examine your router inscriptions and inscribe the router to deploy your site.
+2. Then, you can examine your router (YAML file) and inscribe the router to deploy your static website.
 
 ![create_page_create_router](/screenshots/create_page_create_router.png)
 
