@@ -301,10 +301,11 @@
 				});
 			})
 			.catch((error) => {
-				if (error instanceof UnexpectedTransactionError) {
-				}
-				if (error instanceof RejectedTransactionError) {
-				}
+				console.error('Error with wallet:', error);
+				toastStore.trigger({
+					message: error.message,
+					background: 'variant-filled-error'
+				});
 			});
 	}
 
