@@ -80,6 +80,13 @@
 		// Add inscriptions to list
 		for (let i = 0; i < fileList.length; i++) {
 			const file = fileList[i];
+			if (!file.type) {
+				toastStore.trigger({
+					message: `Unknown content type for ${file.name}. Skipping this file.`,
+					background: 'variant-filled-error'
+				});
+				continue;
+			}
 			const uuid = crypto.randomUUID();
 			const newInscription: InscriptionFile = {
 				id: uuid,
