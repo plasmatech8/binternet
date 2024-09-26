@@ -53,5 +53,10 @@ interface WalletSites {
 
 interface WalletSitesResult {
 	router: Router;
-	details: InscriptionDetails;
+	details: {
+		number: number;
+		id: string;
+		contentType: string;
+		inscribedAt: Date;
+	};
 }

@@ -55,7 +55,7 @@
 						site={{
 							number: site.details.number,
 							router: site.router,
-							createdAt: site.details.createdAt
+							createdAt: site.details.inscribedAt.toISOString()
 						}}
 					></SiteCard>
 				{:else}

@@ -22,5 +22,6 @@ export async function fetchSiteList(
 ) {
 	const url = `/api/address/${address}/sites`;
 	const { data } = await axios.get<WalletSites>(url, { params: { limit, offset } });
+	data.results.forEach((res) => (res.details.inscribedAt = new Date(res.details.inscribedAt)));
 	return data;
 }
