@@ -11,13 +11,14 @@
 	let player: LottiePlayer;
 </script>
 
-<Shine class="hover:scale-105 transition duration-300">
-	<lottie-player
-		bind:this={player}
-		autoplay
-		mode="normal"
-		src="/animations/bitcoin_network_animation.json"
-		style="max-width: 40rem;"
-	>
-	</lottie-player>
-</Shine>
+<div class="max-w-[40rem] max-h-[40rem] w-full h-full aspect-square">
+	<Shine class="hover:scale-105 transition duration-300">
+		<lottie-player
+			bind:this={player}
+			autoplay
+			mode="normal"
+			src="/animations/bitcoin_network_animation.json"
+		>
+		</lottie-player>
+	</Shine>
+</div>
