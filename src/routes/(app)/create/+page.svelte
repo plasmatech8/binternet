@@ -3,7 +3,7 @@
 	import InscriptionCard from '$lib/components/cards/InscriptionCard.svelte';
 	import PageLayout from '$lib/components/layouts/PageLayout.svelte';
 	import { orderHistoryStore } from '$lib/stores/history';
-	import { RejectedTransactionError, UnexpectedTransactionError, wallet } from '$lib/stores/wallet';
+	import { wallet } from '$lib/stores/wallet';
 	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
 	import { str2ab } from '$lib/utils/conversion';
 	import {
