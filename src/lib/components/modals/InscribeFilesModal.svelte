@@ -250,7 +250,7 @@
 							<tr>
 								<td>
 									<div class="btn-icon btn-icon-sm variant-ghost">
-										{insc.id}
+										{i + 1}
 									</div>
 								</td>
 								<td>
