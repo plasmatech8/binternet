@@ -25,25 +25,21 @@
 				<p>This site was inscribed onto the Bitcoin Blockchain!</p>
 				<p>The HTML/CSS/JS and image files were inscribed onto the blockchain.</p>
 				<p>
-					Then, a router inscription (defined as a YAML file) was created which maps URL paths of
-					your website to each file.
+					After these files were inscribed onto the blockchain, a router inscription (defined as a
+					YAML file) was created which maps URL paths to the website assets via inscription number.
 				</p>
 				<p>For example:</p>
-				<ul>
-					<li>
-						<code>/</code> is mapped to inscription number <code>10001</code> (containing
-						<code>/index.html</code>)
-					</li>
-					<li>
-						<code>/styles.css</code> is mapped to inscription number <code>10002</code> (containing
-						<code>/styles.css</code>)
-					</li>
-					<li>
-						<code>/script.js</code> is mapped to inscription number <code>10003</code> (containing
-						<code>/script.js</code>)
-					</li>
-					<li>etc...</li>
-				</ul>
+				<pre>
+
+    binternet: v1
+    routes:
+        /: 1001             # /index.html
+        /styles.css: 1002   # /styles.css
+        /script.js: 1003    # /script.js
+                            # ...etc
+				</pre
+				>
+
 				<p>
 					You can view the code for this website
 					<a href="https://github.com/plasmatech8/binternet/tree/main/examples/01_basic_site">

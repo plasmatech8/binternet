@@ -1,9 +1,10 @@
 /* General */
 
-h1, h2 {
+h1,
+h2 {
 	text-align: center;
 	padding: 1rem;
-	padding-top: 2rem
+	padding-top: 2rem;
 }
 
 body {
@@ -16,7 +17,8 @@ main {
 	margin: 0 auto;
 }
 
-code {
+code,
+pre {
 	background-color: lightgray;
 	border-radius: 0.3rem;
 	padding: 0 0.2rem;
@@ -27,7 +29,6 @@ code {
 header {
 	background-color: white;
 }
-
 
 /* Header Nav */
 
