@@ -38,26 +38,28 @@
 
 	onMount(() => {
 		blockStore.subscribe(() => {
-			setTimeout(async () => {
-				const inscriptionId = inscription.inscribing?.inscriptionId;
-				if (isInscribing && inscriptionId) {
-					try {
-						const res = await axios.get<InscriptionDetails>(
-							`/api/inscription/${inscriptionId}/details`
-						);
-						if (res.status === 200) {
-							// Call txn endpoint to check if transaction is confirmed
-							if (inscription.new) {
-								// Call inscription endpoint to find the inscription number
-								inscription.new.number = res.data.number;
-								console.log(`Inscription ${inscription.new.number} is now confirmed!`);
-							}
-						}
-					} catch (_) {}
-				}
-			}, 1000);
+			setTimeout(tryRefreshInscriptionConfirmation, 5000);
 		});
 	});
+
+	async function tryRefreshInscriptionConfirmation() {
+		const inscriptionId = inscription.inscribing?.inscriptionId;
+		if (isInscribing && inscriptionId) {
+			try {
+				const res = await axios.get<InscriptionDetails>(
+					`/api/inscription/${inscriptionId}/details`
+				);
+				if (res.status === 200) {
+					// Call txn endpoint to check if transaction is confirmed
+					if (inscription.new) {
+						// Call inscription endpoint to find the inscription number
+						inscription.new.number = res.data.number;
+						console.log(`Inscription ${inscription.new.number} is now confirmed!`);
+					}
+				}
+			} catch (_) {}
+		}
+	}
 
 	/*
 	 * File information popup
