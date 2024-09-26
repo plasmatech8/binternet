@@ -4,7 +4,7 @@
 website assets and creating a router inscription, your content is permanently stored and accessible
 via inscription number and URL paths.
 
-[mainnet](https://binternet.org) | [signet](https://signet.binternet.org)
+[mainnet](https://binternet.org) • [signet](https://signet.binternet.org)
 
 ## Table of Contents
 - [BInternet](#binternet)
