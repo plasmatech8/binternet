@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 		// Save to DB
 		const client = new BInternetServerClient(platform);
-		client.saveSite(number, title);
+		await client.saveSite(number, title);
 
 		return json({});
 	} catch (err) {
