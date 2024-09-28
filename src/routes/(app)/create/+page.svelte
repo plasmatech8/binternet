@@ -169,8 +169,8 @@
 				const orderStatus = $orderHistoryStore[i];
 				// Do not check already completed orders
 				if (orderStatus.completed) continue;
-				// Do not check if more than 5 minutes old
-				if (Date.now() - orderStatus.createdAt > 300_000) continue;
+				// Do not check if more than 1 day old
+				if (Date.now() - orderStatus.createdAt > 86400_000) continue;
 				// Check order status for pending order
 				const orderId = orderStatus.id;
 				try {
