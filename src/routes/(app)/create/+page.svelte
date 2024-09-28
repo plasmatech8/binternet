@@ -171,7 +171,8 @@
 					const res = await axios.get<OrdinalsBotOrderStatusResponse>(`/api/order/${orderId}`);
 					const newOrderStatus = res.data;
 					if (!newOrderStatus.completed) {
-						return console.log(`Order ${orderId} still pending!`);
+						console.log(`Order ${orderId} still pending!`);
+						continue;
 					}
 					console.log(`Order ${orderId} has completed submission!`);
 					// Update inscriptions array with inscription information
