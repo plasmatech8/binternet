@@ -171,7 +171,7 @@
 		}
 	}
 
-	$: if (feeRate && inscriptions) {
+	$: if (feeRate && inscriptions && !paymentLoading) {
 		order = null;
 		orderErrors = null;
 		orderStatus = null;
