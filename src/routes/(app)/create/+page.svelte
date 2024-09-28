@@ -19,6 +19,11 @@
 	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { slide } from 'svelte/transition';
+	import pkg from '../../../../package.json?raw';
+
+	const { version } = JSON.parse(pkg);
+	const isBeta = parseInt(version.split('.')[0]) < 1;
+	let betaWarningOpen = true;
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -356,6 +361,31 @@
 </svelte:head>
 
 <PageLayout>
+	{#if isBeta && betaWarningOpen}
+		<aside class="alert variant-soft-warning mb-4">
+			<!-- Icon -->
+			<i class="fas fa-exclamation-triangle text-3xl"></i>
+			<!-- Message -->
+			<div class="alert-message">
+				<h3 class="h3">This application is currently in Beta.</h3>
+				<p>Some features may have issues or bugs. Use at your own risk.</p>
+				<p>
+					We are not liable for any issues that may arise from using this beta application. Your
+					feedback is appreciated.
+				</p>
+			</div>
+			<!-- Actions -->
+			<div class="alert-actions">
+				<button
+					class="btn-icon hover:variant-soft-warning"
+					on:click={() => (betaWarningOpen = false)}
+				>
+					<i class="fas fa-close"></i>
+				</button>
+			</div>
+		</aside>
+	{/if}
+
 	<!-- Main Page Title & Reset button -->
 	<div class="flex gap-2 justify-between items-center">
 		<!-- Title -->

@@ -45,7 +45,7 @@
 				<!-- Beta label -->
 				<div class="font-semibold leading-none absolute bottom-0 right-5">
 					{#if isBeta}
-						<div class="text-xs opacity-30">BETA</div>
+						<div class="text-xs opacity-30">⚠️ BETA</div>
 					{/if}
 				</div>
 			</a>
