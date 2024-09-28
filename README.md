@@ -14,6 +14,7 @@ via inscription number and URL paths.
   - [Usage](#usage)
   - [Documentation](#documentation)
   - [License](#license)
+  - [Development roadmap/notes](#development-roadmapnotes)
 
 ## Features
 
@@ -63,3 +64,19 @@ documentation page:
 ## License
 
 This project is licensed under the MIT License.
+
+## Development roadmap/notes
+
+Routing features:
+- **Add URL path option to display dynamic content**:
+  - i.e. `/blog/1` will returns the first transferred inscription between two addresses.
+  - `/blog` could possibly return JSON containing a list of inscriptions.
+  - Make filtering configurable to only show inscriptions sent between two specified addresses.
+
+Create Page improvements:
+- **Auto-Select Existing Inscription**: Automatically use existing inscriptions if identical content is found ([issue #1](https://github.com/plasmatech8/binternet/issues/1))
+- **Minify Assets**: Add a button to minify JavaScript and CSS.
+
+Other features:
+- **My Sites Page**: Allow users to view their deployed sites on Signet.
+- **Deployed Sites List**: Display a list of sites which were recently created.
