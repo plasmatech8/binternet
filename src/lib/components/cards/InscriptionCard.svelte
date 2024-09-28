@@ -173,7 +173,7 @@
 	<!-- Content -->
 	<div class="w-full flex flex-col lg:flex-row gap-2 items-center">
 		<!-- Path Input -->
-		<div class="input-group input-group-divider grid-cols-[auto_auto_1fr] h-fit">
+		<div class="input-group input-group-divider grid-cols-[auto_1fr] h-fit">
 			<div class="input-group-shim">Path</div>
 			<input
 				bind:this={inputEl}
