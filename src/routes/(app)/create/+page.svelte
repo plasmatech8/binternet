@@ -162,6 +162,7 @@
 	 */
 
 	onMount(() => {
+		const orderCheckCount: Record<string, number> = {};
 		// Every 5 seconds, check if pending order IDs have completed submission,
 		// Then add the (unconfirmed) inscription information to the list of inscriptions.
 		const interval = setInterval(async () => {
@@ -174,6 +175,10 @@
 				// Check order status for pending order
 				const orderId = orderStatus.id;
 				try {
+					// Increment check counter
+					orderCheckCount[orderId] = (orderCheckCount[orderId] ?? 0) + 1;
+					// Only check every 5 minutes if 10 checks already done (50 seconds)
+					if (orderCheckCount[orderId] > 10 && orderCheckCount[orderId] % 60 !== 0) continue;
 					// Query order details
 					const res = await axios.get<OrdinalsBotOrderStatusResponse>(`/api/order/${orderId}`);
 					const newOrderStatus = res.data;
