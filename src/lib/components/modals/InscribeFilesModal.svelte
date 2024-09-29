@@ -31,17 +31,18 @@
 	$: totalSize = inscriptions.reduce((agg, next) => agg + (next.new?.size ?? 0), 0);
 
 	let feeRate = 0;
+	const minFeeRate = 2;
 
 	$: feeRateOptions = $recommendedFeeStore
 		? [
-				{ name: 'Economy', feeRate: $recommendedFeeStore.economyFee },
-				{ name: 'Normal', feeRate: $recommendedFeeStore.halfHourFee },
-				{ name: 'Fast', feeRate: $recommendedFeeStore.fastestFee }
+				{ name: 'Economy', feeRate: Math.max($recommendedFeeStore.economyFee, minFeeRate) },
+				{ name: 'Normal', feeRate: Math.max($recommendedFeeStore.halfHourFee, minFeeRate) },
+				{ name: 'Fast', feeRate: Math.max($recommendedFeeStore.fastestFee, minFeeRate) }
 			]
 		: null;
 
 	$: if (!feeRate && $recommendedFeeStore) {
-		feeRate = $recommendedFeeStore.fastestFee;
+		feeRate = Math.max($recommendedFeeStore.fastestFee, minFeeRate);
 	}
 
 	$: atFeeRateOption = feeRateOptions?.reduce((best, next) => {
@@ -318,8 +319,8 @@
 			<RangeSlider
 				name="range-slider"
 				bind:value={feeRate}
-				max={Math.round($recommendedFeeStore.fastestFee * 1.6)}
-				min={3}
+				min={minFeeRate}
+				max={Math.round(Math.max($recommendedFeeStore.fastestFee * 1.6, 4))}
 				ticked
 			>
 				<div class="flex justify-between items-center">
