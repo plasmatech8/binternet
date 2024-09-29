@@ -11,6 +11,7 @@
 	} from '$env/static/public';
 	import { getTitleFromHTML } from '$lib/utils/htmlUtils';
 	import { siteHistoryStore } from '$lib/stores/history';
+	import { getSiteLinkUrl } from '$lib/utils/network';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -24,13 +25,6 @@
 	$: routerInscriptionId = txnId + 'i0';
 	let confirmedSite: WalletSitesResult | null = null;
 
-	function getSiteLinkUrl(siteNumber: number) {
-		// http://localhost:5173 		-> http://123.localhost:5173
-		// https://signet.binternet.org -> https://123.signet.binternet.org
-		// https://binternet.org 		-> https://123.mainnet.binternet.org
-		const addSubdomain = location.hostname === 'binternet.org' ? 'mainnet.' : '';
-		return `${location.protocol}//${siteNumber}.${addSubdomain}${location.host}`;
-	}
 	$: siteLinkUrl = confirmedSite ? getSiteLinkUrl(confirmedSite.details.number) : null;
 
 	blockStore.subscribe(() => {

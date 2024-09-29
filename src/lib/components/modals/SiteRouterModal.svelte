@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import { CodeBlock } from '@skeletonlabs/skeleton';
-	import yaml from 'js-yaml';
 	import { PUBLIC_INSCRIPTION_LINK_URL } from '$env/static/public';
+	import { getModalStore } from '@skeletonlabs/skeleton';
 	import SiteRouterCodeBlock from '../code/SiteRouterCodeBlock.svelte';
+	import { getSiteLinkUrl } from '$lib/utils/network';
 
 	const modalStore = getModalStore();
 
 	const site = $modalStore[0].meta.site as Site;
+
+	$: siteLinkUrl = getSiteLinkUrl(site.number);
 
 	function onClose() {
 		modalStore.close();
@@ -31,11 +31,18 @@
 		<SiteRouterCodeBlock {site}></SiteRouterCodeBlock>
 
 		<div>
-			Click on
-			<span class="font-bold text-primary-500">router paths</span>
-			and
-			<span class="font-bold text-primary-500">inscription numbers</span>
-			to navigate to preview links.
+			<p class="mb-2">
+				You can click on a
+				<span class="font-bold text-primary-500">router path</span>
+				or
+				<span class="font-bold text-primary-500">inscription number</span> above to navigate to preview
+				links.
+			</p>
+			<p>
+				<a href={siteLinkUrl} class="anchor no-underline hover:underline" target="_blank">
+					{siteLinkUrl}
+				</a>
+			</p>
 		</div>
 
 		<div class="flex justify-end gap-3">

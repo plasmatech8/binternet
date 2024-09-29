@@ -7,6 +7,7 @@
 	import { fetchSiteList } from '$lib/api';
 	import { PUBLIC_BITCOIN_NETWORK } from '$env/static/public';
 	import { siteHistoryStore } from '$lib/stores/history';
+	import { onMount } from 'svelte';
 
 	const toastStore = getToastStore();
 
@@ -20,13 +21,17 @@
 			size = data.total;
 			return data.results;
 		} else {
-			toastStore.trigger({
-				message: `<i class="fas fa-exclamation-triangle"></i> Fetching sites not currently supported for ${PUBLIC_BITCOIN_NETWORK}. Falling back to sites found in local history.`,
-				background: 'variant-filled-warning'
-			});
-			return $siteHistoryStore;
+			size = $siteHistoryStore.length;
+			return $siteHistoryStore.slice(offset, offset + limit);
 		}
 	}
+	onMount(() => {
+		if (PUBLIC_BITCOIN_NETWORK === 'mainnet') return;
+		toastStore.trigger({
+			message: `<i class="fas fa-exclamation-triangle"></i> Fetching sites not currently supported for ${PUBLIC_BITCOIN_NETWORK}. Falling back to sites found in local history.`,
+			background: 'variant-filled-warning'
+		});
+	});
 
 	function onPageChange(e: CustomEvent) {
 		const newPage = e.detail as number;
@@ -55,7 +60,7 @@
 						site={{
 							number: site.details.number,
 							router: site.router,
-							createdAt: site.details.inscribedAt.toISOString()
+							createdAt: new Date(site.details.inscribedAt).toISOString()
 						}}
 					></SiteCard>
 				{:else}

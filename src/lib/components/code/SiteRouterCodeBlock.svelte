@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { PUBLIC_BITCOIN_NETWORK, PUBLIC_INSCRIPTION_LINK_URL } from '$env/static/public';
+	import { PUBLIC_INSCRIPTION_LINK_URL } from '$env/static/public';
+	import { getSiteLinkUrl } from '$lib/utils/network';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import yaml from 'js-yaml';
 
@@ -14,7 +14,8 @@
 			const match = text.match(/^(\/.*):$/);
 			if (match) {
 				const anchor = document.createElement('a');
-				anchor.href = `${$page.url.protocol}//${site.number}.${PUBLIC_BITCOIN_NETWORK}.${$page.url.host}${match[1]}`;
+				const siteLinkUrl = getSiteLinkUrl(site.number);
+				anchor.href = `${siteLinkUrl}${match[1]}`;
 				anchor.target = '_blank';
 				anchor.innerHTML = el.innerHTML;
 				anchor.className = `hover:!anchor ${el.className}`;

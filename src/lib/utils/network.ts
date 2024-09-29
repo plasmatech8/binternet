@@ -19,3 +19,14 @@ export function extractNumberAndNetwork(url: URL): {
 }
 
 type Network = 'mainnet' | 'testnet' | 'signet';
+
+/**
+ * Get the site link URL for a BInternet site.
+ */
+export function getSiteLinkUrl(siteNumber: number) {
+	// http://localhost:5173 		-> http://123.localhost:5173
+	// https://signet.binternet.org -> https://123.signet.binternet.org
+	// https://binternet.org 		-> https://123.mainnet.binternet.org
+	const addSubdomain = location.hostname === 'binternet.org' ? 'mainnet.' : '';
+	return `${location.protocol}//${siteNumber}.${addSubdomain}${location.host}`;
+}
