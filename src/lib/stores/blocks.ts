@@ -21,6 +21,16 @@ function createBlockStore() {
 		);
 	};
 
+	// Resend data request every minute to ensure still working
+	setInterval(() => {
+		socket.send(
+			JSON.stringify({
+				action: 'want',
+				data: ['blocks']
+			})
+		);
+	}, 60_000);
+
 	// Listen for events and update the store
 	socket.onmessage = (event: MessageEvent) => {
 		const res = JSON.parse(event.data);
