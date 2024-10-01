@@ -6,7 +6,7 @@ import { writable } from 'svelte/store';
 function useAPIPollingStore<T>(url: string) {
 	const store = writable<T | null>(null, () => {
 		if (!browser) return;
-		const interval = setInterval(update, 30_000);
+		const interval = setInterval(update, 20_000); // every 20 seconds
 		return () => {
 			clearInterval(interval);
 		};
