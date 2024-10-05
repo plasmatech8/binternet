@@ -110,15 +110,38 @@ export interface OrdinalsBotOrderStatusResponse {
 	status: string;
 }
 
+export interface OrdinalsBotSearchResponse {
+	status: string;
+	count: number;
+	currentPage: number;
+	totalPages: number;
+	totalItems: number;
+	itemsPerPage: number;
+	results: OrdinalsBotSearchResponseResult[];
+}
+
+export interface OrdinalsBotSearchResponseResult {
+	txid: string;
+	inputindex: string;
+	inscriptionid: string;
+	blockheight: string;
+	contenttypestr: string;
+	contenthash: string;
+	contentlength: string;
+	createdat: Date;
+}
+
 export class OrdinalsBot {
 	static apiUrl = endpointsEnv.ordinalsBotApiUrl;
+	static apiKey = endpointsEnv.ordinalsBotApiKey;
 	client: AxiosInstance;
 
 	constructor() {
 		this.client = axios.create({
 			baseURL: OrdinalsBot.apiUrl,
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'x-api-key': OrdinalsBot.apiKey
 			}
 		});
 	}
@@ -129,6 +152,9 @@ export class OrdinalsBot {
 	async createInscriptionOrder(
 		data: OrdinalsBotInscriptionOrderRequest
 	): Promise<OrdinalsBotInscriptionOrderResponse> {
+		console.log(`OrdinalsBot - creating order for ${data.files.length} inscriptions`);
+
+		// Post order request
 		const res = await this.client.post<OrdinalsBotInscriptionOrderResponse>(`/inscribe`, data);
 		return res.data;
 	}
@@ -137,7 +163,35 @@ export class OrdinalsBot {
 	 * Get the status of an inscription order by ID.
 	 */
 	async getOrderStatus(id: string): Promise<OrdinalsBotOrderStatusResponse> {
+		console.log(`OrdinalsBot - getting order status for ID: ${id}`);
+
+		// Get order status
 		const res = await this.client.get<OrdinalsBotOrderStatusResponse>(`/order`, { params: { id } });
+		return res.data;
+	}
+
+	/**
+	 * Get inscription list by sha256 hash.
+	 */
+	async fetchInscriptionListByHash(
+		hash: string,
+		options?: {
+			page?: number;
+			itemsPerPage?: number;
+		}
+	): Promise<OrdinalsBotSearchResponse> {
+		console.log(`OrdinalsBot - fetching list of inscriptions by address: ${hash}`);
+
+		// Fetch inscription list
+		const res = await this.client.get<OrdinalsBotSearchResponse>(`/search`, {
+			responseType: 'json',
+			params: {
+				hash,
+				page: options?.page,
+				itemsPerPage: options?.itemsPerPage
+			}
+		});
+		// Do not bother converting because data returned does not include inscription number
 		return res.data;
 	}
 }

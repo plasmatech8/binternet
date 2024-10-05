@@ -5,7 +5,8 @@ import {
 	MEMPOOL_API_URL,
 	ORDINALSBOT_API_URL,
 	CACHE_STORE_ENABLED,
-	CACHE_FETCH_ENABLED
+	CACHE_FETCH_ENABLED,
+	ORDINALSBOT_API_KEY
 } from '$env/static/private';
 import { z } from 'zod';
 
@@ -20,6 +21,7 @@ export const endpointsEnv = {
 	ordApiUrl: urlSchema.parse(ORD_API_URL),
 	mempoolApiUrl: urlSchema.parse(MEMPOOL_API_URL),
 	ordinalsBotApiUrl: urlSchema.parse(ORDINALSBOT_API_URL),
+	ordinalsBotApiKey: ORDINALSBOT_API_KEY ?? undefined,
 	cacheStoreEnabled: booleanSchema.parse(CACHE_STORE_ENABLED),
 	cacheFetchEnabled: booleanSchema.parse(CACHE_FETCH_ENABLED)
 };

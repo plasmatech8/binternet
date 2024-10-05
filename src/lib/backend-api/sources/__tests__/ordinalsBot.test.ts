@@ -32,12 +32,18 @@ describe('OrdinalsBot API', () => {
 
 	it('getOrderStatus(id)', async () => {
 		const orderId = '21961281-4ea1-4326-8c0e-0909d0a659fa';
-		try {
-			const details = await ordinalsBot.getOrderStatus(orderId);
-			expect(details.files.length).toEqual(2);
-			expect(details.fee).toEqual(11);
-		} catch (error) {
-			console.error(error);
-		}
+		const details = await ordinalsBot.getOrderStatus(orderId);
+		expect(details.files.length).toEqual(2);
+		expect(details.fee).toEqual(11);
+	});
+
+	it('fetchInscriptionListByHash(hash)', async () => {
+		const inscriptionHash = 'cc34f536770c355b181397ff27f18cca8602b2f3cb164f96b3b317d4208db71b';
+		const inscriptionId = 'f3a1059896c8f72f7471ef161098bcd63ced6a10b182fa92b5209660e4fdf4bci0';
+		const details = await ordinalsBot.fetchInscriptionListByHash(inscriptionHash);
+		expect(details.status).toEqual('ok');
+		expect(details.count).toEqual(2);
+		expect(details.totalItems).toEqual('2');
+		expect(details.results).containSubset([{ inscriptionid: inscriptionId }]);
 	});
 });
