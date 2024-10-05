@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { InscriptionDetailsList } from './backend-api/types';
+import type { InscriptionDetails, InscriptionDetailsList } from './backend-api/types';
 
 export async function fetchInscriptionList(
 	address: string,
@@ -24,4 +24,9 @@ export async function fetchSiteList(
 	const { data } = await axios.get<WalletSites>(url, { params: { limit, offset } });
 	data.results.forEach((res) => (res.details.inscribedAt = new Date(res.details.inscribedAt)));
 	return data;
+}
+
+export async function fetchInscriptionByHash(hash: string) {
+	const x = await axios.get<InscriptionDetails | null>(`/api/inscription-hash/${hash}/details`);
+	return x.data;
 }

@@ -20,6 +20,8 @@
 	import { flip } from 'svelte/animate';
 	import { slide } from 'svelte/transition';
 	import pkg from '../../../../package.json?raw';
+	import { sha256 } from 'js-sha256';
+	import { fetchInscriptionByHash } from '$lib/api';
 
 	const { version } = JSON.parse(pkg);
 	const isBeta = parseInt(version.split('.')[0]) < 1;
@@ -106,7 +108,39 @@
 					orderFilename: `${uuid}_${file.name}`
 				}
 			};
+			checkIfFileInscriptionAlreadyExists(newInscription);
 			$inscriptions = [...$inscriptions, newInscription];
+		}
+	}
+
+	async function checkIfFileInscriptionAlreadyExists(inscFile: InscriptionFile) {
+		if (!inscFile.new) return;
+		const hash = sha256(inscFile.new.data);
+		const existing = await fetchInscriptionByHash(hash);
+		if (existing) {
+			const index = $inscriptions.findIndex((insc) => insc.id === inscFile.id);
+			toastStore.trigger({
+				message: `An identical inscription was found for #${index + 1} (${inscFile.new.filename})`,
+				autohide: false,
+				action: {
+					label: 'Use Existing',
+					response: async () => {
+						const index = $inscriptions.findIndex((insc) => insc.id === inscFile.id);
+						const url = `/api/inscription/${existing.id}/content`;
+						const res = await fetch(url);
+						if (!res.ok) throw Error('Error loading the identical inscription');
+						const inscriptionBlob = await res.blob();
+						const inscriptionContentType = res.headers.get('content-type')!;
+						const inscriptionContentSize = inscriptionBlob.size;
+						$inscriptions[index].existing = {
+							contentSize: inscriptionContentSize,
+							contentType: inscriptionContentType,
+							number: existing.number
+						};
+						$inscriptions[index].type = 'existing';
+					}
+				}
+			});
 		}
 	}
 
