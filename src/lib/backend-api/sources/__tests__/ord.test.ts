@@ -13,7 +13,7 @@ describe('Ord API', () => {
 
 	it('fetchInscriptionDetails(id)', async () => {
 		const details = await ord.fetchInscriptionDetails(routerInscription.details.id);
-		expect(details).toEqual(routerInscription.details);
+		expect(details).containSubset(routerInscription.details);
 	});
 
 	it('fetchInscriptionContent(number)', async () => {

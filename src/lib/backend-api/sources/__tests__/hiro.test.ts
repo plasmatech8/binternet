@@ -17,7 +17,7 @@ describe('Hiro API', () => {
 	});
 
 	it('fetchInscriptionList(address)', async () => {
-		const res = await hiro.fetchInscriptionList(routerInscription.details.address!, {
+		const res = await hiro.fetchInscriptionList(routerInscription.address, {
 			limit: 50,
 			offset: 0,
 			mimeType: 'application/x-yaml'

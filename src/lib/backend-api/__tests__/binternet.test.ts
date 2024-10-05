@@ -15,7 +15,7 @@ describe('BInternet Server Client', () => {
 	});
 
 	it('getAddressBalance(address)', async () => {
-		const address = routerInscription.details.address!;
+		const address = routerInscription.address;
 		const balance = await client.getAddressBalance(address);
 		expect(balance).toBeGreaterThan(0);
 	});
@@ -33,7 +33,7 @@ describe('BInternet Server Client', () => {
 	});
 
 	it('fetchInscriptionList(address)', async () => {
-		const res = await client.getInscriptionListByAddress(routerInscription.details.address!, {
+		const res = await client.getInscriptionListByAddress(routerInscription.address, {
 			limit: 50,
 			offset: 0,
 			mimeType: 'application/x-yaml'

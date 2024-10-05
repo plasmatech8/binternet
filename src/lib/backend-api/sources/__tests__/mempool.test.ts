@@ -6,7 +6,7 @@ const mempool = new Mempool();
 
 describe('Mempool API', () => {
 	it('getAddressBalance(address)', async () => {
-		const details = await mempool.fetchAddressBalance(routerInscription.details.address!);
+		const details = await mempool.fetchAddressBalance(routerInscription.address);
 		expect(details).toBeGreaterThan(0);
 	});
 
