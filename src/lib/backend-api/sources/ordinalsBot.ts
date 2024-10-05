@@ -180,7 +180,7 @@ export class OrdinalsBot {
 			itemsPerPage?: number;
 		}
 	): Promise<OrdinalsBotSearchResponse> {
-		console.log(`OrdinalsBot - fetching list of inscriptions by address: ${hash}`);
+		console.log(`OrdinalsBot - fetching list of inscriptions by hash: ${hash}`);
 
 		// Fetch inscription list
 		const res = await this.client.get<OrdinalsBotSearchResponse>(`/search`, {
