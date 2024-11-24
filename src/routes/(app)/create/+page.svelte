@@ -402,7 +402,7 @@
 </svelte:head>
 
 <PageLayout>
-	{#if isBeta && betaWarningOpen}
+	{#if false && isBeta && betaWarningOpen}
 		<aside class="alert variant-soft-warning mb-4">
 			<!-- Icon -->
 			<i class="fas fa-exclamation-triangle text-3xl"></i>
