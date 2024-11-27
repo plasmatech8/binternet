@@ -129,10 +129,7 @@
 		const orderDetails: OrdinalsBotInscriptionOrderRequest = {
 			fee: feeRate,
 			files: inscriptions.map((insc) => {
-				const { size, contentType, data } = insc.new!;
-				const base64 = btoa(
-					new Uint8Array(data).reduce((data, byte) => data + String.fromCharCode(byte), '')
-				);
+				const { size, contentType, base64 } = insc.new!;
 				return {
 					name: insc.new!.orderFilename,
 					size: size,

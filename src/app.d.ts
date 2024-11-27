@@ -17,6 +17,7 @@ interface InscriptionFile {
 		filepath: string;
 		size: number;
 		data: ArrayBuffer;
+		base64: string;
 		number?: number;
 		contentType: string;
 		orderFilename: string;

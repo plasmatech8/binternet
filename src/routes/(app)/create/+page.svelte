@@ -5,7 +5,7 @@
 	import { orderHistoryStore } from '$lib/stores/history';
 	import { wallet } from '$lib/stores/wallet';
 	import { addCodeBlockRouterLinks } from '$lib/utils/actions';
-	import { str2ab } from '$lib/utils/conversion';
+	import { ab2base64, str2ab } from '$lib/utils/conversion';
 	import {
 		CodeBlock,
 		FileButton,
@@ -104,6 +104,7 @@
 					filepath: file.webkitRelativePath ?? file.name,
 					size: file.size,
 					data: await file.arrayBuffer(),
+					base64: ab2base64(await file.arrayBuffer()),
 					contentType: file.type,
 					orderFilename: `${uuid}_${file.name}`
 				}

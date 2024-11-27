@@ -6,6 +6,7 @@
 	import prettyBytes from 'pretty-bytes';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { PUBLIC_INSCRIPTION_LINK_URL, PUBLIC_TRANSACTION_LINK_URL } from '$env/static/public';
+	import { ab2base64 } from '$lib/utils/conversion';
 
 	/*
 	 * Data
@@ -89,6 +90,7 @@
 				filepath: file.webkitRelativePath ?? file.name,
 				size: file.size,
 				data: await file.arrayBuffer(),
+				base64: ab2base64(await file.arrayBuffer()),
 				contentType: file.type || 'text/plain',
 				orderFilename: crypto.randomUUID() + `_(${inscription.id})_${file.name}`
 			}
