@@ -147,6 +147,16 @@
 		try {
 			const res = await axios.post<OrdinalsBotInscriptionOrderResponse>('/api/order', orderDetails);
 			order = res.data;
+			orderStatus = null;
+			console.log({ orderDetails, order });
+
+			// Check that files do not have 0 size
+			if (order.files.some((f) => f.size === 0)) {
+				orderErrors = ['Order Error: Some files have size 0'];
+				return;
+			}
+
+			// Update order status
 			getOrderStatus(order.id);
 		} catch (error) {
 			console.error('Failed to get order quote:', error);
@@ -162,6 +172,7 @@
 		try {
 			const res = await axios.get<OrdinalsBotOrderStatusResponse>(`/api/order/${orderId}`);
 			orderStatus = res.data;
+			console.log({ orderStatus });
 		} catch (error) {
 			console.error('Failed to get order status:', error);
 			if (axios.isAxiosError(error) && error.response?.status === 400) {
